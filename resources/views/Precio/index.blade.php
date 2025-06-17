@@ -1,0 +1,127 @@
+@extends('layout.app')
+
+@section('conten')
+
+<div class="text-center my-4">
+    <h3>
+        <span class="badge rounded-pill text-bg-success">Precios</span>
+    </h3>
+</div>
+
+@if (session('success'))
+    <div class="text-center">
+        <div class="alert alert-warning d-inline-flex align-items-center py-1 px-2 rounded-3 shadow-sm" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                fill="currentColor" class="bi me-2" viewBox="0 0 16 16" role="img"
+                aria-label="success:">
+                <path
+                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+            </svg>
+            <small class="fw-semibold">
+                {{ session('success') }}
+            </small>
+        </div>
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="text-center">
+        <div class="alert alert-danger d-inline-flex align-items-center py-1 px-2 rounded-3 shadow-sm" role="alert">
+            <strong>{{ session('error') }}</strong>
+        </div>
+    </div>
+@endif
+
+<div class="d-flex justify-content-center my-3">
+    <form class="row g-3 justify-content-center">
+        <div class="col-md-12">
+            <input type="text" id="inputBuscar" class="form-control" placeholder="Buscar precio o ID...">
+        </div>
+    </form>
+</div>
+
+@if (auth()->user()->rol == 0)
+    <div class="text-center mb-3">
+        <a href="{{ route('Precio.create') }}" class="btn btn-primary">Crear Nuevo Precio</a>
+    </div>
+@endif
+
+<div class="container mt-4"></div>
+<table class="table table-bordered table-hover mt-5" id="tablaPrecios">
+    <thead class="table-light">
+        <tr class="text-center">
+            <th>ID Precio</th>
+            <th>Nombre Modelo</th>
+            <th>Tipo Membresía</th>
+            <th>Seleccionar Precio</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @forelse ($precios as $p)
+            <tr class="text-center">
+                <td>{{ $p->id_precio }}</td>
+                <td>{{ $p->modelo->nombre_modelo ?? 'Sin modelo' }}</td>
+                <td>{{ $p->membresia->tipo_membresia ?? 'Sin tipo' }}</td>
+                <td>
+                    <select class="form-select form-select-sm" disabled>
+                        @foreach ($precios as $op)
+                            <option value="{{ $op->id_precio }}" {{ $p->id_precio == $op->id_precio ? 'selected' : '' }}>
+                                ${{ number_format($op->precio, 2) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-outline-success"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalActualizar{{ $p->id_precio }}">
+                        Actualizar
+                    </button>
+                    @include('Precio.update', ['precio' => $p])
+                </td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="5" class="text-center">No hay precios registrados.</td>
+            </tr>
+        @endforelse
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('inputBuscar');
+        const tabla = document.getElementById('tablaPrecios').getElementsByTagName('tbody')[0];
+
+        const normalizarTexto = (texto) => {
+            return texto
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/\s+/g, " ")
+                .trim();
+        };
+
+        input.addEventListener('input', () => {
+            const filtro = normalizarTexto(input.value);
+            const filas = tabla.querySelectorAll('tr');
+
+            filas.forEach(fila => {
+                const celdas = fila.querySelectorAll('td');
+                let coincide = false;
+
+                celdas.forEach(celda => {
+                    const textoCelda = normalizarTexto(celda.textContent);
+                    if (textoCelda.includes(filtro)) {
+                        coincide = true;
+                    }
+                });
+
+                fila.style.display = coincide ? '' : 'none';
+            });
+        });
+    });
+</script>
+
+@endsection
