@@ -41,11 +41,15 @@ class LoteController extends Controller
         }
     }
 
-    public function ver()
+
+    
+   public function ver()
 {
-    $lotes = Lote::all(); 
-    return view('Lote.vista', compact('lotes')); 
+    // Trae los lotes paginados en bloques de 15
+    $lotes = Lote::paginate(15);
+    return view('Lote.vista', compact('lotes'));
 }
+
 
 
 

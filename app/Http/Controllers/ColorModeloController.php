@@ -52,29 +52,36 @@ class ColorModeloController extends Controller
 
 
 
+public function search(Request $request)
+{
+    $query = ColorModelo::query();
+    
+    if($request->has('q')) {
+        $searchTerm = $request->input('q');
+        $query->where(function($q) use ($searchTerm) {
+            $q->where('nombre_color', 'like', "%$searchTerm%")
+              ->orWhere('id_modelo', 'like', "%$searchTerm%");
+        });
+    }
+    
+    $colores = $query->limit(50)->get();
+    
+    return response()->json([
+        'data' => $colores
+    ]);
+}
+
 
 
     public function ver()
-    {
-        $colores = ColorModelo::with('modelo')->get();
-        $modelos = modelos_bici::all();
+{
+    // Carga los colores con paginación de 15 ítems por página
+    $colores = ColorModelo::with('modelo')->paginate(15);
+    $modelos = modelos_bici::all();
     return view('ColorModelo.vista', compact('colores', 'modelos'));
-    }
-
-
-
-    public function buscar(Request $request)
-    {
-        $busqueda = $request->input('buscar');
-
-        $colores = ColorModelo::where('nombre_color', 'like', '%' . $busqueda . '%')
-                    ->orWhere('id_colorM', 'like', '%' . $busqueda . '%')
-                    ->get();
-        
-    $modelos = modelos_bici::all(); 
-
-    return view('colormodelo.ver', compact('colores', 'modelos'));
 }
+
+
 
 
 
@@ -102,10 +109,4 @@ class ColorModeloController extends Controller
 }
 
 
-
-    public function eliminar(ColorModelo $colormodelo)
-    {
-        $colormodelo->delete();
-        return redirect()->route('colormodelo.vista')->with('success', 'Color del modelo eliminado correctamente!');
-    }
 }

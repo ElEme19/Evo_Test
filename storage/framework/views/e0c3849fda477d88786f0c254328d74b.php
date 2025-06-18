@@ -21,7 +21,7 @@
           
 
                 <div class="mb-3">
-                <label for="id_modelo" class="form-label">ID Modelo</label>
+                <label for="id_modelo" class="form-label">Modelo</label>
                 <select class="form-select" name="id_modelo" id="id_modelo" required>
               <option value="">Selecciona un modelo</option>
               <?php $__currentLoopData = $modelos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $modelo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>

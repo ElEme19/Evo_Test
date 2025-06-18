@@ -57,7 +57,7 @@ public function store(Request $request)
 
     public function ver()
     {
-        $tipos = TipoStock::all();
+        $tipos = TipoStock::paginate(7);
         return view('Stock.vista', compact('tipos'));
     }
 

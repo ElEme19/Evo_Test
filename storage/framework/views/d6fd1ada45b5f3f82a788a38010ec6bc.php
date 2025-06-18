@@ -60,17 +60,17 @@
                             Bicicleta
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="crearDropdown">
-                            <li><a class="dropdown-item" href="/Bicicleta/crear">Nuevo</a></li>
-                            <li><a class="dropdown-item" href="/ColorModelo/crear">Colores</a></li>
-                            <li><a class="dropdown-item" href="/Lote/crear">Lote</a></li>
-                            <li><a class="dropdown-item" href="/Stock/crear">Stock</a></li>
+                            <li><a class="dropdown-item" href="/Bicicleta/vista">Nuevo</a></li>
+                            <li><a class="dropdown-item" href="/ColorModelo/vista">Colores</a></li>
+                            <li><a class="dropdown-item" href="/Lote/vista">Lote</a></li>
+                            <li><a class="dropdown-item" href="/Stock/vista">Stock</a></li>
                         </ul>
                     </li>
                 <?php endif; ?>
 
                 <?php if(in_array($tipo, ['0', '2','3', '4'])): ?>
                     <li class="nav-item"><a class="nav-link" href="/Envio/crear">Envios</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Sucursal/crear">Sucursales</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Sucursal/vista">Sucursales</a></li>
                 <?php endif; ?>
 
                 <?php if(in_array($tipo, ['0', '2'])): ?>
@@ -78,8 +78,8 @@
                 <?php endif; ?>
 
                 <?php if($tipo == '0'): ?>
-                    <li class="nav-item"><a class="nav-link" href="/Precio">Precio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Clientes">Clientes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Precio/index">Precio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Clientes/index">Clientes</a></li>
                     <li class="nav-item"><a class="nav-link" href="/Membresia">Memebresia</a></li>
                 <?php endif; ?>
 

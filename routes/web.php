@@ -48,6 +48,8 @@ Route::get('/ColorModelo/crear', [ColorModeloController::class, 'crear']) -> nam
 Route::post('/ColorModelo/store', [ColorModeloController::class, 'store']) -> name('Color.store');
 Route::get('/ColorModelo/vista', [ColorModeloController::class, 'ver']) -> name('Color.vista');
 Route::put('/ColorModelo/{color}', [ColorModeloController::class, 'update'])->name('Color.update');
+Route::get('/colores/search', [ColorModeloController::class, 'search'])->name('colores.search');
+
 
 // Lote
 Route::get('/Lote/crear', [LoteController::class, 'crear'])->name('Lote.crear');

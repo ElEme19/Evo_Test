@@ -14,12 +14,19 @@ class ClientesController extends Controller
     }
 
     // Mostrar todos los clientes
-    public function index()
+    // app/Http/Controllers/ClienteController.php
+
+public function index()
 {
-    $clientes = Cliente::with('membresia')->get();
-    $membresias = Membresia::all(); // Asegúrate de tener esto
+    // Paginamos a 20 registros por página y ordenamos por nombre (o el campo que prefieras)
+    $clientes = Cliente::with('membresia')
+                       ->orderBy('nombre', 'asc')
+                       ->paginate(20);
+
+    $membresias = Membresia::all();
     return view('Clientes.index', compact('clientes', 'membresias'));
 }
+
 
 
     // Mostrar formulario de creación

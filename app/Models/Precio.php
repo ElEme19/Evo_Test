@@ -9,7 +9,8 @@ class Precio extends Model
     protected $table = 'precio'; // Nombre exacto de la tabla
 
     protected $primaryKey = 'id_precio'; // Clave primaria personalizada
-
+    public $incrementing = false;
+    protected $keyType = 'string';
     public $timestamps = false; // Asumimos que no tiene created_at ni updated_at
 
     protected $fillable = [

@@ -17,13 +17,22 @@ class PrecioController extends Controller
 
     // Mostrar todos los precios
     public function index()
-    {
-        $precios = Precio::with(['membresia', 'modelo'])->get();
-        $todosLosPrecios = Precio::all();
-        $membresias = Membresia::all();
-        $modelos = modelos_bici::all();
-        return view('Precio.index', compact('precios', 'membresias', 'modelos'));
-    }
+{
+    // Paginar 15 precios por página, ordenados por id
+    $precios = Precio::with(['membresia', 'modelo'])
+                     ->orderBy('id_precio', 'asc')
+                     ->paginate(15);
+
+    // Si realmente necesitas todos los precios para algún cálculo extra,
+    // déjalos en otra variable. Pero para la tabla no los uses.
+    // $todosLosPrecios = Precio::all();
+
+    $membresias = Membresia::all();
+    $modelos    = modelos_bici::all();
+
+    return view('Precio.index', compact('precios', 'membresias', 'modelos'));
+}
+
 
     // Mostrar formulario de creación
     public function create()
@@ -68,7 +77,7 @@ class PrecioController extends Controller
     {
         $request->validate([
             'id_membresia' => 'required|exists:membresia,id_membresia',
-            'id_modelo' => 'required|exists:modelo,id_modelo',
+            'id_modelo' => 'required|exists:modelos,id_modelo',
             'precio' => 'required|numeric|min:0',
         ]);
 
@@ -82,12 +91,5 @@ class PrecioController extends Controller
         return redirect()->route('Precio.index')->with('success', '¡Precio actualizado correctamente!');
     }
 
-    // Eliminar precio
-    public function destroy($id)
-    {
-        $precio = Precio::findOrFail($id);
-        $precio->delete();
 
-        return redirect()->route('Precios.index')->with('success', '¡Precio eliminado correctamente!');
-    }
 }
