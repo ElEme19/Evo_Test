@@ -97,6 +97,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="bicicletaDropdown">
                             <li><a class="dropdown-item" href="/Bicicleta/vista"><i class="bi bi-plus-circle me-2"></i>Nuevo</a></li>
+                            <li><a class="dropdown-item" href="/Modelo/ver"><i class="bi bi-bicycle me-2"></i>Modelos</a></li>
                             <li><a class="dropdown-item" href="/ColorModelo/vista"><i class="bi bi-palette me-2"></i>Colores</a></li>
                             <li><a class="dropdown-item" href="/Lote/vista"><i class="bi bi-box-seam me-2"></i>Lote</a></li>
                             <li><a class="dropdown-item" href="/Stock/vista"><i class="bi bi-boxes me-2"></i>Stock</a></li>

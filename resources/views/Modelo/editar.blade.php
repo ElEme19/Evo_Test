@@ -6,7 +6,7 @@
         <div class="col-lg-8">
             <h4 class="mb-4 text-center">Editar Modelo: {{ $modelo->nombre_modelo }}</h4>
 
-            <form action="{{ route('modelos.update', $modelo->id_modelo) }}" method="POST" enctype="multipart/form-data" class="card shadow-sm p-4 rounded-3">
+            <form action="{{ route('Modelo.update', $modelo->id_modelo) }}" method="POST" enctype="multipart/form-data" class="card shadow-sm p-4 rounded-3">
                 @csrf
                 @method('PUT')
 

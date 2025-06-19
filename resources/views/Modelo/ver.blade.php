@@ -34,7 +34,7 @@
 
             <!-- Buscador -->
             <div class="d-flex justify-content-center my-3">
-                <form class="row g-3 justify-content-center w-100" method="GET" action="{{ route('modelos.ver') }}">
+                <form class="row g-3 justify-content-center w-100" method="GET" action="{{ route('Modelo.ver') }}">
                     <div class="col-md-8 position-relative">
                         <input type="text" name="q" value="{{ $q }}" class="form-control ps-5" placeholder="Buscar modelo...">
                         <span class="position-absolute start-0 top-50 translate-middle-y ps-3">
@@ -47,7 +47,7 @@
             <!-- Crear modelo -->
             @if (auth()->user()->rol == 0)
                 <div class="text-center mb-3">
-                    <a href="{{ route('modelos.crear') }}" class="btn btn-outline-primary">
+                    <a href="{{ route('Modelo.crear') }}" class="btn btn-outline-primary">
                         <i class="bi bi-plus-circle me-1"></i> Crear Nuevo Modelo
                     </a>
                 </div>
@@ -62,7 +62,6 @@
                                 <tr>
                                     <th class="text-center">ID</th>
                                     <th class="text-center">Nombre</th>
-                                    <th class="text-center">Descripción</th>
                                     <th class="text-center">Imagen</th>
                                     <th class="text-center">Opciones</th>
                                 </tr>
@@ -72,7 +71,6 @@
                                     <tr>
                                         <td class="text-center fw-semibold">{{ $modelo->id_modelo }}</td>
                                         <td class="text-center fw-semibold">{{ $modelo->nombre_modelo }}</td>
-                                        <td class="text-center">{{ $modelo->descripcion }}</td>
                                         <td class="text-center">
                                             @if($modelo->foto_modelo)
                                                 <img src="data:image/jpeg;base64,{{ base64_encode($modelo->foto_modelo) }}" width="60" class="rounded shadow-sm" />
@@ -81,16 +79,9 @@
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            <a href="{{ route('modelos.editar', $modelo->id_modelo) }}" class="btn btn-outline-secondary btn-sm">
+                                            <a href="{{ route('Modelo.editar', $modelo->id_modelo) }}" class="btn btn-outline-secondary btn-sm">
                                                 <i class="bi bi-pencil-square"></i> Editar
-                                            </a>
-                                            <form action="{{ route('modelos.eliminar', $modelo->id_modelo) }}" method="POST" class="d-inline-block" onsubmit="return confirm('¿Estás seguro de eliminar este modelo?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-outline-danger btn-sm">
-                                                    <i class="bi bi-trash"></i> Eliminar
-                                                </button>
-                                            </form>
+                                            
                                         </td>
                                     </tr>
                                 @empty

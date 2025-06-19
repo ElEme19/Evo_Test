@@ -16,7 +16,7 @@ class ModelosBController extends Controller
 
     public function crear()
     {
-        return view('modelos.crear');
+        return view('Modelo.crear');
     }
 
 
@@ -28,14 +28,12 @@ class ModelosBController extends Controller
         $request->validate([
             'id_modelo' => 'required|string|max:64|unique:modelos,id_modelo',
             'nombre_modelo' => 'required|string|max:15',
-            'descripcion' => 'required|string|max:64',
             'foto_modelo' => 'nullable|image|max:2048',
         ]);
 
         $modelo = new modelos_bici();
         $modelo->id_modelo = $request->id_modelo;
         $modelo->nombre_modelo = $request->nombre_modelo;
-        $modelo->descripcion = $request->descripcion;
 
         if ($request->hasFile('foto_modelo')) {
             $modelo->foto_modelo = file_get_contents($request->file('foto_modelo')->getRealPath());
@@ -43,7 +41,7 @@ class ModelosBController extends Controller
 
         $modelo->save();
 
-        return redirect()->route('modelos.ver')->with('success', 'Modelo creado correctamente!');
+        return redirect()->route('Modelo.ver')->with('success', 'Modelo creado correctamente!');
     }
 
 
@@ -60,13 +58,13 @@ class ModelosBController extends Controller
             $modelos = modelos_bici::all();
         }
 
-        return view('modelos.ver', compact('modelos', 'q'));
+        return view('Modelo.ver', compact('modelos', 'q'));
     }
 
     public function editar($id_modelo)
     {
         $modelo = modelos_bici::findOrFail($id_modelo);
-        return view('modelos.editar', compact('modelo'));
+        return view('Modelo.editar', compact('modelo'));
     }
 
 

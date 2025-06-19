@@ -14,11 +14,11 @@ class modelos_bici extends Model
     protected $primaryKey = 'id_modelo';
     public $incrementing = false;
     protected $keyType = 'string';
+     public $timestamps = false;
 
     protected $fillable = [
         'id_modelo',
         'nombre_modelo',
-        'descripcion',
         'foto_modelo',
     ];
 
