@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const val = numChasisInput.value.trim();
 
         if (val.length === 4) {
-            fetch(`/bicicleta/buscar-por-ultimos4?ult4=${val}`)
+            fetch(`/Bicicleta/buscar-por-ultimos4?ult4=${val}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.bicicleta) {
