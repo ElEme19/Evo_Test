@@ -74,7 +74,7 @@
                 @endif
 
                 @if (in_array($tipo, ['0', '2']))
-                    <li class="nav-item"><a class="nav-link" href="#">Estadísticas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Mexico/import">Este</a></li>
                 @endif
 
                 @if ($tipo == '0')

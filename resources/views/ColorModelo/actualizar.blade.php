@@ -1,5 +1,5 @@
 <!-- Modal de edición -->
-<div class="modal fade" id="modalActualizar{{ $color->id_colorM }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editModalLabel{{ $color->id_colorM }}" aria-hidden="true">
+<div class="modal fade" id="modalActualizar{{ $color->id_colorM }}"  tabindex="-1" aria-labelledby="editModalLabel{{ $color->id_colorM }}" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">

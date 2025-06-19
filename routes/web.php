@@ -13,6 +13,7 @@ use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\MembresiaController;
 use App\Http\Controllers\PrecioController;
+use App\Http\Controllers\ProsesadorController;
 use App\Models\modelos_bici;
 
 
@@ -109,6 +110,11 @@ Route::get('/Precio/index', [PrecioController::class, 'index'])->name('Precio.in
 Route::get('/Precio', [PrecioController::class, 'create'])->name('Precio.create');
 Route::put('/Precio/{id}', [PrecioController::class, 'update'])->name('Precio.update');
 Route::post('/Precio', [PrecioController::class, 'store'])->name('Precio.store');
+
+
+Route::get('/Mexico/import',  [ProsesadorController::class, 'formulario'])->name('procesador.import');
+Route::post('/Mexico/procesar', [ProsesadorController::class, 'procesarExcel'])->name('procesador.procesar');
+
 
 });
 
