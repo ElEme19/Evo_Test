@@ -99,6 +99,24 @@
     </div>
 </form>
 
+<!-- Modal para mostrar resultado búsqueda número de serie -->
+<div class="modal fade" id="modalResultadoBusqueda" tabindex="-1" aria-labelledby="modalResultadoBusquedaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalResultadoBusquedaLabel">Resultado de la búsqueda</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body" id="modalBodyMensaje">
+        <!-- Mensaje dinámico aquí -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -107,6 +125,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const colorSelect = document.getElementById('id_color');
     const btnGuardar = document.getElementById('btnGuardar');
     const numChasisFullInput = document.getElementById('num_chasis_full');
+
+    // Instancia del modal Bootstrap
+    const modalResultadoBusqueda = new bootstrap.Modal(document.getElementById('modalResultadoBusqueda'));
+    const modalBodyMensaje = document.getElementById('modalBodyMensaje');
 
     // Función para cargar colores según modelo
     function cargarColores(modeloId, colorSeleccionado = null) {
@@ -145,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(res => res.json())
                 .then(data => {
                     if (data.bicicleta) {
-                        // Bicicleta encontrada: asignar modelo, color y número completo de chasis
                         modeloSelect.value = data.bicicleta.id_modelo;
                         modeloSelect.disabled = true;
 
@@ -153,23 +174,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         numChasisFullInput.value = data.bicicleta.num_chasis;
                         btnGuardar.disabled = false;
+
+                        modalBodyMensaje.innerHTML = `
+                          <p><strong>¡Número de serie encontrado!</strong></p>
+                          <p><strong>Chasis:</strong> ${data.bicicleta.num_chasis}</p>
+                          <p><strong>Modelo:</strong> ${data.bicicleta.modelo?.nombre_modelo ?? 'N/A'}</p>
+                          <p><strong>Color:</strong> ${data.bicicleta.color?.nombre_color ?? 'N/A'}</p>
+                        `;
                     } else {
-                        // No encontrada: habilitar selección manual
                         modeloSelect.value = "";
                         modeloSelect.disabled = false;
 
                         colorSelect.innerHTML = '<option value="">Seleccione un color</option>';
                         colorSelect.disabled = true;
 
-                        numChasisFullInput.value = ''; // No hay número completo
+                        numChasisFullInput.value = '';
                         btnGuardar.disabled = false;
+
+                        modalBodyMensaje.innerHTML = `<p><strong>No se encontró ningún número de serie con esos últimos 4 dígitos.</strong></p>`;
                     }
+                    modalResultadoBusqueda.show();
                 })
                 .catch(() => {
-                    alert('Error al buscar bicicleta.');
+                    modalBodyMensaje.innerHTML = `<p><strong>Error al buscar bicicleta.</strong></p>`;
+                    modalResultadoBusqueda.show();
                 });
         } else {
-            // Si hay menos de 4 dígitos
             modeloSelect.value = "";
             modeloSelect.disabled = true;
 
@@ -181,7 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Si el usuario cambia manualmente el modelo (solo si está habilitado), recargar colores
     modeloSelect.addEventListener('change', () => {
         cargarColores(modeloSelect.value);
     });

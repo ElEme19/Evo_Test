@@ -81,7 +81,7 @@ Route::post('/Bicicleta/store', [BicicletaController::class, 'store'])->name('Bi
 Route::get('/Bicicleta/vista', [BicicletaController::class, 'ver'])->name('Bicicleta.ver');
 /* Route::put('/Bicicleta/{bicicleta}', [BicicletaController::class, 'update'])->name('Bicicleta.update'); */
 Route::get('/colores-por-modelo/{id_modelo}', [BicicletaController::class, 'coloresPorModelo']);
-Route::get('/Bicicleta/buscarPorUltimos4', [BicicletaController::class, 'buscarPorUltimos4'])->name('Bicicleta.buscarUltimos4');
+Route::get('/Bicicleta/buscar-por-ultimos4', [BicicletaController::class, 'buscarPorUltimos4'])->name('Bicicleta.buscarUltimos4');
 
 
 // Busquedas
