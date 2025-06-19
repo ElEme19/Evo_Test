@@ -25,7 +25,7 @@ class BicicletaController extends Controller
         $lotes = Lote::all();
         $tipos = TipoStock::all();
 
-        return view('bicicleta.crear', compact('modelos', 'colores', 'lotes', 'tipos'));
+        return view('Bicicleta.crear', compact('modelos', 'colores', 'lotes', 'tipos'));
     }
 
 
@@ -96,7 +96,7 @@ class BicicletaController extends Controller
 
      //dd($bicicletas); // Ver toda la colección con relaciones
 
-    return view('bicicleta.vista', compact('bicicletas', 'modelos', 'colores', 'lotes'));
+    return view('bicicleta.vista', compact('Bicicletas', 'modelos', 'colores', 'lotes'));
         }
 
 
