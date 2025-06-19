@@ -62,7 +62,7 @@
 
     <div class="col-md-6">
         <label for="id_color" class="form-label">Color</label>
-        <select name="id_color" id="id_color" class="form-select" required>
+        <select name="id_color" id="id_color" class="form-select" >
             <option value="">Seleccione un modelo primero</option>
         </select>
     </div>

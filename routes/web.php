@@ -28,9 +28,9 @@ use App\Models\modelos_bici;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/',[PiezasController::class ,'inicio'])->name ('piezas.inicio');
+
+
 
 
 Route::middleware(['auth:usuarios','check.user.type:0'])->group(function(){  // ==> Tener acceso dependiendo del usuario a las vistas (/piezas/crear)
