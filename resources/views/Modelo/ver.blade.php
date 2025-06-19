@@ -53,12 +53,12 @@
             <tr>
                 <td class="text-center">{{ $modelo->id_modelo }}</td>
                 <td class="text-center">{{ $modelo->nombre_modelo }}</td>
-                <td class="text-center">{{ $modelo->descripcion }}</td>
+               
                 <td class="text-center">
                     <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalEditar{{ $modelo->id_modelo }}">Editar</button>
                     <div class="modal fade" id="modalEditar{{ $modelo->id_modelo }}" tabindex="-1">
                         <div class="modal-dialog modal-lg">
-                            <form action="{{ route('modelos.update', $modelo->id_modelo) }}" method="POST" enctype="multipart/form-data" class="modal-content">
+                            <form action="{{ route('Modelo.update', $modelo->id_modelo) }}" method="POST" enctype="multipart/form-data" class="modal-content">
                                 @csrf
                                 @method('PUT')
                                 <div class="modal-header">
@@ -70,10 +70,7 @@
                                         <label class="form-label">Nombre</label>
                                         <input type="text" name="nombre_modelo" class="form-control" value="{{ $modelo->nombre_modelo }}" required>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Descripción</label>
-                                        <input type="text" name="descripcion" class="form-control" value="{{ $modelo->descripcion }}" required>
-                                    </div>
+                                    
                                     <div class="col-md-12">
                                         <label class="form-label">Nueva Foto</label>
                                         <input type="file" name="foto_modelo" class="form-control">
