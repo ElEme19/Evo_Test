@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ModelosBController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PiezasController;
@@ -51,6 +52,14 @@ Route::get('/ColorModelo/vista', [ColorModeloController::class, 'ver']) -> name(
 Route::put('/ColorModelo/{color}', [ColorModeloController::class, 'update'])->name('Color.update');
 Route::get('/colores/search', [ColorModeloController::class, 'search'])->name('colores.search');
 
+
+//Modelos
+  Route::get('ver', [ModelosBController::class, 'ver'])->name('Modelo.ver');
+    Route::get('crear', [ModelosBController::class, 'crear'])->name('Modelo.crear');
+    Route::post('store', [ModelosBController::class, 'store'])->name('Modelo.store');
+    Route::get('editar/{id_modelo}', [ModelosBController::class, 'editar'])->name('Modelo.editar');
+    Route::put('update/{id_modelo}', [ModelosBController::class, 'update'])->name('Modelo.update');
+    //Route::delete('eliminar/{id_modelo}', [ModelosBController::class, 'eliminar'])->name('modelos.eliminar');
 
 // Lote
 Route::get('/Lote/crear', [LoteController::class, 'crear'])->name('Lote.crear');
