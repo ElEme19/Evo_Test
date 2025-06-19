@@ -43,6 +43,18 @@
         <div class="invalid-feedback">Este campo es obligatorio.</div>
     </div>
 
+     <div class="col-md-4">
+                <label for="id_cliente" class="form-label">Cliente</label>
+                <select class="form-select" name="id_cliente" id="id_cliente" required>
+                    <option value="">Selecciona un Cliente</option>
+                    @foreach($clientes as $cliente)
+                        <option value="{{ $cliente->id_cliente }}"> {{ $cliente->nombre?? 'Sin nombre' }}</option>
+                    @endforeach
+                </select>
+                <div class="invalid-feedback">Seleccione un cliente válido.</div>
+                </div>
+             
+
     <div class="col-md-6">
         <label for="localizacion" class="form-label">Localización</label>
         <input type="text" name="localizacion" id="localizacion" class="form-control">
