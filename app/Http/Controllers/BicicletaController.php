@@ -15,6 +15,21 @@ class BicicletaController extends Controller
         $this->middleware('auth:usuarios');
     }
 
+
+    public function buscarPorUltimos4(Request $request)
+{
+    $ult4 = $request->query('ult4');
+
+    if (!$ult4 || strlen($ult4) !== 4) {
+        return response()->json(['bicicleta' => null]);
+    }
+
+    // Buscar bicicleta cuyo num_chasis termina con los últimos 4 dígitos
+    $bicicleta = Bicicleta::where('num_chasis', 'like', '%' . $ult4)
+                ->first();
+
+    return response()->json(['bicicleta' => $bicicleta]);
+}
     public $timestamps = false;
 
     // Mostrar formulario para crear bicicleta

@@ -1,6 +1,6 @@
 @extends('layout.app')
 
-@section('title')
+@section('title', 'Crear Bicicleta')
 
 @section('conten')
 
@@ -21,9 +21,7 @@
                 aria-label="success:">
                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
             </svg>
-            <small class="fw-semibold">  <!-- Para la alerta -->
-                {{ session('success') }}  
-            </small>
+            <small class="fw-semibold">{{ session('success') }}</small>
         </div>
     </div>
 @endif
@@ -37,22 +35,19 @@
 @endif
 
 
-<form method="POST" action="{{ route('Bicicleta.store') }}" class="row g-3 was-validated">
+<form method="POST" action="{{ route('Bicicleta.store') }}" class="row g-3 was-validated" id="formBicicleta">
     @csrf
 
     <div class="col-md-6">
-        <label for="num_chasis" class="form-label">Número de Chasis</label>
-        <input type="text" name="num_chasis" class="form-control" required>
+        <label for="num_chasis" class="form-label">Últimos 4 Dígitos de Número de Chasis</label>
+        <input type="text" name="num_chasis_parcial" id="num_chasis_parcial" maxlength="4" class="form-control" placeholder="Ingrese últimos 4 dígitos" required autocomplete="off">
+        <input type="hidden" name="num_chasis" id="num_chasis_full" value="">
+        <div class="form-text">Al ingresar los últimos 4 dígitos, se buscará automáticamente la bicicleta.</div>
     </div>
 
     <div class="col-md-6">
-        <label for="num_motor" class="form-label">Número de Motor</label>
-        <input type="text" name="num_motor" class="form-control">
-    </div>
-
-    <div class="col-md-6">
-        <label for="id_modelo" class="form-label">Modelo</label>
-        <select name="id_modelo" id="id_modelo" class="form-select" required>
+        <label for="id_modelo" class="form-label">Modelo (Asignado automáticamente)</label>
+        <select name="id_modelo" id="id_modelo" class="form-select" disabled required>
             <option value="">Seleccione un modelo</option>
             @foreach($modelos as $modelo)
                 <option value="{{ $modelo->id_modelo }}">{{ $modelo->nombre_modelo }}</option>
@@ -61,9 +56,9 @@
     </div>
 
     <div class="col-md-6">
-        <label for="id_color" class="form-label">Color</label>
-        <select name="id_color" id="id_color" class="form-select" >
-            <option value="">Seleccione un modelo primero</option>
+        <label for="id_color" class="form-label">Color (Disponible según modelo)</label>
+        <select name="id_color" id="id_color" class="form-select" disabled required>
+            <option value="">Seleccione un color</option>
         </select>
     </div>
 
@@ -87,49 +82,138 @@
 
     <div class="col-md-4">
         <label for="voltaje" class="form-label">Voltaje</label>
-        <input type="text" name="voltaje" class="form-control">
+        <input type="text" name="voltaje" class="form-control" maxlength="10">
     </div>
 
     <div class="col-md-6">
         <label for="error_iden_produccion" class="form-label">Error Identificación Producción</label>
-        <input type="text" name="error_iden_produccion" class="form-control">
+        <input type="text" name="error_iden_produccion" class="form-control" maxlength="255">
     </div>
-
 
     <div class="col-12 mt-3 text-center">
-        <button type="submit" class="btn btn-outline-success">Guardar Bicicleta</button>
+        <button type="submit" class="btn btn-outline-success" id="btnGuardar" disabled>Guardar Bicicleta</button>
     </div>
-     <div class="col text-end">
-            <a href="{{ route('Bicicleta.ver') }}" class="btn btn-outline-success">
-                Ver Bicis
-            </a>
-        </div>
+
+    <div class="col text-end">
+        <a href="{{ route('Bicicleta.ver') }}" class="btn btn-outline-success">Ver Bicis</a>
+    </div>
 </form>
 
-{{-- Script para filtrar colores por modelo --}}
+<!-- Modal para mostrar resultado búsqueda número de serie -->
+<div class="modal fade" id="modalResultadoBusqueda" tabindex="-1" aria-labelledby="modalResultadoBusquedaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalResultadoBusquedaLabel">Resultado de la búsqueda</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body" id="modalBodyMensaje">
+        <!-- Mensaje dinámico aquí -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-    document.getElementById('id_modelo').addEventListener('change', function () {
-        const modeloId = this.value;
-        const colorSelect = document.getElementById('id_color');
+document.addEventListener('DOMContentLoaded', () => {
 
-        colorSelect.innerHTML = '<option value="">Cargando...</option>';
+    const numChasisInput = document.getElementById('num_chasis_parcial');
+    const modeloSelect = document.getElementById('id_modelo');
+    const colorSelect = document.getElementById('id_color');
+    const btnGuardar = document.getElementById('btnGuardar');
+    const numChasisFullInput = document.getElementById('num_chasis_full');
 
+    // Instancia del modal Bootstrap
+    const modalResultadoBusqueda = new bootstrap.Modal(document.getElementById('modalResultadoBusqueda'));
+    const modalBodyMensaje = document.getElementById('modalBodyMensaje');
+
+    // Función para cargar colores según modelo
+    function cargarColores(modeloId, colorSeleccionado = null) {
+        if (!modeloId) {
+            colorSelect.innerHTML = '<option value="">Seleccione un color</option>';
+            colorSelect.disabled = true;
+            return;
+        }
         fetch(`/colores-por-modelo/${modeloId}`)
             .then(res => res.json())
             .then(colores => {
                 colorSelect.innerHTML = '<option value="">Seleccione un color</option>';
-                colores.forEach(color => {
+                colores.forEach(c => {
                     const opt = document.createElement('option');
-                    opt.value = color.id_colorM;
-                    opt.textContent = color.nombre_color;
+                    opt.value = c.id_colorM;
+                    opt.textContent = c.nombre_color;
                     colorSelect.appendChild(opt);
                 });
+                colorSelect.disabled = false;
+                if (colorSeleccionado) {
+                    colorSelect.value = colorSeleccionado;
+                }
             })
             .catch(() => {
                 colorSelect.innerHTML = '<option value="">Error al cargar colores</option>';
+                colorSelect.disabled = true;
             });
-    });
-</script>
+    }
 
+    // Buscar bicicleta al ingresar últimos 4 dígitos
+    numChasisInput.addEventListener('input', () => {
+        const val = numChasisInput.value.trim();
+
+        if (val.length === 4) {
+            fetch(`/Bicicleta/buscar-por-ultimos4?ult4=${val}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.bicicleta) {
+                        modeloSelect.value = data.bicicleta.id_modelo;
+                        modeloSelect.disabled = true;
+
+                        cargarColores(data.bicicleta.id_modelo, data.bicicleta.id_color);
+
+                        numChasisFullInput.value = data.bicicleta.num_chasis;
+                        btnGuardar.disabled = false;
+
+                        modalBodyMensaje.innerHTML = `
+                          <p><strong>¡Número de serie encontrado!</strong></p>
+                          <p><strong>Chasis:</strong> ${data.bicicleta.num_chasis}</p>
+                          
+                        `;
+                    } else {
+                        modeloSelect.value = "";
+                        modeloSelect.disabled = false;
+
+                        colorSelect.innerHTML = '<option value="">Seleccione un color</option>';
+                        colorSelect.disabled = true;
+
+                        numChasisFullInput.value = '';
+                        btnGuardar.disabled = false;
+
+                        modalBodyMensaje.innerHTML = `<p><strong>No se encontró ningún número de serie con esos últimos 4 dígitos.</strong></p>`;
+                    }
+                    modalResultadoBusqueda.show();
+                })
+                .catch(() => {
+                    modalBodyMensaje.innerHTML = `<p><strong>Error al buscar bicicleta.</strong></p>`;
+                    modalResultadoBusqueda.show();
+                });
+        } else {
+            modeloSelect.value = "";
+            modeloSelect.disabled = true;
+
+            colorSelect.innerHTML = '<option value="">Seleccione un color</option>';
+            colorSelect.disabled = true;
+
+            numChasisFullInput.value = '';
+            btnGuardar.disabled = true;
+        }
+    });
+
+    modeloSelect.addEventListener('change', () => {
+        cargarColores(modeloSelect.value);
+    });
+});
+</script>
 
 @endsection
