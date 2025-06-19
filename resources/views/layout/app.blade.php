@@ -135,7 +135,7 @@
                         <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                             <li><a class="dropdown-item" href="/Precio/index"><i class="bi bi-tag me-2"></i>Precios</a></li>
                             <li><a class="dropdown-item" href="/Clientes/index"><i class="bi bi-people me-2"></i>Clientes</a></li>
-                            <li><a class="dropdown-item" href="/Membresia"><i class="bi bi-card-checklist me-2"></i>Membresías</a></li>
+                            <li><a class="dropdown-item" href="/Membresia/index"><i class="bi bi-card-checklist me-2"></i>Membresías</a></li>
                         </ul>
                     </li>
                     @endif

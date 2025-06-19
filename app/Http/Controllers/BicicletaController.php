@@ -58,42 +58,39 @@ class BicicletaController extends Controller
 
     
     // Guardar bicicleta
-    public function store(Request $request)
-    {
-         //dd($request->all());
-        $request->validate([
-            'num_chasis' => 'required|string|max:64|unique:bicicleta,num_chasis',
-            'id_modelo' => 'required|string|exists:modelos,id_modelo',
-            'id_color' => 'required|string|exists:color_modelo,id_colorM',
-            'id_lote' => 'required|string|exists:lote,id_lote',
-            'id_tipoStock' => 'required|string|exists:tipo_stock,id_tipoStock',
-            'voltaje' => 'nullable|string|max:10',
-            'num_motor' => 'nullable|string|max:64',
-            'error_iden_produccion' => 'nullable|string|max:255',
-            'descripcion_general' => 'nullable|string|max:255',
+   public function store(Request $request)
+{
+    $validated = $request->validate([
+        'num_chasis' => 'required|string|exists:bicicleta,num_chasis',
+        'id_color' => 'required|string|exists:color_modelo,id_colorM',
+        'id_lote' => 'required|string|exists:lote,id_lote',
+        'id_tipoStock' => 'required|string|exists:tipo_stock,id_tipoStock',
+        'voltaje' => 'nullable|string|max:10',
+        'error_iden_produccion' => 'nullable|string|max:255',
+    ]);
+
+    try {
+        $bicicleta = Bicicleta::with(['color', 'lote', 'tipoStock'])
+                        ->where('num_chasis', $validated['num_chasis'])
+                        ->firstOrFail();
+
+        $bicicleta->update([
+            'id_color' => $validated['id_color'],
+            'id_lote' => $validated['id_lote'],
+            'id_tipoStock' => $validated['id_tipoStock'],
+            'voltaje' => $validated['voltaje'],
+            'error_iden_produccion' => $validated['error_iden_produccion'],
         ]);
 
-        try {
-            $bicicleta = new Bicicleta();
-            $bicicleta->num_chasis = $request->num_chasis;
-            $bicicleta->id_modelo = $request->id_modelo;
-            $bicicleta->id_color = $request->id_color;
-            $bicicleta->id_lote = $request->id_lote;
-            $bicicleta->id_tipoStock = $request->id_tipoStock;
-            $bicicleta->voltaje = $request->voltaje;
-            $bicicleta->num_motor = $request->num_motor;
-            $bicicleta->error_iden_produccion = $request->error_iden_produccion;
+        return back()->with('success', '¡Bicicleta actualizada correctamente!');
 
-
-            if ($bicicleta->save()) {
-                return redirect()->back()->with('success', '¡Bicicleta creada correctamente!');
-            } else {
-                return redirect()->back()->with('error', 'No se pudo crear la bicicleta. Intenta nuevamente.');
-            }
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error inesperado: ' );
-        }
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        return back()->with('error', 'Bicicleta no encontrada con ese número de chasis');
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error inesperado: ' . $e->getMessage());
     }
+}
+
 
     // Ver bicicletas
 

@@ -1,6 +1,5 @@
 @extends('layout.app')
 
-@section('title', 'Crear Bicicleta')
 
 @section('conten')
 
