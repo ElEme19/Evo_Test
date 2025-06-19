@@ -178,8 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         modalBodyMensaje.innerHTML = `
                           <p><strong>¡Número de serie encontrado!</strong></p>
                           <p><strong>Chasis:</strong> ${data.bicicleta.num_chasis}</p>
-                          <p><strong>Modelo:</strong> ${data.bicicleta.modelo?.nombre_modelo ?? 'N/A'}</p>
-                          <p><strong>Color:</strong> ${data.bicicleta.color?.nombre_color ?? 'N/A'}</p>
+                          
                         `;
                     } else {
                         modeloSelect.value = "";
