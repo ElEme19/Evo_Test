@@ -96,7 +96,7 @@ class BicicletaController extends Controller
 
      //dd($bicicletas); // Ver toda la colección con relaciones
 
-    return view('bicicleta.vista', compact('Bicicletas', 'modelos', 'colores', 'lotes'));
+    return view('Bicicleta.vista', compact('bicicletas', 'modelos', 'colores', 'lotes'));
         }
 
 
