@@ -1,7 +1,5 @@
 @extends('layout.app')
 
-hola
-
 @section('conten')
 
 <div class="text-center my-4">
