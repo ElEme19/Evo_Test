@@ -29,7 +29,7 @@ class AreaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre_area' => 'required|string|max:100|unique:areas,nombre_area',
+            'nombre_area' => 'required|string|max:100|unique:area,nombre_area',
         ]);
 
         // Buscar el último ID
