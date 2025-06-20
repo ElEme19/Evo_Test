@@ -15,14 +15,14 @@ class AreaController extends Controller
     // Ver lista de áreas
     public function ver()
     {
-        $area = Area::orderBy('id_area', 'desc')->paginate(10);
-        return view('area.ver', compact('area'));
+        $areas = Area::orderBy('id_area', 'desc')->paginate(10);
+        return view('area.ver', compact('areas'));
     }
 
     // Mostrar formulario (si lo usas como modal o vista separada)
     public function crear()
     {
-        return view('Area.crear');
+        return view('area.crear');
     }
 
     // Guardar nueva área con ID incremental tipo AR001, AR002...
@@ -50,7 +50,7 @@ class AreaController extends Controller
     public function editar($id)
     {
         $area = Area::findOrFail($id);
-        return view('Area.editar', compact('area'));
+        return view('area.editar', compact('area'));
     }
 
     // Actualizar área
