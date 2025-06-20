@@ -80,8 +80,9 @@
     </div>
 </div>
 
-
-
+<!-- Incluir los modales desde archivos separados -->
+@include('area.crear')   {{-- modalCrearArea --}}
+@include('area.editar')  {{-- modalEditarArea --}}
 
 <!-- Scripts necesarios -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -104,14 +105,12 @@
 
     // Llenar modal editar con datos del área seleccionada
     document.querySelectorAll('.btnEditarArea').forEach(button => {
-        button.addEventListener('click', event => {
+        button.addEventListener('click', () => {
             const id = button.getAttribute('data-id');
             const nombre = button.getAttribute('data-nombre');
 
-            document.getElementById('edit_id_area').value = id;
             document.getElementById('edit_nombre_area').value = nombre;
 
-            // Cambiar acción del formulario al actualizar
             const form = document.getElementById('formEditarArea');
             form.action = `/area/${id}`;
         });
