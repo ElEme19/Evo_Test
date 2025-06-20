@@ -13,10 +13,10 @@ class AreaController extends Controller
     }
 
     // Ver lista de áreas
-    public function index()
+    public function ver()
     {
         $areas = Area::orderBy('id_area', 'desc')->paginate(10);
-        return view('area.index', compact('areas'));
+        return view('area.ver', compact('areas'));
     }
 
     // Mostrar formulario de creación
@@ -34,7 +34,7 @@ class AreaController extends Controller
 
         Area::create($validated);
 
-        return redirect()->route('area.index')->with('success', 'Área registrada correctamente');
+        return redirect()->route('area.ver')->with('success', 'Área registrada correctamente');
     }
 
     // Mostrar formulario de edición
@@ -55,7 +55,7 @@ class AreaController extends Controller
 
         $area->update($validated);
 
-        return redirect()->route('area.index')->with('success', 'Área actualizada correctamente');
+        return redirect()->route('area.ver')->with('success', 'Área actualizada correctamente');
     }
 
     // Eliminar área
@@ -64,6 +64,6 @@ class AreaController extends Controller
         $area = Area::findOrFail($id);
         $area->delete();
 
-        return redirect()->route('area.index')->with('success', 'Área eliminada correctamente');
+        return redirect()->route('area.ver')->with('success', 'Área eliminada correctamente');
     }
 }

@@ -16,7 +16,7 @@ use App\Http\Controllers\MembresiaController;
 use App\Http\Controllers\PrecioController;
 use App\Http\Controllers\ProsesadorController;
 use App\Models\modelos_bici;
-
+use App\Http\Controllers\AreaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -120,6 +120,12 @@ Route::get('/Precio/index', [PrecioController::class, 'index'])->name('Precio.in
 Route::get('/Precio', [PrecioController::class, 'create'])->name('Precio.create');
 Route::put('/Precio/{id}', [PrecioController::class, 'update'])->name('Precio.update');
 Route::post('/Precio', [PrecioController::class, 'store'])->name('Precio.store');
+
+//Area
+Route::get('/area/ver', [AreaController::class, 'ver'])->name('area.ver');         // Ver listado
+    Route::post('/area', [AreaController::class, 'store'])->name('area.store');        // Guardar nueva área
+    Route::put('/area/{id}', [AreaController::class, 'update'])->name('area.editar');  // Actualizar área
+    Route::delete('/area/{id}', [AreaController::class, 'eliminar'])->name('area.eliminar'); // Eliminar área
 
 
 Route::get('/Mexico/import',  [ProsesadorController::class, 'formulario'])->name('procesador.import');
