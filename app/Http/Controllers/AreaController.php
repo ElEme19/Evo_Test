@@ -16,32 +16,41 @@ class AreaController extends Controller
     public function ver()
     {
         $areas = Area::orderBy('id_area', 'desc')->paginate(10);
-        return view('area.ver', compact('areas'));
+        return view('Area.index', compact('areas'));
     }
 
-    // Mostrar formulario de creación
+    // Mostrar formulario (si lo usas como modal o vista separada)
     public function crear()
     {
-        return view('area.crear');
+        return view('Area.crear');
     }
 
-    // Guardar nueva área
+    // Guardar nueva área con ID incremental tipo AR001, AR002...
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nombre_area' => 'required|string|max:100|unique:area,nombre_area',
+        $request->validate([
+            'nombre_area' => 'required|string|max:100|unique:areas,nombre_area',
         ]);
 
-        Area::create($validated);
+        // Buscar el último ID
+        $ultima = Area::orderBy('id_area', 'desc')->first();
+        $nuevoId = $ultima
+            ? 'AR' . str_pad((int)substr($ultima->id_area, 2) + 1, 3, '0', STR_PAD_LEFT)
+            : 'AR001';
 
-        return redirect()->route('area.ver')->with('success', 'Área registrada correctamente');
+        Area::create([
+            'id_area' => $nuevoId,
+            'nombre_area' => $request->nombre_area,
+        ]);
+
+        return redirect()->route('area.ver')->with('success', '¡Área registrada correctamente!');
     }
 
-    // Mostrar formulario de edición
+    // Editar área
     public function editar($id)
     {
         $area = Area::findOrFail($id);
-        return view('area.editar', compact('area'));
+        return view('Area.editar', compact('area'));
     }
 
     // Actualizar área
@@ -49,13 +58,15 @@ class AreaController extends Controller
     {
         $area = Area::findOrFail($id);
 
-        $validated = $request->validate([
-            'nombre_area' => 'required|string|max:100|unique:area,nombre_area,' . $id . ',id_area',
+        $request->validate([
+            'nombre_area' => 'required|string|max:100|unique:areas,nombre_area,' . $id . ',id_area',
         ]);
 
-        $area->update($validated);
+        $area->update([
+            'nombre_area' => $request->nombre_area,
+        ]);
 
-        return redirect()->route('area.ver')->with('success', 'Área actualizada correctamente');
+        return redirect()->route('area.ver')->with('success', '¡Área actualizada correctamente!');
     }
 
     // Eliminar área
@@ -64,6 +75,6 @@ class AreaController extends Controller
         $area = Area::findOrFail($id);
         $area->delete();
 
-        return redirect()->route('area.ver')->with('success', 'Área eliminada correctamente');
+        return redirect()->route('area.ver')->with('success', '¡Área eliminada correctamente!');
     }
 }
