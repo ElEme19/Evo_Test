@@ -49,13 +49,7 @@
                                             <i class="bi bi-pencil"></i> Editar
                                         </button>
 
-                                        <form action="{{ route('area.eliminar', $area->id_area) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que quieres eliminar esta área?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i> Eliminar
-                                            </button>
-                                        </form>
+                                        
                                     </td>
                                 </tr>
                                 @empty

@@ -59,7 +59,7 @@ class AreaController extends Controller
         $area = Area::findOrFail($id);
 
         $request->validate([
-            'nombre_area' => 'required|string|max:100|unique:areas,nombre_area,' . $id . ',id_area',
+            'nombre_area' => 'required|string|max:100|unique:area,nombre_area,' . $id . ',id_area',
         ]);
 
         $area->update([
