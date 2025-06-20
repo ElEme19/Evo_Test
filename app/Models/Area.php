@@ -9,7 +9,7 @@ class Area extends Model
 {
     use HasFactory;
 
-    protected $table = 'areas';               // Nombre real de la tabla
+    protected $table = 'area';               // Nombre real de la tabla
     protected $primaryKey = 'id_area';        // Clave primaria personalizada
     public $incrementing = false;             // ❌ No autoincrementa, se asigna manualmente
     protected $keyType = 'string';            // ✅ Es tipo string (por ejemplo: AR001)

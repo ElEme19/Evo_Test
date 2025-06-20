@@ -15,8 +15,8 @@ class AreaController extends Controller
     // Ver lista de áreas
     public function ver()
     {
-        $areas = Area::orderBy('id_area', 'desc')->paginate(10);
-        return view('Area.index', compact('areas'));
+        $area = Area::orderBy('id_area', 'desc')->paginate(10);
+        return view('area.ver', compact('areas'));
     }
 
     // Mostrar formulario (si lo usas como modal o vista separada)
