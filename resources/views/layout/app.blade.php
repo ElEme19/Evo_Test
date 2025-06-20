@@ -118,6 +118,14 @@
                     </li>
                     @endif
                     
+@if (in_array($tipo, ['0', '2', '3', '4']))
+    <li class="nav-item">
+        <a class="nav-link" href="/area/ver">
+            <i class="bi bi-diagram-3 me-1"></i>Áreas
+        </a>
+    </li>
+@endif
+
                     @if (in_array($tipo, ['0', '2']))
                     <li class="nav-item">
                         <a class="nav-link" href="/Mexico/import">
