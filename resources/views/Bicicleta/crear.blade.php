@@ -71,22 +71,17 @@
     </div>
 
     <div class="col-md-4">
-        <label for="id_tipoStock" class="form-label">Tipo de Stock</label>
-        <select name="id_tipoStock" class="form-select" required>
-            @foreach($tipos as $tipo)
-                <option value="{{ $tipo->id_tipoStock }}">{{ $tipo->nombre_stock }}</option>
-            @endforeach
-        </select>
-    </div>
-
-    {{-- NUEVO CAMPO: Fábrica --}}
-    <div class="col-md-4">
-        <label for="id_fabrica" class="form-label">Fábrica</label>
-        <select name="id_fabrica" id="id_fabrica" class="form-select" disabled>
-            <option value="{{ $fabrica->id_fabrica }}">{{ $fabrica->nombre_fabrica }}</option>
-        </select>
-        <input type="hidden" name="id_fabrica" value="{{ $fabrica->id_fabrica }}">
-    </div>
+    <label for="id_tipoStock" class="form-label">Tipo de Stock</label>
+    <select name="id_tipoStock" class="form-select" required disabled>
+        @foreach($tipos as $tipo)
+            <option value="{{ $tipo->id_tipoStock }}" {{ $tipo->id_tipoStock === 'STK000' ? 'selected' : '' }}>
+                {{ $tipo->nombre_stock }}
+            </option>
+        @endforeach
+    </select>
+    {{-- Input oculto para que el valor se envíe al backend --}}
+    <input type="hidden" name="id_tipoStock" value="STK000">
+</div>
 
     <div class="col-12 mt-3 text-center">
         <button type="submit" class="btn btn-outline-success" id="btnGuardar" disabled>Guardar Bicicleta</button>

@@ -104,7 +104,14 @@
 
             try {
                 // Corrige la URL para enviar query param
-                const res = await fetch(`/bicicleta/buscarC?num_chasis=${encodeURIComponent(codigo)}`);
+                let url = '';
+if (codigo.length === 4 && /^\d+$/.test(codigo)) {
+    url = `/bicicleta/buscar-por-ultimos4?ult4=${encodeURIComponent(codigo)}`;
+} else {
+    url = `/bicicleta/buscarC?num_chasis=${encodeURIComponent(codigo)}`;
+}
+const res = await fetch(url);
+
                 const data = await res.json();
 
                 if (data.status === 'ok' && data.bicicleta) {

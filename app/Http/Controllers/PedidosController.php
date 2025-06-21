@@ -24,10 +24,29 @@ class PedidosController extends Controller
 
     // Formulario para crear nuevo pedido
     public function crear()
-    {
-        $sucursales = Sucursal::all();
-        return view('pedido.crear', compact('sucursales'));
+{
+    $sucursales = Sucursal::all();
+    return view('pedido.crear', compact('nombre_sucursal'));
+}
+
+    public function buscarPorUltimos4(Request $request)
+{
+    $ult4 = $request->query('ult4');
+
+    if (!$ult4 || strlen($ult4) !== 4) {
+        return response()->json(['status' => 'error', 'message' => 'Faltan dígitos']);
     }
+
+    $bicicleta = Bicicleta::with(['modelo', 'color'])
+        ->where('num_chasis', 'like', '%' . $ult4)
+        ->first();
+
+    if ($bicicleta) {
+        return response()->json(['status' => 'ok', 'bicicleta' => $bicicleta]);
+    } else {
+        return response()->json(['status' => 'not_found']);
+    }
+}
 
     // Guardar pedido con bicicletas (JSON)
     public function store(Request $request)
