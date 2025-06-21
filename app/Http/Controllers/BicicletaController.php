@@ -24,14 +24,43 @@ class BicicletaController extends Controller
     $ult4 = $request->query('ult4');
 
     if (!$ult4 || strlen($ult4) !== 4) {
-        return response()->json(['bicicleta' => null]);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Debe proporcionar exactamente 4 dígitos',
+            'bicicleta' => null
+        ]);
     }
 
-    // Buscar bicicleta cuyo num_chasis termina con los últimos 4 dígitos
-    $bicicleta = Bicicleta::where('num_chasis', 'like', '%' . $ult4)
-                ->first();
+    try {
+        // Buscar bicicleta cuyo num_chasis termina con los últimos 4 dígitos
+        $bicicleta = Bicicleta::where('num_chasis', 'like', '%' . $ult4)
+            ->with(['modelo', 'color'])
+            ->first();
 
-    return response()->json(['bicicleta' => $bicicleta]);
+        if (!$bicicleta) {
+            return response()->json([
+                'status' => 'not_found',
+                'message' => 'Bicicleta no encontrada',
+                'bicicleta' => null
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'bicicleta' => [
+                'num_chasis' => $bicicleta->num_chasis,
+                'modelo' => $bicicleta->modelo->nombre_modelo,
+                'color' => $bicicleta->color->nombre_color
+            ]
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Error en el servidor: ' . $e->getMessage(),
+            'bicicleta' => null
+        ], 500);
+    }
 }
     public $timestamps = false;
 
@@ -149,21 +178,47 @@ private function enviarImpresionLocal(string $codigo): array
 // Busqueda por Num de Serie o Hachis
 
     public function buscarC(Request $request)
-    {
-        $numChasis = $request->query('num_chasis');
+{
+    $numChasis = $request->query('num_chasis');
 
-        if (!$numChasis) {
-            return response()->json(['bici' => null]);
-        }
+    if (!$numChasis) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Debe proporcionar un número de chasis',
+            'bici' => null
+        ]);
+    }
 
-        $bici = bicicleta::where('num_chasis', $numChasis)
-            ->with(['modelo', 'color', 'tipoStock'])
+    try {
+        $bici = Bicicleta::where('num_chasis', $numChasis)
+            ->with(['modelo', 'color'])
             ->first();
 
-        // Retornar datos en JSON para que el JS los reciba
-        return response()->json(['bici' => $bici]);
-}
+        if (!$bici) {
+            return response()->json([
+                'status' => 'not_found',
+                'message' => 'Bicicleta no encontrada',
+                'bici' => null
+            ]);
+        }
 
+        return response()->json([
+            'status' => 'success',
+            'bici' => [
+                'num_chasis' => $bici->num_chasis,
+                'modelo' => $bici->modelo->nombre_modelo,
+                'color' => $bici->color->nombre_color
+            ]
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Error en el servidor: ' . $e->getMessage(),
+            'bici' => null
+        ], 500);
+    }
+}
 
 // Busqueda por Num de Motor
 
