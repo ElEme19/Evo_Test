@@ -80,6 +80,7 @@ class BicicletaController extends Controller
             // 2. Enviar impresión
             $printResult = $this->enviarPrintNode($validated['num_chasis']);
 
+
             DB::commit();
 
             return redirect()->route('Bicicleta.crear')
@@ -100,46 +101,34 @@ class BicicletaController extends Controller
      * Siempre retorna un array para evitar errores de tipo
      */
     private function enviarPrintNode(string $codigo): array
-    {
-        // Leer directamente de env
-        $apiKey    = env('PRINTNODE_API_KEY');
-        $printerId = env('PRINTNODE_PRINTER_ID');
+{
+    try {
+        $client = new \GuzzleHttp\Client([
+            'base_uri' => 'https://api.printnode.com/',
+            'auth'     => [config('printnode.api_key'), ''],
+        ]);
 
-        if (! $apiKey || ! $printerId) {
-            Log::error('PrintNode: falta API_KEY o PRINTER_ID en .env');
-            return ['error' => 'Configuración de PrintNode inválida'];
-        }
+        $raw  = "Código: {$codigo}\n";
+        $raw .= "\x1dV\x00"; // Comando de corte para la impresora térmica
 
-        try {
-            $client = new Client([
-                'base_uri' => 'https://api.printnode.com/',
-                'auth'     => [$apiKey, ''],
-            ]);
+        $response = $client->post('printjobs', [
+            'json' => [
+                'printerId'   => config('printnode.printer_id'),
+                'title'       => 'Impresión Bicicleta ' . $codigo,
+                'contentType' => 'raw_base64',
+                'content'     => base64_encode($raw),
+                'source'      => 'MiAppLaravel',
+            ],
+        ]);
 
-            $raw  = "Código: {$codigo}\n";
-            $raw .= "\x1dV\x00"; // GS V 0 -> cortar
+        return json_decode($response->getBody(), true);
 
-            $response = $client->post('printjobs', [
-                'json' => [
-                    'printerId'   => $printerId,
-                    'title'       => 'Bicicleta ' . $codigo,
-                    'contentType' => 'raw_base64',
-                    'content'     => base64_encode($raw),
-                    'source'      => 'MiAppLaravel',
-                ],
-            ]);
-
-            return json_decode((string) $response->getBody(), true) ?? ['status' => 'unknown'];
-
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            $body = (string) $e->getResponse()->getBody();
-            Log::error('PrintNode ClientException:', ['body' => $body]);
-            return ['error' => 'PrintNode error: ' . $body];
-        } catch (\Exception $e) {
-            Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
-            return ['error' => 'Falló la impresión: ' . $e->getMessage()];
-        }
+    } catch (\Exception $e) {
+        \Log::error('Error al imprimir con PrintNode: ' . $e->getMessage());
+        throw new \Exception('Falló la impresión: ' . $e->getMessage());
     }
+}
+
 
     /**
      * Búsqueda por últimos 4 dígitos de chasis
