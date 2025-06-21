@@ -15,7 +15,10 @@ class Pedidos extends Model
     protected $keyType = 'string';                // ✅ Tipo entero
     public $timestamps = false;                // No usa created_at ni updated_at
 
-protected $fillable = [
+protected $casts = [
+    'fecha_envio' => 'datetime',
+];
+    protected $fillable = [
     'id_pedido',
     'id_sucursal',
     'num_chasis',
