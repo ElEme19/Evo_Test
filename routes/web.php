@@ -77,6 +77,7 @@ Route::put('/Stock/{tipostock}', [TipoStockController::class, 'update'])->name('
 
 // Bicicleta
 
+Route::get('/Bicicleta/buscarC', [BicicletaController::class, 'buscarC']);
 Route::get('/Bicicleta/crear', [BicicletaController::class, 'crear'])->name('Bicicleta.crear');
 Route::post('/Bicicleta/store', [BicicletaController::class, 'store'])->name('Bicicleta.store');
 Route::get('/Bicicleta/vista', [BicicletaController::class, 'ver'])->name('Bicicleta.ver');
