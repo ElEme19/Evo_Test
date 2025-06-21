@@ -65,6 +65,7 @@ class BicicletaController extends Controller
         DB::beginTransaction();
 
         try {
+            // 1. Actualizar registro
             Bicicleta::where('num_chasis', $validated['num_chasis'])
                 ->update([
                     'id_color'              => $validated['id_color'],
@@ -76,7 +77,7 @@ class BicicletaController extends Controller
                     'updated_at'            => now(),
                 ]);
 
-            // Enviar impresión
+            // 2. Enviar impresión
             $printResult = $this->enviarPrintNode($validated['num_chasis']);
 
             DB::commit();
@@ -96,13 +97,23 @@ class BicicletaController extends Controller
 
     /**
      * Envía impresión a PrintNode API
+     * Siempre retorna un array para evitar errores de tipo
      */
     private function enviarPrintNode(string $codigo): array
     {
+        // Leer directamente de env
+        $apiKey    = env('PRINTNODE_API_KEY');
+        $printerId = env('PRINTNODE_PRINTER_ID');
+
+        if (! $apiKey || ! $printerId) {
+            Log::error('PrintNode: falta API_KEY o PRINTER_ID en .env');
+            return ['error' => 'Configuración de PrintNode inválida'];
+        }
+
         try {
             $client = new Client([
                 'base_uri' => 'https://api.printnode.com/',
-                'auth'     => [config('printnode.api_key'), ''],
+                'auth'     => [$apiKey, ''],
             ]);
 
             $raw  = "Código: {$codigo}\n";
@@ -110,7 +121,7 @@ class BicicletaController extends Controller
 
             $response = $client->post('printjobs', [
                 'json' => [
-                    'printerId'   => config('printnode.printer_id'),
+                    'printerId'   => $printerId,
                     'title'       => 'Bicicleta ' . $codigo,
                     'contentType' => 'raw_base64',
                     'content'     => base64_encode($raw),
@@ -118,10 +129,15 @@ class BicicletaController extends Controller
                 ],
             ]);
 
-            return json_decode((string) $response->getBody(), true);
+            return json_decode((string) $response->getBody(), true) ?? ['status' => 'unknown'];
+
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $body = (string) $e->getResponse()->getBody();
+            Log::error('PrintNode ClientException:', ['body' => $body]);
+            return ['error' => 'PrintNode error: ' . $body];
         } catch (\Exception $e) {
             Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
-            throw new \Exception('Falló la impresión: ' . $e->getMessage());
+            return ['error' => 'Falló la impresión: ' . $e->getMessage()];
         }
     }
 
@@ -195,8 +211,7 @@ class BicicletaController extends Controller
             return response()->json(['modelos' => $modelos, 'bicis' => []]);
         }
         $bicis = Bicicleta::with(['modelo:id_modelo,nombre_modelo', 'color', 'tipoStock'])
-                 ->where('id_modelo', $idModelo)
-                 ->get();
+                 ->where('id_modelo', $idModelo)->get();
         return response()->json(['modelos' => [], 'bicis' => $bicis]);
     }
 
@@ -218,5 +233,10 @@ class BicicletaController extends Controller
     /**
      * Dispatch a print job to queue (opcional)
      */
-    
+    protected function dispatchPrintJob(string $codigo, array $metadata = []): void
+    {
+        EnviarTrabajoImpresion::dispatch($codigo, $metadata)
+            ->onQueue('impresiones')
+            ->delay(now()->addSeconds(5));
+    }
 }
