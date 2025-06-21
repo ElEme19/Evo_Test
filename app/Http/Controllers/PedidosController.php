@@ -46,11 +46,13 @@ class PedidosController extends Controller
         }
 
         // Generar ID incremental
-        $ultimo = Pedidos::orderBy('id_pedido', 'desc')->first();
-        $nuevoId = $ultimo
-            ? 'PED' . str_pad((int)substr($ultimo->id_pedido, 3) + 1, 3, '0', STR_PAD_LEFT)
-            : 'PED001';
+       $ultimo = Pedidos::orderBy('id_pedido', 'desc')->first();
+$nuevoId = 'PED001';
 
+if ($ultimo && preg_match('/^PED(\d+)$/', $ultimo->id_pedido, $match)) {
+    $numero = (int)$match[1] + 1;
+    $nuevoId = 'PED' . str_pad($numero, 3, '0', STR_PAD_LEFT);
+}
         foreach ($bicis as $bici) {
             Pedidos::create([
                 'id_pedido' => $nuevoId,

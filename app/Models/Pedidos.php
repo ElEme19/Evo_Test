@@ -15,11 +15,14 @@ class Pedidos extends Model
     protected $keyType = 'string';                // ✅ Tipo entero
     public $timestamps = false;                // No usa created_at ni updated_at
 
-    protected $fillable = [
-        'id_sucursal',
-        'num_chasis',
-        'fecha_envio',
-    ];
+protected $fillable = [
+    'id_pedido',
+    'id_sucursal',
+    'num_chasis',
+    'fecha_envio',
+];
+
+
 
     // Relación: un pedido pertenece a una sucursal
     public function sucursal()
