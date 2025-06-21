@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let url = '';
                 // Si la longitud es 4, buscar por últimos 4 dígitos
                 if (valor.length === 4) {
-                    url = `/bicicleta/buscar-por-ultimos4?ult4=${encodeURIComponent(valor)}`;
+                    url = `/Bicicleta/buscar-por-ultimos4?ult4=${encodeURIComponent(valor)}`;
                 } else {
                     // Buscar por número de serie completo
                     url = `/bicicleta/buscarC?num_chasis=${encodeURIComponent(valor)}`;
