@@ -39,18 +39,19 @@ class BicicletaController extends Controller
         return response()->json([
             'bicicleta' => [
                 'num_chasis' => $bici->num_chasis,
+                'id_modelo' => $bici->id_modelo,
+                'id_color' => $bici->id_color,
                 'modelo' => [
-                    'nombre_modelo' => $bici->modelo->nombre_modelo,
-                    'id_modelo' => $bici->id_modelo,
+                    'nombre_modelo' => optional($bici->modelo)->nombre_modelo
                 ],
                 'color' => [
-                    'nombre_color' => $bici->color->nombre_color,
-                    'id_color' => $bici->id_color,
+                    'nombre_color' => optional($bici->color)->nombre_color
                 ]
             ]
         ]);
+
     } catch (\Exception $e) {
-        Log::error('Error en buscarPorUltimos4: '.$e->getMessage());
+        \Log::error('Error en buscarPorUltimos4(): ' . $e->getMessage());
         return response()->json(['bicicleta' => null], 500);
     }
 }
