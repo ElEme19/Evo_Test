@@ -1,4 +1,3 @@
-```php
 <?php
 
 namespace App\Http\Controllers;
@@ -191,11 +190,5 @@ class BicicletaController extends Controller
     /**
      * Dispatch a print job to queue (opcional)
      */
-    protected function dispatchPrintJob(string $codigo, array $metadata = []): void
-    {
-        EnviarTrabajoImpresion::dispatch($codigo, $metadata)
-            ->onQueue('impresiones')
-            ->delay(now()->addSeconds(5));
-    }
+    
 }
-```
