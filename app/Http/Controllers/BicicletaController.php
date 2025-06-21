@@ -24,47 +24,9 @@ class BicicletaController extends Controller
     $ult4 = $request->query('ult4');
 
     if (!$ult4 || strlen($ult4) !== 4) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Debe ingresar exactamente 4 dígitos',
-            'bicicleta' => null
-        ]);
-    }
-
-    try {
-        $bicicleta = Bicicleta::where('num_chasis', 'like', '%'.$ult4)
-            ->with(['modelo', 'color'])
-            ->first();
-
-        if (!$bicicleta) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Bicicleta no encontrada',
-                'bicicleta' => null
-            ]);
-        }
-
-        return response()->json([
-            'success' => true,
-            'bicicleta' => [
-                'num_chasis' => $bicicleta->num_chasis,
-                'modelo' => $bicicleta->modelo->nombre_modelo,
-                'color' => $bicicleta->color->nombre_color,
-                // Datos adicionales si son necesarios
-                'id_modelo' => $bicicleta->id_modelo,
-                'id_color' => $bicicleta->id_color
-            ]
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Error en el servidor: '.$e->getMessage(),
-            'bicicleta' => null
-        ], 500);
+        return response()->json(['bicicleta' => null]);
     }
 }
-
     public $timestamps = false;
 
     // Mostrar formulario para crear bicicleta
