@@ -26,11 +26,26 @@ class BicicletaController extends Controller
     public function crear()
     {
         $modelos = modelos_bici::all();
-        $colores = ColorModelo::all();
+        $colores = [];
         $lotes   = Lote::all();
         $tipos   = TipoStock::all();
 
         return view('Bicicleta.crear', compact('modelos','colores','lotes','tipos'));
+    }
+
+    /**
+     * Carga colores según modelo (AJAX)
+     */
+    public function coloresPorModelo($id_modelo)
+    {
+        try {
+            $colores = ColorModelo::where('id_modelo', $id_modelo)
+                       ->get(['id_colorM', 'nombre_color']);
+            return response()->json($colores);
+        } catch (\Exception $e) {
+            Log::error('Error al cargar colores:', ['error' => $e->getMessage()]);
+            return response()->json([], 500);
+        }
     }
 
     /**
@@ -50,16 +65,15 @@ class BicicletaController extends Controller
         DB::beginTransaction();
 
         try {
-            // Actualizar registro
             Bicicleta::where('num_chasis', $validated['num_chasis'])
                 ->update([
-                    'id_color'               => $validated['id_color'],
-                    'id_lote'                => $validated['id_lote'],
-                    'id_tipoStock'           => $validated['id_tipoStock'],
-                    'codigo_barras'          => $validated['num_chasis'],
-                    'voltaje'                => $validated['voltaje'] ?? null,
-                    'error_iden_produccion'  => $validated['error_iden_produccion'] ?? null,
-                    'updated_at'             => now(),
+                    'id_color'              => $validated['id_color'],
+                    'id_lote'               => $validated['id_lote'],
+                    'id_tipoStock'          => $validated['id_tipoStock'],
+                    'codigo_barras'         => $validated['num_chasis'],
+                    'voltaje'               => $validated['voltaje'] ?? null,
+                    'error_iden_produccion' => $validated['error_iden_produccion'] ?? null,
+                    'updated_at'            => now(),
                 ]);
 
             // Enviar impresión
@@ -73,10 +87,7 @@ class BicicletaController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en store BicicletaController:', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+            Log::error('Error en store BicicletaController:', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return back()
                 ->with('error', 'Error: ' . $e->getMessage())
                 ->withInput();
@@ -140,20 +151,20 @@ class BicicletaController extends Controller
         }
         try {
             $bici = Bicicleta::where('num_chasis', $numChasis)
-                        ->with(['modelo','color'])
+                        ->with(['modelo', 'color'])
                         ->first();
             if (! $bici) {
-                return response()->json(['success'=>false,'message'=>'Bicicleta no encontrada','bici'=>null]);
+                return response()->json(['success' => false, 'message' => 'Bicicleta no encontrada', 'bici' => null]);
             }
-            return response()->json(['success'=>true,'bici'=>[
-                'num_chasis'=>$bici->num_chasis,
-                'modelo'=>$bici->modelo->nombre_modelo,
-                'color'=>$bici->color->nombre_color,
-                'id_modelo'=>$bici->id_modelo,
-                'id_color'=>$bici->id_color,
+            return response()->json(['success' => true, 'bici' => [
+                'num_chasis' => $bici->num_chasis,
+                'modelo'     => $bici->modelo->nombre_modelo,
+                'color'      => $bici->color->nombre_color,
+                'id_modelo'  => $bici->id_modelo,
+                'id_color'   => $bici->id_color,
             ]]);
         } catch (\Exception $e) {
-            return response()->json(['success'=>false,'message'=>'Error en el servidor:'.$e->getMessage(),'bici'=>null],500);
+            return response()->json(['success' => false, 'message' => 'Error en el servidor:' . $e->getMessage(), 'bici' => null], 500);
         }
     }
 
@@ -164,12 +175,12 @@ class BicicletaController extends Controller
     {
         $numMotor = $request->query('num_motor');
         if (! $numMotor) {
-            return response()->json(['bici'=>null]);
+            return response()->json(['bici' => null]);
         }
         $bici = Bicicleta::where('num_motor', $numMotor)
-                ->with(['modelo','color','tipoStock'])
+                ->with(['modelo', 'color', 'tipoStock'])
                 ->first();
-        return response()->json(['bici'=>$bici]);
+        return response()->json(['bici' => $bici]);
     }
 
     /**
@@ -179,12 +190,14 @@ class BicicletaController extends Controller
     {
         $idModelo = $request->query('modelo');
         if (! $idModelo) {
-            $modelos = modelos_bici::select('id_modelo','nombre_modelo')->orderBy('nombre_modelo')->get();
-            return response()->json(['modelos'=>$modelos,'bicis'=>[]]);
+            $modelos = modelos_bici::select('id_modelo', 'nombre_modelo')
+                        ->orderBy('nombre_modelo')->get();
+            return response()->json(['modelos' => $modelos, 'bicis' => []]);
         }
-        $bicis = Bicicleta::with(['modelo:id_modelo,nombre_modelo','color','tipoStock'])
-                 ->where('id_modelo', $idModelo)->get();
-        return response()->json(['modelos'=>[],'bicis'=>$bicis]);
+        $bicis = Bicicleta::with(['modelo:id_modelo,nombre_modelo', 'color', 'tipoStock'])
+                 ->where('id_modelo', $idModelo)
+                 ->get();
+        return response()->json(['modelos' => [], 'bicis' => $bicis]);
     }
 
     /**
@@ -192,21 +205,18 @@ class BicicletaController extends Controller
      */
     public function ver()
     {
-        $bicicletas = Bicicleta::with(['modelo','color','lote','tipoStock'])
-                        ->orderBy('updated_at','desc')->take(8)->get();
-        $modelos  = $bicicletas->pluck('modelo')->filter()->unique('id')->values();
-        $colores  = $bicicletas->pluck('color')->filter()->unique('id')->values();
-        $lotes    = $bicicletas->pluck('lote')->filter()->unique('id')->values();
-        return view('Bicicleta.vista', compact('bicicletas','modelos','colores','lotes'));
+        $bicicletas = Bicicleta::with(['modelo', 'color', 'lote', 'tipoStock'])
+                        ->orderBy('updated_at', 'desc')
+                        ->take(8)
+                        ->get();
+        $modelos = $bicicletas->pluck('modelo')->filter()->unique('id')->values();
+        $colores = $bicicletas->pluck('color')->filter()->unique('id')->values();
+        $lotes   = $bicicletas->pluck('lote')->filter()->unique('id')->values();
+        return view('Bicicleta.vista', compact('bicicletas', 'modelos', 'colores', 'lotes'));
     }
 
     /**
      * Dispatch a print job to queue (opcional)
      */
-    protected function dispatchPrintJob(string $codigo, array $metadata = []): void
-    {
-        EnviarTrabajoImpresion::dispatch($codigo, $metadata)
-            ->onQueue('impresiones')
-            ->delay(now()->addSeconds(5));
-    }
+    
 }
