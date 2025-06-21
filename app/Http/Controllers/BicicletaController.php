@@ -19,12 +19,39 @@ class BicicletaController extends Controller
     }
 
 
-   public function buscarPorUltimos4(Request $request)
+ public function buscarPorUltimos4(Request $request)
 {
     $ult4 = $request->query('ult4');
 
     if (!$ult4 || strlen($ult4) !== 4) {
         return response()->json(['bicicleta' => null]);
+    }
+
+    try {
+        $bici = Bicicleta::where(DB::raw('RIGHT(num_chasis, 4)'), $ult4)
+                         ->with(['modelo', 'color'])
+                         ->first();
+
+        if (!$bici) {
+            return response()->json(['bicicleta' => null]);
+        }
+
+        return response()->json([
+            'bicicleta' => [
+                'num_chasis' => $bici->num_chasis,
+                'modelo' => [
+                    'nombre_modelo' => $bici->modelo->nombre_modelo,
+                    'id_modelo' => $bici->id_modelo,
+                ],
+                'color' => [
+                    'nombre_color' => $bici->color->nombre_color,
+                    'id_color' => $bici->id_color,
+                ]
+            ]
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Error en buscarPorUltimos4: '.$e->getMessage());
+        return response()->json(['bicicleta' => null], 500);
     }
 }
     public $timestamps = false;
