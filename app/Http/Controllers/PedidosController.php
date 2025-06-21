@@ -29,24 +29,7 @@ class PedidosController extends Controller
     return view('pedido.crear', compact('sucursales')); // <- CAMBIADO
 }
 
-    public function buscarPorUltimos4(Request $request)
-{
-    $ult4 = $request->query('ult4');
-
-    if (!$ult4 || strlen($ult4) !== 4) {
-        return response()->json(['status' => 'error', 'message' => 'Faltan dígitos']);
-    }
-
-    $bicicleta = Bicicleta::with(['modelo', 'color'])
-        ->where('num_chasis', 'like', '%' . $ult4)
-        ->first();
-
-    if ($bicicleta) {
-        return response()->json(['status' => 'ok', 'bicicleta' => $bicicleta]);
-    } else {
-        return response()->json(['status' => 'not_found']);
-    }
-}
+   
 
     // Guardar pedido con bicicletas (JSON)
     public function store(Request $request)
