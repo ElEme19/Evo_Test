@@ -17,6 +17,7 @@ use App\Http\Controllers\PrecioController;
 use App\Http\Controllers\ProsesadorController;
 use App\Models\modelos_bici;
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\PedidosController;
 
 /*
 |--------------------------------------------------------------------------
@@ -131,7 +132,11 @@ Route::get('/area/ver', [AreaController::class, 'ver'])->name('area.ver');      
 Route::get('/Mexico/import',  [ProsesadorController::class, 'formulario'])->name('procesador.import');
 Route::post('/Mexico/procesar', [ProsesadorController::class, 'procesarExcel'])->name('procesador.procesar');
 
-
+//Pedidos
+Route::get('/pedido/ver', [PedidosController::class, 'index'])->name('pedido.ver');
+Route::get('/pedido/crear', [PedidosController::class, 'crear'])->name('pedido.crear');
+Route::post('/pedido/store', [PedidosController::class, 'store'])->name('pedido.store');
+Route::get('/pedido/pdf/{id_pedido}', [PedidosController::class, 'generarPDF'])->name('pedido.pdf');
 });
 
 

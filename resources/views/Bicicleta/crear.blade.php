@@ -79,14 +79,13 @@
         </select>
     </div>
 
+    {{-- NUEVO CAMPO: Fábrica --}}
     <div class="col-md-4">
-        <label for="voltaje" class="form-label">Voltaje</label>
-        <input type="text" name="voltaje" class="form-control" maxlength="10">
-    </div>
-
-    <div class="col-md-6">
-        <label for="error_iden_produccion" class="form-label">Error Identificación Producción</label>
-        <input type="text" name="error_iden_produccion" class="form-control" maxlength="255">
+        <label for="id_fabrica" class="form-label">Fábrica</label>
+        <select name="id_fabrica" id="id_fabrica" class="form-select" disabled>
+            <option value="{{ $fabrica->id_fabrica }}">{{ $fabrica->nombre_fabrica }}</option>
+        </select>
+        <input type="hidden" name="id_fabrica" value="{{ $fabrica->id_fabrica }}">
     </div>
 
     <div class="col-12 mt-3 text-center">
@@ -94,9 +93,10 @@
     </div>
 
     <div class="col text-end">
-        <a href="{{ route('Bicicleta.ver') }}" class="btn btn-outline-success">Ver Bicis</a>
+        <a href="{{ route('Bicicleta.vistar') }}" class="btn btn-outline-success">Ver Bicis</a>
     </div>
 </form>
+
 
 <!-- Modal para mostrar resultado búsqueda número de serie -->
 <div class="modal fade" id="modalResultadoBusqueda" tabindex="-1" aria-labelledby="modalResultadoBusquedaLabel" aria-hidden="true">
