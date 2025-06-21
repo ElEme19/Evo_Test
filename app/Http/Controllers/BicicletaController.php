@@ -7,6 +7,9 @@ use App\Models\modelos_bici;
 use App\Models\ColorModelo;
 use App\Models\Lote;
 use App\Models\TipoStock;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class BicicletaController extends Controller
 {
@@ -58,7 +61,8 @@ class BicicletaController extends Controller
 
     
     // Guardar bicicleta
-   public function store(Request $request)
+
+ public function store(Request $request)
 {
     $validated = $request->validate([
         'num_chasis' => 'required|string|exists:bicicleta,num_chasis',
@@ -69,30 +73,60 @@ class BicicletaController extends Controller
         'error_iden_produccion' => 'nullable|string|max:255',
     ]);
 
+    DB::beginTransaction();
+
+
+    DB::beginTransaction();
+
     try {
-        $bicicleta = Bicicleta::with(['color', 'lote', 'tipoStock'])
-                        ->where('num_chasis', $validated['num_chasis'])
-                        ->firstOrFail();
+        // 1. Actualización en base de datos (tu código actual)
+        $updateData = [
+            // ... (tus campos actuales)
+            'codigo_barras' => $validated['num_chasis']
+        ];
+        
+        DB::table('bicicleta')->where('num_chasis', $validated['num_chasis'])->update($updateData);
 
-        $bicicleta->update([
-            'id_color' => $validated['id_color'],
-            'id_lote' => $validated['id_lote'],
-            'id_tipoStock' => $validated['id_tipoStock'],
-            'voltaje' => $validated['voltaje'],
-            'error_iden_produccion' => $validated['error_iden_produccion'],
-        ]);
+        // 2. Nuevo método de impresión (reemplazo de shell_exec)
+        $resultado = $this->enviarImpresionLocal($validated['num_chasis']);
 
-        return back()->with('success', '¡Bicicleta actualizada correctamente!');
+        DB::commit();
 
-    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-        return back()->with('error', 'Bicicleta no encontrada con ese número de chasis');
+        return back()->with('success', '¡Bicicleta actualizada e impresa correctamente!');
+
     } catch (\Exception $e) {
-        return back()->with('error', 'Error inesperado: ' . $e->getMessage());
+        DB::rollBack();
+        Log::error('Error en store:', ['error' => $e->getMessage()]);
+        return back()->with('error', 'Error: ' . $e->getMessage())->withInput();
     }
 }
 
+// Nuevo método privado para manejar la impresión
+private function enviarImpresionLocal(string $codigo): array
+{
+    $urlServicioLocal = 'http://192.168.100.228:8000/imprimir'; // Cambia por la IP del equipo con Python
+    
+    try {
+        $response = Http::timeout(15) // 15 segundos de timeout
+            ->retry(3, 500) // Reintenta 3 veces con 500ms de espera
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post($urlServicioLocal, [
+                'codigo' => $codigo,
+                'api_key' => env('IMPRESORA_API_KEY') // Clave en tu .env
+            ]);
 
-    // Ver bicicletas
+        if ($response->failed()) {
+            throw new \Exception("Error en servicio local: HTTP {$response->status()}");
+        }
+
+        return $response->json();
+
+    } catch (\Illuminate\Http\Client\ConnectionException $e) {
+        throw new \Exception("No se pudo conectar al servicio de impresión local");
+    } catch (\Exception $e) {
+        throw new \Exception("Error al imprimir: " . $e->getMessage());
+    }
+}
 
     public function ver()
     {
