@@ -126,7 +126,7 @@ class BicicletaController extends Controller
 // Nuevo método privado para manejar la impresión
 private function enviarImpresionLocal(string $codigo): array
 {
-    $urlServicioLocal = 'http://192.168.100.228:8000/imprimir'; // Cambia por la IP del equipo con Python
+    $urlServicioLocal = 'http://localhost:9000/imprimir'; // Cambia por la IP del equipo con Python
     
     try {
         $response = Http::timeout(15) // 15 segundos de timeout
