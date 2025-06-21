@@ -25,34 +25,41 @@
         {{-- Seleccionar Sucursal --}}
         <div class="mb-3">
             <label for="id_sucursal" class="form-label">Sucursal</label>
-<select name="id_sucursal" class="form-select" required>
-    <option value="">Seleccione una sucursal</option>
-    @foreach($sucursales as $sucursal)
-        <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre_sucursal }}</option>
-    @endforeach
-</select>
+            <select name="id_sucursal" id="id_sucursal" class="form-select" required>
+                <option value="">Seleccione una sucursal</option>
+                @foreach($sucursales as $sucursal)
+                    <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre_sucursal }}</option>
+                @endforeach
+            </select>
         </div>
 
         {{-- Escaneo --}}
-<div class="mb-3">
-    <label for="codigo_bici" class="form-label">Escanea Bicicleta (N° de Serie o últimos 4 dígitos)</label>
-    <input type="text" id="codigo_bici" class="form-control" autocomplete="off" placeholder="Escanea o escribe el número de serie o últimos 4 dígitos" {{ old('id_sucursal') ? '' : 'disabled' }}>
-</div>
+        <div class="mb-3">
+            <label for="codigo_bici" class="form-label">Escanea Bicicleta (N° de Serie o últimos 4 dígitos)</label>
+            <input type="text" id="codigo_bici" class="form-control" autocomplete="off" placeholder="Escanea o escribe el número de serie o últimos 4 dígitos" disabled>
+        </div>
 
-{{-- Tabla para mostrar bicis agregadas --}}
-<div class="table-responsive mb-3">
-    <table class="table table-bordered text-center align-middle" id="tablaBicicletas">
-        <thead class="table-light">
-            <tr>
-                <th>#</th>
-                <th>Número de Serie</th>
-                <th>Modelo</th>
-                <th>Color</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+        {{-- Tabla para mostrar bicis agregadas --}}
+        <div class="table-responsive mb-3">
+            <table class="table table-bordered text-center align-middle" id="tablaBicicletas">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Número de Serie</th>
+                        <th>Modelo</th>
+                        <th>Color</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        {{-- Botón Finalizar --}}
+        <div class="text-center">
+            <button type="submit" class="btn btn-success" id="btnFinalizar" disabled>Finalizar Pedido</button>
+        </div>
+    </form>
 </div>
 
 {{-- Modal para mostrar resultado búsqueda número de serie --}}
@@ -76,11 +83,30 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const inputCodigo = document.getElementById('codigo_bici');
+    const sucursalSelect = document.getElementById('id_sucursal');
     const tabla = document.getElementById('tablaBicicletas').querySelector('tbody');
     const modal = new bootstrap.Modal(document.getElementById('modalResultadoBusqueda'));
     const modalBody = document.getElementById('modalBodyMensaje');
+    const btnFinalizar = document.getElementById('btnFinalizar');
 
     let listaBicis = [];
+
+    // Inicialmente input deshabilitado
+    inputCodigo.disabled = true;
+
+    // Habilitar input solo cuando se selecciona sucursal
+    sucursalSelect.addEventListener('change', () => {
+        if (sucursalSelect.value) {
+            inputCodigo.disabled = false;
+            inputCodigo.focus();
+        } else {
+            inputCodigo.disabled = true;
+            inputCodigo.value = '';
+            listaBicis = [];
+            renderizarTabla();
+            btnFinalizar.disabled = true;
+        }
+    });
 
     function renderizarTabla() {
         tabla.innerHTML = '';
@@ -95,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </tr>
             `);
         });
+        btnFinalizar.disabled = listaBicis.length === 0;
     }
 
     window.quitarBici = function(num_chasis) {
@@ -168,7 +195,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
-
-
 
 @endsection
