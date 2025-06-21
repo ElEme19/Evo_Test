@@ -25,8 +25,8 @@ class PedidosController extends Controller
     // Formulario para crear nuevo pedido
     public function crear()
 {
-    $sucursales = Sucursal::all();
-    return view('pedido.crear', compact('nombre_sucursal'));
+    $sucursales = Sucursal::all(); // Esto es correcto
+    return view('pedido.crear', compact('sucursales')); // <- CAMBIADO
 }
 
     public function buscarPorUltimos4(Request $request)

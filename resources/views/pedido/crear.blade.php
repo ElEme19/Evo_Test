@@ -25,12 +25,12 @@
         {{-- Seleccionar Sucursal --}}
         <div class="mb-3">
             <label for="id_sucursal" class="form-label">Sucursal</label>
-            <select name="id_sucursal" id="id_sucursal" class="form-select" required>
-                <option value="">Seleccione una sucursal</option>
-                @foreach($sucursales as $sucursal)
-                    <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre }}</option>
-                @endforeach
-            </select>
+<select name="id_sucursal" class="form-select" required>
+    <option value="">Seleccione una sucursal</option>
+    @foreach($sucursales as $sucursal)
+        <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre_sucursal }}</option>
+    @endforeach
+</select>
         </div>
 
         {{-- Escaneo --}}
