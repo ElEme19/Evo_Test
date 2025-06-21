@@ -88,7 +88,7 @@
     </div>
 
     <div class="col text-end">
-        <a href="{{ route('Bicicleta.vistar') }}" class="btn btn-outline-success">Ver Bicis</a>
+        <a href="{{ route('Bicicleta.vista') }}" class="btn btn-outline-success">Ver Bicis</a>
     </div>
 </form>
 
