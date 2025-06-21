@@ -21,6 +21,19 @@ class BicicletaController extends Controller
     }
 
     /**
+     * Muestra el formulario para crear bicicleta
+     */
+    public function crear()
+    {
+        $modelos = modelos_bici::all();
+        $colores = ColorModelo::all();
+        $lotes   = Lote::all();
+        $tipos   = TipoStock::all();
+
+        return view('Bicicleta.crear', compact('modelos','colores','lotes','tipos'));
+    }
+
+    /**
      * Guarda la bicicleta y dispara la impresión vía PrintNode.
      */
     public function store(Request $request)
@@ -54,8 +67,8 @@ class BicicletaController extends Controller
 
             DB::commit();
 
-            return back()
-                ->with('success', '¡Bicicleta actualizada e impresa correctamente!')
+            return redirect()->route('Bicicleta.crear')
+                ->with('success', '¡Bicicleta guardada e impresa correctamente!')
                 ->with('print_response', $printResult);
 
         } catch (\Exception $e) {
@@ -190,5 +203,10 @@ class BicicletaController extends Controller
     /**
      * Dispatch a print job to queue (opcional)
      */
-    
+    protected function dispatchPrintJob(string $codigo, array $metadata = []): void
+    {
+        EnviarTrabajoImpresion::dispatch($codigo, $metadata)
+            ->onQueue('impresiones')
+            ->delay(now()->addSeconds(5));
+    }
 }
