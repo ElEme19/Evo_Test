@@ -16,49 +16,52 @@ class BicicletaController extends Controller
     }
 
 
-    public function buscarPorUltimos4(Request $request)
+   public function buscarPorUltimos4(Request $request)
 {
     $ult4 = $request->query('ult4');
 
     if (!$ult4 || strlen($ult4) !== 4) {
         return response()->json([
-            'status' => 'error',
-            'message' => 'Debe proporcionar exactamente 4 dígitos',
+            'success' => false,
+            'message' => 'Debe ingresar exactamente 4 dígitos',
             'bicicleta' => null
         ]);
     }
 
     try {
-        // Buscar bicicleta cuyo num_chasis termina con los últimos 4 dígitos
-        $bicicleta = Bicicleta::where('num_chasis', 'like', '%' . $ult4)
+        $bicicleta = Bicicleta::where('num_chasis', 'like', '%'.$ult4)
             ->with(['modelo', 'color'])
             ->first();
 
         if (!$bicicleta) {
             return response()->json([
-                'status' => 'not_found',
+                'success' => false,
                 'message' => 'Bicicleta no encontrada',
                 'bicicleta' => null
             ]);
         }
 
         return response()->json([
-            'status' => 'success',
+            'success' => true,
             'bicicleta' => [
                 'num_chasis' => $bicicleta->num_chasis,
                 'modelo' => $bicicleta->modelo->nombre_modelo,
-                'color' => $bicicleta->color->nombre_color
+                'color' => $bicicleta->color->nombre_color,
+                // Datos adicionales si son necesarios
+                'id_modelo' => $bicicleta->id_modelo,
+                'id_color' => $bicicleta->id_color
             ]
         ]);
 
     } catch (\Exception $e) {
         return response()->json([
-            'status' => 'error',
-            'message' => 'Error en el servidor: ' . $e->getMessage(),
+            'success' => false,
+            'message' => 'Error en el servidor: '.$e->getMessage(),
             'bicicleta' => null
         ], 500);
     }
 }
+
     public $timestamps = false;
 
     // Mostrar formulario para crear bicicleta
@@ -149,8 +152,8 @@ class BicicletaController extends Controller
 
     if (!$numChasis) {
         return response()->json([
-            'status' => 'error',
-            'message' => 'Debe proporcionar un número de chasis',
+            'success' => false,
+            'message' => 'Debe ingresar un número de chasis',
             'bici' => null
         ]);
     }
@@ -162,25 +165,28 @@ class BicicletaController extends Controller
 
         if (!$bici) {
             return response()->json([
-                'status' => 'not_found',
+                'success' => false,
                 'message' => 'Bicicleta no encontrada',
                 'bici' => null
             ]);
         }
 
         return response()->json([
-            'status' => 'success',
+            'success' => true,
             'bici' => [
                 'num_chasis' => $bici->num_chasis,
                 'modelo' => $bici->modelo->nombre_modelo,
-                'color' => $bici->color->nombre_color
+                'color' => $bici->color->nombre_color,
+                // Datos adicionales consistentes con el otro método
+                'id_modelo' => $bici->id_modelo,
+                'id_color' => $bici->id_color
             ]
         ]);
 
     } catch (\Exception $e) {
         return response()->json([
-            'status' => 'error',
-            'message' => 'Error en el servidor: ' . $e->getMessage(),
+            'success' => false,
+            'message' => 'Error en el servidor: '.$e->getMessage(),
             'bici' => null
         ], 500);
     }
