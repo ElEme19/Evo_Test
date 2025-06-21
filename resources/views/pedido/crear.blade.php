@@ -34,138 +34,141 @@
         </div>
 
         {{-- Escaneo --}}
-        <div class="mb-3">
-            <label for="codigo_bici" class="form-label">Escanea Bicicleta (N° de Serie)</label>
-            <input type="text" id="codigo_bici" class="form-control" autocomplete="off" placeholder="Escanea o escribe el número de serie" {{ old('id_sucursal') ? '' : 'disabled' }}>
-        </div>
-
-        {{-- Lista dinámica --}}
-        <div class="table-responsive mb-3">
-            <table class="table table-bordered text-center align-middle" id="tablaBicicletas">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Número de Serie</th>
-                        <th>Modelo</th>
-                        <th>Color</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-        {{-- Input oculto para las bicis escaneadas --}}
-        <input type="hidden" name="bicis_json" id="bicis_json">
-
-        <div class="text-center">
-            <button type="submit" class="btn btn-success" id="btnFinalizar" disabled>
-                Finalizar Pedido
-            </button>
-        </div>
-    </form>
+<div class="mb-3">
+    <label for="codigo_bici" class="form-label">Escanea Bicicleta (N° de Serie o últimos 4 dígitos)</label>
+    <input type="text" id="codigo_bici" class="form-control" autocomplete="off" placeholder="Escanea o escribe el número de serie o últimos 4 dígitos" {{ old('id_sucursal') ? '' : 'disabled' }}>
 </div>
 
-{{-- Script --}}
+{{-- Tabla para mostrar bicis agregadas --}}
+<div class="table-responsive mb-3">
+    <table class="table table-bordered text-center align-middle" id="tablaBicicletas">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Número de Serie</th>
+                <th>Modelo</th>
+                <th>Color</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+{{-- Modal para mostrar resultado búsqueda número de serie --}}
+<div class="modal fade" id="modalResultadoBusqueda" tabindex="-1" aria-labelledby="modalResultadoBusquedaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalResultadoBusquedaLabel">Resultado de la búsqueda</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body" id="modalBodyMensaje">
+        <!-- Mensaje dinámico aquí -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-    const sucursalSelect = document.getElementById('id_sucursal');
+document.addEventListener('DOMContentLoaded', () => {
     const inputCodigo = document.getElementById('codigo_bici');
     const tabla = document.getElementById('tablaBicicletas').querySelector('tbody');
-    const inputBicis = document.getElementById('bicis_json');
-    const btnFinalizar = document.getElementById('btnFinalizar');
+    const modal = new bootstrap.Modal(document.getElementById('modalResultadoBusqueda'));
+    const modalBody = document.getElementById('modalBodyMensaje');
 
     let listaBicis = [];
 
-    // Habilitar campo escaneo solo si se selecciona sucursal
-    sucursalSelect.addEventListener('change', () => {
-        inputCodigo.disabled = !sucursalSelect.value;
-        inputCodigo.value = '';
-        listaBicis = [];
-        renderizarTabla();
-        btnFinalizar.disabled = true;
-        if (sucursalSelect.value) {
-            inputCodigo.focus();
-        }
-    });
+    function renderizarTabla() {
+        tabla.innerHTML = '';
+        listaBicis.forEach((bici, i) => {
+            tabla.insertAdjacentHTML('beforeend', `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${bici.num_chasis}</td>
+                    <td>${bici.modelo}</td>
+                    <td>${bici.color}</td>
+                    <td><button type="button" class="btn btn-sm btn-danger" onclick="quitarBici('${bici.num_chasis}')">Quitar</button></td>
+                </tr>
+            `);
+        });
+    }
 
-    inputCodigo.addEventListener('keypress', async (e) => {
+    window.quitarBici = function(num_chasis) {
+        listaBicis = listaBicis.filter(b => b.num_chasis !== num_chasis);
+        renderizarTabla();
+    }
+
+    inputCodigo.addEventListener('keypress', async e => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            const codigo = inputCodigo.value.trim();
+            const valor = inputCodigo.value.trim();
+            if (!valor) return;
 
-            if (!codigo) return;
-
-            // Validar si ya fue agregada
-            if (listaBicis.find(b => b.num_chasis === codigo)) {
-                alert('Bicicleta ya agregada.');
+            // Evitar duplicados
+            if (listaBicis.some(b => b.num_chasis === valor)) {
+                alert('Esta bicicleta ya fue agregada.');
                 inputCodigo.value = '';
                 return;
             }
 
             try {
-                // Corrige la URL para enviar query param
                 let url = '';
-if (codigo.length === 4 && /^\d+$/.test(codigo)) {
-    url = `/bicicleta/buscar-por-ultimos4?ult4=${encodeURIComponent(codigo)}`;
-} else {
-    url = `/bicicleta/buscarC?num_chasis=${encodeURIComponent(codigo)}`;
-}
-const res = await fetch(url);
+                // Si la longitud es 4, buscar por últimos 4 dígitos
+                if (valor.length === 4) {
+                    url = `/bicicleta/buscar-por-ultimos4?ult4=${encodeURIComponent(valor)}`;
+                } else {
+                    // Buscar por número de serie completo
+                    url = `/bicicleta/buscarC?num_chasis=${encodeURIComponent(valor)}`;
+                }
 
+                const res = await fetch(url);
                 const data = await res.json();
 
                 if (data.status === 'ok' && data.bicicleta) {
-                    // Asegura que el objeto bici tenga las propiedades necesarias
-                    listaBicis.push({
-                        num_chasis: data.bicicleta.num_chasis,
-                        modelo: data.bicicleta.modelo.nombre_modelo,
-                        color: data.bicicleta.color.nombre_color
-                    });
-                    renderizarTabla();
-                    inputCodigo.value = '';
-                    btnFinalizar.disabled = false;
-                    inputCodigo.focus();
+                    const bici = data.bicicleta;
+
+                    // Mostrar info en modal
+                    modalBody.innerHTML = `
+                        <p><strong>Bicicleta encontrada:</strong></p>
+                        <ul>
+                            <li><strong>Número de Serie:</strong> ${bici.num_chasis}</li>
+                            <li><strong>Modelo:</strong> ${bici.modelo.nombre_modelo}</li>
+                            <li><strong>Color:</strong> ${bici.color.nombre_color}</li>
+                        </ul>
+                        <p>¿Deseas agregar esta bicicleta al pedido?</p>
+                        <button id="btnAgregarModal" class="btn btn-success">Agregar</button>
+                    `;
+                    modal.show();
+
+                    // Agregar event listener al botón dentro del modal
+                    document.getElementById('btnAgregarModal').onclick = () => {
+                        listaBicis.push({
+                            num_chasis: bici.num_chasis,
+                            modelo: bici.modelo.nombre_modelo,
+                            color: bici.color.nombre_color
+                        });
+                        renderizarTabla();
+                        inputCodigo.value = '';
+                        modal.hide();
+                    };
+
                 } else {
-                    alert('Bicicleta no encontrada.');
-                    inputCodigo.value = '';
+                    modalBody.innerHTML = `<p><strong>No se encontró ninguna bicicleta con ese número o últimos 4 dígitos.</strong></p>`;
+                    modal.show();
                 }
-            } catch (err) {
-                alert('Error al buscar bicicleta.');
-                inputCodigo.value = '';
+            } catch (error) {
+                modalBody.innerHTML = `<p><strong>Error al realizar la búsqueda.</strong></p>`;
+                modal.show();
             }
         }
     });
-
-    function renderizarTabla() {
-        tabla.innerHTML = '';
-        listaBicis.forEach((bici, index) => {
-            const row = `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${bici.num_chasis}</td>
-                    <td>${bici.modelo}</td>
-                    <td>${bici.color}</td>
-                    <td>
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="quitarBici('${bici.num_chasis}')">Quitar</button>
-                    </td>
-                </tr>
-            `;
-            tabla.insertAdjacentHTML('beforeend', row);
-        });
-
-        // Actualizar input oculto con la lista serializada
-        inputBicis.value = JSON.stringify(listaBicis);
-
-        // Controlar estado del botón Finalizar
-        btnFinalizar.disabled = listaBicis.length === 0;
-    }
-
-    function quitarBici(codigo) {
-        listaBicis = listaBicis.filter(b => b.num_chasis !== codigo);
-        renderizarTabla();
-        inputCodigo.focus();
-    }
+});
 </script>
+
 
 
 @endsection
