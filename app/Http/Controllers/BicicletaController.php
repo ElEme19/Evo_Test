@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Bicicleta;
-use App\Models\ModelosBici;
+use App\Models\modelos_bici;
 use App\Models\ColorModelo;
 use App\Models\Lote;
 use App\Models\TipoStock;
@@ -25,7 +25,7 @@ class BicicletaController extends Controller
      */
     public function crear()
     {
-        $modelos = ModelosBici::all();
+        $modelos = modelos_bici::all();
         $colores = ColorModelo::all();
         $lotes = Lote::all();
         $tipos = TipoStock::all();
@@ -218,7 +218,7 @@ ZPL;
     {
         $idModelo = $request->query('modelo');
         if (!$idModelo) {
-            $modelos = ModelosBici::select('id_modelo', 'nombre_modelo')
+            $modelos = modelos_bici::select('id_modelo', 'nombre_modelo')
                        ->orderBy('nombre_modelo')
                        ->get();
             return response()->json(['modelos' => $modelos, 'bicis' => []]);
