@@ -86,34 +86,45 @@ class BicicletaController extends Controller
     /**
      * Envía impresión a PrintNode API
      */
-    private function enviarPrintNode(string $codigo): array
-    {
-        try {
-            $client = new Client([
-                'base_uri' => 'https://api.printnode.com/',
-                'auth'     => [config('printnode.api_key'), ''],
-            ]);
+   /**
+ * Envía impresión de QR a PrintNode API
+ */
+private function enviarPrintNode(string $codigo): array
+{
+    try {
+        $client = new Client([
+            'base_uri' => 'https://api.printnode.com/',
+            'auth'     => [config('printnode.api_key'), ''],
+        ]);
 
-            $raw  = "Código: {$codigo}\n";
-            $raw .= "\x1dV\x00"; // GS V 0 -> cortar
+        // Generar comando ZPL para un código QR
+        $zpl = <<<ZPL
+^XA
+^FO50,50
+^BQN,2,10
+^FDMM,A{$codigo}^FS
+^FO50,150
+^A0N,50,50
+^FD{$codigo}^FS
+^XZ
+ZPL;
 
-            $response = $client->post('printjobs', [
-                'json' => [
-                    'printerId'   => config('printnode.printer_id'),
-                    'title'       => 'Bicicleta ' . $codigo,
-                    'contentType' => 'raw_base64',
-                    'content'     => base64_encode($raw),
-                    'source'      => 'MiAppLaravel',
-                ],
-            ]);
+        $response = $client->post('printjobs', [
+            'json' => [
+                'printerId'   => config('printnode.printer_id'),
+                'title'       => 'Bicicleta ' . $codigo,
+                'contentType' => 'raw_base64',
+                'content'     => base64_encode($zpl),
+                'source'      => 'MiAppLaravel',
+            ],
+        ]);
 
-            return json_decode((string) $response->getBody(), true);
-        } catch (\Exception $e) {
-            Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
-            throw new \Exception('Falló la impresión: ' . $e->getMessage());
-        }
+        return json_decode((string) $response->getBody(), true);
+    } catch (\Exception $e) {
+        Log::error('Error al imprimir QR con PrintNode:', ['error' => $e->getMessage()]);
+        throw new \Exception('Falló la impresión del QR: ' . $e->getMessage());
     }
-
+}
     /**
      * Búsqueda por últimos 4 dígitos de chasis
      */
