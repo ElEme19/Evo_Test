@@ -16,25 +16,33 @@ class LoginController extends Controller
     }
 
     public function login(Request $request)
-    {
-        // Validación básica
-        $request->validate([
-            'user_name' => 'required|string',
-            'user_pass' => 'required|string',
-        ]);
+{
+    // Validación básica
+    $request->validate([
+        'user_name' => 'required|string',
+        'user_pass' => 'required|string',
+    ]);
 
-        $credenciales = $request->only('user_name', 'user_pass');
-        $usuario = usuarios::where('user_name', $credenciales['user_name'])->first();
+    $credenciales = $request->only('user_name', 'user_pass');
+    $usuario = usuarios::where('user_name', $credenciales['user_name'])->first();
 
-        if ($usuario && Hash::check($credenciales['user_pass'], $usuario->user_pass)) {
-            Auth::guard('usuarios')->login($usuario);
-            return redirect()->intended('/Mexico/inicio');
+    if ($usuario && Hash::check($credenciales['user_pass'], $usuario->user_pass)) {
+        Auth::guard('usuarios')->login($usuario);
+
+        // ✅ Guardar idioma en sesión según user_tipo
+        if ($usuario->user_tipo == 2) {
+            session(['idioma' => 'zh']); // Chino
+        } else {
+            session(['idioma' => 'es']); // Español
         }
 
-        return back()->withErrors([
-            'user_name' => 'Credenciales erróneas.',
-        ]);
+        return redirect()->intended('/Mexico/inicio');
     }
+
+    return back()->withErrors([
+        'user_name' => 'Credenciales erróneas.',
+    ]);
+}
 
     public function logout(Request $request)
     {
