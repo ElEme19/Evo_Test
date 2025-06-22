@@ -126,6 +126,19 @@ private function enviarPrintNode(string $codigo): array
         throw new \Exception('Falló la impresión: ' . $e->getMessage());
     }
 }
+public function coloresPorModelo($id_modelo)
+{
+    try {
+        $colores = ColorModelo::where('id_modelo', $id_modelo)
+            ->get(['id_colorM', 'nombre_color']);
+
+        return response()->json($colores);
+    } catch (\Exception $e) {
+        \Log::error('Error al cargar colores:', ['error' => $e->getMessage()]);
+        return response()->json([], 500);
+    }
+}
+
 
     /**
      * Búsqueda por últimos 4 dígitos de chasis
