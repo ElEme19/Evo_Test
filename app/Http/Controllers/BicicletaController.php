@@ -115,7 +115,7 @@ private function enviarPrintNode(string $codigo): array
         
         // Generar QR con mejor tamaño y corrección de errores
         $printer->qrCode($codigo, Printer::QR_ECLEVEL_H, 8, Printer::QR_MODEL_2);
-        
+         $printer->feed(1);
         
         // Mostrar el código de texto también
         $printer->text("Código: " . $codigo . "\n");
