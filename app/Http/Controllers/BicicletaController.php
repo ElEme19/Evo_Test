@@ -90,7 +90,6 @@ class BicicletaController extends Controller
     /**
      * Envía impresión a PrintNode API
      */
-
 private function enviarPrintNode(string $codigo): array
 {
     try {
@@ -120,13 +119,25 @@ private function enviarPrintNode(string $codigo): array
             ],
         ]);
 
-        return json_decode((string) $response->getBody(), true);
+        $body = (string) $response->getBody();
+        $decoded = json_decode($body, true);
+
+        if (!is_array($decoded)) {
+            throw new \Exception('Respuesta inesperada de PrintNode: ' . $body);
+        }
+
+        return $decoded;
     } catch (\Exception $e) {
         Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
         throw new \Exception('Falló la impresión: ' . $e->getMessage());
     }
 }
-public function coloresPorModelo($id_modelo)
+
+
+
+
+
+     public function coloresPorModelo($id_modelo)
 {
     try {
         $colores = ColorModelo::where('id_modelo', $id_modelo)
