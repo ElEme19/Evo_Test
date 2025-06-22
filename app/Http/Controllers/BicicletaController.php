@@ -90,9 +90,6 @@ class BicicletaController extends Controller
     /**
      * Envía impresión a PrintNode API
      */
-    use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
-use Mike42\Escpos\Printer;
-use Mike42\Escpos\EscposImage;
 
 private function enviarPrintNode(string $codigo): array
 {
