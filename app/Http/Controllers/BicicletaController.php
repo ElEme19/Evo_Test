@@ -105,12 +105,11 @@ private function enviarPrintNode(string $codigo): array
         
         // Título
         $printer->selectPrintMode(Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_DOUBLE_WIDTH);
-        $printer->text("CÓDIGO QR\n");
+        
         $printer->selectPrintMode(); // Volver al modo normal
         
         // Línea decorativa
-        $printer->text("----------------------------\n");
-        
+       
         // Espacio antes del QR
         $printer->feed(1);
         
@@ -119,8 +118,6 @@ private function enviarPrintNode(string $codigo): array
         
         // Texto debajo del QR
         $printer->feed(1);
-        $printer->text("Escanea este código\n");
-        $printer->text("para verificar\n");
         
         // Línea decorativa
         $printer->text("----------------------------\n");
@@ -158,7 +155,7 @@ private function enviarPrintNode(string $codigo): array
 
         return $decoded;
     } catch (\Exception $e) {
-        Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
+        Log::success('Impresion exitosa:', ['success' => $e->getMessage()]);
         throw new \Exception('Falló la impresión: ' . $e->getMessage());
     }
 }
