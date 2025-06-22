@@ -90,17 +90,38 @@ class BicicletaController extends Controller
     /**
      * Envía impresión a PrintNode API
      */
-
 private function enviarPrintNode(string $codigo): array
 {
     try {
-        // Crear contenido ESC/POS con código QR
+        // Crear contenido ESC/POS con código QR mejorado
         $connector = new DummyPrintConnector();
         $printer = new Printer($connector);
 
+        // Configuración inicial
         $printer->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->qrCode($codigo, Printer::QR_ECLEVEL_L, 6, Printer::QR_MODEL_2);
-        $printer->feed(2);
+        
+        // Logo o encabezado (opcional - necesitarías tenerlo en formato ESC/POS)
+        // $printer->graphics(...);
+        
+        // Título
+        $printer->selectPrintMode(Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_DOUBLE_WIDTH);
+        
+        $printer->selectPrintMode(); // Volver al modo normal
+        
+        // Línea decorativa
+       
+        // Espacio antes del QR
+        $printer->feed(1);
+        
+        // Generar QR con mejor tamaño y corrección de errores
+        $printer->qrCode($codigo, Printer::QR_ECLEVEL_H, 8, Printer::QR_MODEL_2);
+         $printer->feed(1);
+        
+        // Mostrar el código de texto también
+        $printer->text("Código: " . $codigo . "\n");
+        
+        // Espacio final y corte
+        $printer->feed(3);
         $printer->cut();
 
         $raw = $connector->getData();
@@ -120,13 +141,31 @@ private function enviarPrintNode(string $codigo): array
             ],
         ]);
 
-        return json_decode((string) $response->getBody(), true);
-    } catch (\Exception $e) {
-        Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
-        throw new \Exception('Falló la impresión: ' . $e->getMessage());
-    }
+        $body = (string) $response->getBody();
+        $decoded = json_decode($body, true);
+if (!is_array($decoded)) {
+    throw new \Exception('Respuesta inesperada de PrintNode: ' . $body);
 }
-public function coloresPorModelo($id_modelo)
+
+// Registrar éxito en el log (forma correcta)
+Log::info('Impresión exitosa', ['codigo' => $codigo, 'response' => $decoded]);
+
+return [
+    'status' => 'success',
+    'message' => '🎉 ¡QR impreso con éxito!',
+    'data' => $decoded,
+    'timestamp' => now()->toDateTimeString()
+];
+} catch (\Exception $e) {
+    Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
+    throw new \Exception('⚠️ Error en impresión: ' . $e->getMessage());
+}
+}
+
+
+
+
+     public function coloresPorModelo($id_modelo)
 {
     try {
         $colores = ColorModelo::where('id_modelo', $id_modelo)
