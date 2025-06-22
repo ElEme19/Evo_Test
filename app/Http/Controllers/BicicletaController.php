@@ -116,11 +116,6 @@ private function enviarPrintNode(string $codigo): array
         // Generar QR con mejor tamaño y corrección de errores
         $printer->qrCode($codigo, Printer::QR_ECLEVEL_H, 8, Printer::QR_MODEL_2);
         
-        // Texto debajo del QR
-        $printer->feed(1);
-        
-        // Línea decorativa
-        $printer->text("----------------------------\n");
         
         // Mostrar el código de texto también
         $printer->text("Código: " . $codigo . "\n");
@@ -148,16 +143,23 @@ private function enviarPrintNode(string $codigo): array
 
         $body = (string) $response->getBody();
         $decoded = json_decode($body, true);
+if (!is_array($decoded)) {
+    throw new \Exception('Respuesta inesperada de PrintNode: ' . $body);
+}
 
-        if (!is_array($decoded)) {
-            throw new \Exception('Respuesta inesperada de PrintNode: ' . $body);
-        }
+// Registrar éxito en el log (forma correcta)
+Log::info('Impresión exitosa', ['codigo' => $codigo, 'response' => $decoded]);
 
-        return $decoded;
-    } catch (\Exception $e) {
-        Log::success('Impresion exitosa:', ['success' => $e->getMessage()]);
-        throw new \Exception('Falló la impresión: ' . $e->getMessage());
-    }
+return [
+    'status' => 'success',
+    'message' => '🎉 ¡QR impreso con éxito!',
+    'data' => $decoded,
+    'timestamp' => now()->toDateTimeString()
+];
+} catch (\Exception $e) {
+    Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
+    throw new \Exception('⚠️ Error en impresión: ' . $e->getMessage());
+}
 }
 
 
