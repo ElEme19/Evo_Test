@@ -109,7 +109,7 @@ class BicicletaController extends Controller
         ]);
 
         $raw  = "Código: {$codigo}\n";
-        $raw .= "\x1dV\x00"; // Comando de corte para la impresora térmica
+        $raw .= "\x1dV\x00"; // Comando de corte
 
         $response = $client->post('printjobs', [
             'json' => [
@@ -121,7 +121,15 @@ class BicicletaController extends Controller
             ],
         ]);
 
-        return json_decode($response->getBody(), true);
+        $body = (string) $response->getBody();
+
+        // Si devuelve un número (ID), lo convertimos a array
+        if (is_numeric($body)) {
+            return ['job_id' => (int)$body];
+        }
+
+        // Si devuelve JSON, lo parseamos
+        return json_decode($body, true) ?? ['respuesta_raw' => $body];
 
     } catch (\Exception $e) {
         \Log::error('Error al imprimir con PrintNode: ' . $e->getMessage());
