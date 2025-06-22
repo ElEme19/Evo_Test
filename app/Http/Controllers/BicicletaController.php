@@ -33,6 +33,19 @@ class BicicletaController extends Controller
         return view('Bicicleta.crear', compact('modelos','colores','lotes','tipos'));
     }
 
+
+    public function coloresPorModelo($id_modelo)
+    {
+        try {
+            $colores = ColorModelo::where('id_modelo', $id_modelo)
+                       ->get(['id_colorM', 'nombre_color']);
+            return response()->json($colores);
+        } catch (\Exception $e) {
+            Log::error('Error al cargar colores:', ['error' => $e->getMessage()]);
+            return response()->json([], 500);
+        }
+    }
+
     /**
      * Guarda la bicicleta y dispara la impresión vía PrintNode.
      */
@@ -83,12 +96,7 @@ class BicicletaController extends Controller
         }
     }
 
-    /**
-     * Envía impresión a PrintNode API
-     */
-   /**
- * Envía impresión de QR a PrintNode API
- */
+   
 private function enviarPrintNode(string $codigo): array
 {
     try {
