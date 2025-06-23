@@ -2,131 +2,94 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Formulario de Emisión - {{ $pedidos->first()->sucursal->nombre ?? 'N/A' }}</title>
+    <title>Pedido #{{ $pedido->id_pedido ?? 'N/A' }}</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             font-size: 12px;
-            margin: 0;
-            padding: 20px;
+            margin: 10px;
+            padding: 0;
             color: #333;
-            line-height: 1.3;
+            line-height: 1.2;
         }
         .header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             border-bottom: 2px solid #2e7d32;
-            padding-bottom: 10px;
+            padding-bottom: 5px;
         }
         .header h1 {
             margin: 0;
-            font-size: 22px;
-            font-weight: bold;
+            font-size: 16px;
             color: #2e7d32;
+            font-weight: bold;
         }
         .header h2 {
-            margin: 5px 0 0 0;
-            font-size: 16px;
+            margin: 2px 0 0 0;
+            font-size: 13px;
             font-weight: normal;
-            color: #555;
-        }
-        .header .subtitle {
-            font-size: 12px;
-            color: #2e7d32;
-            font-weight: bold;
-            margin-top: 5px;
         }
         
-        .info-top {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-bottom: 8px;
         }
         .info-item {
-            margin: 0 10px 5px 0;
-            min-width: 150px;
+            margin-bottom: 3px;
         }
         .info-item strong {
-            display: block;
-            font-weight: bold;
             color: #2e7d32;
-        }
-        .info-item span {
-            display: inline-block;
-            margin-top: 3px;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 10px 0 20px 0;
+            margin: 8px 0 12px 0;
+            font-size: 11px;
         }
         th {
             background-color: #e8f5e9;
             border: 1px solid #ddd;
-            padding: 8px 5px;
+            padding: 4px 5px;
             text-align: left;
-            font-weight: bold;
-            color: #1b5e20;
         }
         td {
             border: 1px solid #ddd;
-            padding: 6px 5px;
-            vertical-align: top;
+            padding: 4px 5px;
         }
-        tr:nth-child(even) {
-            background-color: #f5f5f5;
-        }
-        .text-center {
-            text-align: center;
-        }
-        .text-right {
-            text-align: right;
+        .total-row {
+            background-color: #e8f5e9;
+            font-weight: bold;
         }
         
-        .footer-section {
-            margin-top: 25px;
-            font-size: 11px;
-            padding: 10px;
-            background-color: #f1f8e9;
-            border-radius: 4px;
-        }
-        .signature-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
+        .signature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            font-size: 10px;
         }
         .signature-box {
-            width: 200px;
-            border-top: 1px solid #2e7d32;
-            padding-top: 5px;
-            margin-top: 50px;
+            border-top: 1px solid #000;
+            padding-top: 3px;
             text-align: center;
-            color: #2e7d32;
-            font-weight: bold;
         }
-        .notes {
-            margin-top: 20px;
-            font-style: italic;
-            padding: 10px;
-            background-color: #f1f8e9;
-            border-left: 3px solid #2e7d32;
+        
+        .footer {
+            margin-top: 12px;
+            font-size: 9px;
+            text-align: center;
+            color: #666;
         }
         .warning {
-            margin-top: 15px;
-            font-size: 11px;
+            margin-top: 8px;
+            padding: 4px;
+            font-size: 9px;
             color: #d32f2f;
-            font-weight: bold;
-            padding: 8px;
             border: 1px solid #ffcdd2;
             background-color: #ffebee;
-        }
-        .highlight {
-            background-color: #c8e6c9;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -135,104 +98,60 @@
     <div class="header">
         <h1>EVOBIKE S.A DE C.V</h1>
         <h2>Formulario de Emisión de Fábrica</h2>
-        <div class="subtitle">SISTEMA DE GESTIÓN DE PEDIDOS</div>
     </div>
 
-    <div class="info-top">
-        <div class="info-item">
-            <strong>Fecha:</strong> 
-            <span>{{ now()->format('d/m/Y') }}</span>
-        </div>
-        <div class="info-item">
-            <strong>Código:</strong> 
-            <span>{{ $pedidos->first()->id_pedido ?? 'N/A' }}</span>
-        </div>
-        <div class="info-item">
-            <strong>Cliente:</strong> 
-            <span>{{ $pedidos->first()->sucursal->nombre ?? 'Sucursal N/D' }}</span>
-        </div>
-        <div class="info-item">
-            <strong>Distancia:</strong> 
-            <span>{{ $pedidos->first()->distancia ?? 'N/A' }} KM</span>
-        </div>
-        <div class="info-item">
-            <strong>Transporte:</strong> 
-            <span>{{ $pedidos->first()->transporte ?? 'Evobike' }}</span>
-        </div>
-        <div class="info-item">
-            <strong>Costo Envío:</strong> 
-            <span>{{ $pedidos->first()->costo_envio ?? 'N/A' }}</span>
-        </div>
+    <div class="info-grid">
+        <div class="info-item"><strong>Fecha:</strong> {{ now()->format('d/m/Y H:i') }}</div>
+        <div class="info-item"><strong>Pedido #:</strong> {{ $pedido->id_pedido ?? 'N/A' }}</div>
+        <div class="info-item"><strong>Sucursal:</strong> {{ $pedido->sucursal->nombre_sucursal ?? 'N/D' }}</div>
+        <div class="info-item"><strong>Transporte:</strong> {{ $pedido->transporte ?? 'Evobike' }}</div>
+        <div class="info-item"><strong>Responsable:</strong> {{ $pedido->responsable ?? 'N/A' }}</div>
+        <div class="info-item"><strong>Teléfono:</strong> {{ $pedido->telefono_chofer ?? 'N/A' }}</div>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th style="width: 5%;">#</th>
-                <th style="width: 15%;">Modelo</th>
-                <th style="width: 15%;">Color</th>
-                <th style="width: 8%;">Cantidad</th>
-                <th style="width: 25%;">Número de serie</th>
-                <th style="width: 32%;">Observación</th>
+                <th style="width:5%">#</th>
+                <th style="width:25%">N° Serie</th>
+                <th style="width:25%">Modelo</th>
+                <th style="width:20%">Color</th>
+                <th style="width:25%">Especificaciones</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($pedidos as $index => $pedido)
+            @foreach($pedido->bicicletas as $index => $bicicleta)
             <tr>
-                <td class="text-center">{{ $index + 1 }}</td>
-                <td>{{ $pedido->bicicleta->modelo->nombre_modelo ?? 'N/D' }}</td>
-                <td>{{ $pedido->bicicleta->color->nombre_color ?? 'N/D' }}</td>
-                <td class="text-center">1</td>
-                <td>{{ $pedido->num_chasis }}</td>
+                <td>{{ $index + 1 }}</td>
+                <td>{{ $bicicleta->num_chasis }}</td>
+                <td>{{ $bicicleta->modelo->nombre_modelo ?? 'N/D' }}</td>
+                <td>{{ $bicicleta->color->nombre_color ?? 'N/D' }}</td>
                 <td>
-                    @if($pedido->bicicleta->voltaje)
-                        {{ $pedido->bicicleta->voltaje }}
-                    @endif
-                    {{ $pedido->bicicleta->observaciones ?? '' }}
+                    {{ $bicicleta->voltaje ?? '' }}
+                    {{ $bicicleta->observaciones ?? '' }}
                 </td>
             </tr>
             @endforeach
-            <tr class="highlight">
-                <td colspan="3" class="text-right"><strong>TOTAL DE BICICLETAS:</strong></td>
-                <td class="text-center"><strong>{{ $pedidos->count() }}</strong></td>
-                <td colspan="2"></td>
+            <tr class="total-row">
+                <td colspan="4"><strong>TOTAL BICICLETAS</strong></td>
+                <td><strong>{{ count($pedido->bicicletas) }}</strong></td>
             </tr>
         </tbody>
     </table>
 
-    <div class="footer-section">
-        <p>Este pedido es por duplicado, uno se enviará al destino con la mercancía, otro se guardará en fábrica y el archivo electrónico se enviará al departamento comercial.</p>
+    <div class="signature-grid">
+        <div class="signature-box">Responsable de fábrica</div>
+        <div class="signature-box">Inspector de calidad</div>
+        <div class="signature-box">Chofer/Transportista</div>
     </div>
 
-    <div class="signature-container">
-        <div class="signature-box">
-            Sello o firma del responsable de fábrica:
-        </div>
-        <div class="signature-box">
-            Firma del inspector de calidad:
-        </div>
-        <div class="signature-box">
-            Firma del chofer:<br>
-            Teléfono chofer: {{ $pedidos->first()->telefono_chofer ?? 'N/A' }}
-        </div>
-    </div>
-
-    <div class="footer-section">
-        <p><strong>Recibo de Emisión</strong></p>
-        <p>Verificación de orden de emisión: ☐ Verificado ☐ Error de verificación</p>
-    </div>
-
-    <div class="signature-box" style="width: 100%;">
-        Firma del responsable de la tienda (el recibo se recibirá tras confirmar el pedido):
-    </div>
-
-    <div class="notes">
-        <p><strong>Observación:</strong></p>
-        <p>Para cualquier aclaración o informe de daños comuníquese al siguiente número: {{ $pedidos->first()->telefono_contacto ?? '56 4899 6759' }}</p>
+    <div class="footer">
+        <p>Documento generado automáticamente el {{ now()->format('d/m/Y H:i') }}</p>
+        <p>Contacto: {{ $pedido->sucursal->telefono ?? '56 4899 6759' }}</p>
     </div>
 
     <div class="warning">
-        <p>El pedido deberá ser supervisado por el cliente, una vez firmado este documento la empresa no se hace responsable.</p>
+        El pedido debe ser verificado antes de firmar. EVOBIKE no se hace responsable por daños después de la firma.
     </div>
 
 </body>
