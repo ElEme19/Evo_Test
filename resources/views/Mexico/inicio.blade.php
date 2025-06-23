@@ -7,7 +7,7 @@
 
 <div class="container">
     @if($user)
-        <h1 class="mt-5 text-center">{{ $user->tipo_dia }}!, {{ $user->user_name }}  </h1>
+        <h1 class="mt-5 text-center">{{ $user->tipo_dia }}!, {{ $user->nombre_user }}  </h1>
         
 
         <div class="row justify-content-center mt-5">

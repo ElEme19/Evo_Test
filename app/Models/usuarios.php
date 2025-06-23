@@ -18,6 +18,8 @@ class usuarios extends Model implements Authenticatable
         'user_name',
         'user_pass',
         'user_tipo',
+        'nombre_user',
+        
     ];
 
     protected $hidden = [
