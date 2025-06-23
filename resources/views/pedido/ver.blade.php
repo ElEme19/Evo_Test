@@ -102,14 +102,17 @@
                                         </td>
                                         <td class="text-center">
                                             <span class="badge bg-primary rounded-pill">
-                                                {{ \App\Models\Pedidos::where('id_pedido', $pedidoGroup->id_pedido)->count() }}
+                                                {{ $pedidoGroup->bicicletas->count() ?? 0 }}
                                             </span>
                                         </td>
                                         <td class="text-nowrap">
                                             <i class="bi bi-calendar-event me-1 text-muted"></i>
                                             {{ $pedidoGroup->fecha_envio->format('d/m/Y') }}
                                             <br>
-                                            
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock me-1"></i>
+                                                {{ $pedidoGroup->fecha_envio->format('H:i') }}
+                                            </small>
                                         </td>
                                         <td class="text-end">
                                             <a href="{{ route('pedido.pdf', $pedidoGroup->id_pedido) }}" 
