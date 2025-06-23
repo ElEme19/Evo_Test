@@ -88,4 +88,19 @@ class PedidosController extends Controller
         $pdf = Pdf::loadView('pedido.pdf', compact('pedido'));
         return $pdf->download("Pedido_{$id_pedido}.pdf");
     }
+
+    public function buscar(Request $request)
+{
+    $termino = $request->input('q');
+
+    $pedidos = Pedidos::with(['sucursal', 'bicicletas'])
+        ->where('id_pedido', 'LIKE', "%$termino%")
+        ->orWhereHas('sucursal', function ($query) use ($termino) {
+            $query->where('nombre_sucursal', 'LIKE', "%$termino%");
+        })
+        ->orderBy('fecha_envio', 'desc')
+        ->paginate(10);
+
+    return view('pedido.ver', compact('pedidos'))->with('busqueda', $termino);
+}
 }

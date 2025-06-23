@@ -2,41 +2,28 @@
 
 @section('conten-wrapper')
 <style>
-    /* Reduce paddings verticales en la tabla para filas compactas */
     .table > :not(caption) > * > * {
         padding-top: 0.25rem !important;
         padding-bottom: 0.25rem !important;
     }
-
-    /* Reduce margen inferior de encabezados para que queden más juntos */
     thead th {
         padding-top: 0.25rem !important;
         padding-bottom: 0.25rem !important;
     }
-
-    /* Reduce margen de títulos dentro del header */
     header.d-flex h1.h3 {
         margin-bottom: 0.25rem !important;
     }
-
-    /* Reduce margen de alertas */
     .alert-container {
         margin-bottom: 0.75rem !important;
     }
-
-    /* Reduce padding en la card-header */
     .card-header {
         padding-top: 0.5rem !important;
         padding-bottom: 0.5rem !important;
     }
-
-    /* Reduce padding en el card-footer */
     .card-footer {
         padding-top: 0.5rem !important;
         padding-bottom: 0.5rem !important;
     }
-
-    /* Reduce espacio entre líneas para que texto se vea más compacto */
     .table-hover tbody tr {
         line-height: 1.1 !important;
     }
@@ -46,18 +33,36 @@
     <div class="row justify-content-center">
         <div class="col-12 col-xl-10">
 
-            <!-- Encabezado con título y botón -->
+            <!-- Encabezado con título y botones -->
             <header class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
                 <h1 class="h3 mb-0 text-success fw-bold">
                     <i class="bi bi-truck me-2"></i>Gestión de Pedidos
                 </h1>
-                <a href="{#}" class="btn btn-success shadow-sm">
-                    <i class="bi bi-plus-circle me-2"></i>Buscar Pedido
-                </a>
-                <a href="{{ route('pedido.crear') }}" class="btn btn-success shadow-sm">
-                    <i class="bi bi-plus-circle me-2"></i>Nuevo Pedido
-                </a>
+
+                <div class="d-flex gap-2 flex-wrap align-items-center">
+                    <form action="{{ route('pedido.buscar') }}" method="GET" class="d-flex gap-2 align-items-center flex-wrap">
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="🔍 Buscar pedido o sucursal"
+                               class="form-control form-control-sm rounded-pill shadow-sm"
+                               style="max-width: 230px;">
+                        <button type="submit" class="btn btn-outline-success btn-sm rounded-pill shadow-sm">
+                            <i class="bi bi-search-heart-fill me-1"></i>Buscar
+                        </button>
+                    </form>
+
+                    <a href="{{ route('pedido.crear') }}" class="btn btn-success shadow-sm">
+                        <i class="bi bi-plus-circle me-2"></i>Nuevo Pedido
+                    </a>
+                </div>
             </header>
+
+            <!-- Mensaje de búsqueda -->
+            @if(isset($busqueda) && $busqueda)
+                <div class="alert alert-info alert-dismissible fade show mt-1" role="alert">
+                    <i class="bi bi-search me-2"></i>Mostrando resultados para: <strong>{{ $busqueda }}</strong>
+                    <a href="{{ route('pedido.ver') }}" class="btn btn-sm btn-link">Limpiar</a>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            @endif
 
             <!-- Alertas -->
             <div class="alert-container mb-4">
@@ -75,7 +80,7 @@
                 @endif
             </div>
 
-            <!-- Tarjeta de tabla -->
+            <!-- Tabla de pedidos -->
             <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
                 <div class="card-header bg-white py-3 border-bottom">
                     <h2 class="h6 mb-0 text-secondary">
@@ -111,8 +116,6 @@
                                         <td class="text-nowrap">
                                             <i class="bi bi-calendar-event me-1 text-muted"></i>
                                             {{ $pedidoGroup->fecha_envio->format('d/m/Y') }}
-                                            <br>
-                                            
                                         </td>
                                         <td class="text-end">
                                             <a href="{{ route('pedido.pdf', $pedidoGroup->id_pedido) }}" 
@@ -141,7 +144,6 @@
                     </div>
                 </div>
                 
-                <!-- Pie de tabla con paginación -->
                 @if($pedidos->hasPages())
                 <div class="card-footer bg-white py-3">
                     <div class="d-flex justify-content-center">

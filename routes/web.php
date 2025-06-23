@@ -138,6 +138,9 @@ Route::get('/pedido/ver', [PedidosController::class, 'index'])->name('pedido.ver
 Route::get('/pedido/crear', [PedidosController::class, 'crear'])->name('pedido.crear');
 Route::post('/pedido/store', [PedidosController::class, 'store'])->name('pedido.store');
 Route::get('/pedido/pdf/{id_pedido}', [PedidosController::class, 'generarPDF'])->name('pedido.pdf');
+Route::get('/pedido/buscar', [PedidosController::class, 'buscar'])->name('pedido.buscar');
+
+
 });
 
 
