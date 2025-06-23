@@ -35,43 +35,57 @@ class PedidosController extends Controller
 
     // Guardar pedido con bicicletas (JSON)
     public function store(Request $request)
-    {
-        $request->validate([
-            'id_sucursal' => 'required|exists:sucursales,id_sucursal',
-            'bicis_json' => 'required|json',
-        ]);
+{
+    $request->validate([
+        'id_sucursal' => 'required|exists:sucursales,id_sucursal',
+        'bicis_json' => 'required|json',
+    ]);
 
-        $bicis = json_decode($request->bicis_json, true);
+    $bicis = json_decode($request->bicis_json, true);
 
-        if (empty($bicis)) {
-            return back()->with('error', 'No se han agregado bicicletas al pedido.');
-        }
-
-        // Generar ID incremental
-       $ultimo = Pedidos::orderBy('id_pedido', 'desc')->first();
-$nuevoId = 'PED001';
-
-if ($ultimo && preg_match('/^PED(\d+)$/', $ultimo->id_pedido, $match)) {
-    $numero = (int)$match[1] + 1;
-    $nuevoId = 'PED' . str_pad($numero, 3, '0', STR_PAD_LEFT);
-}
-        foreach ($bicis as $bici) {
-            Pedidos::create([
-                'id_pedido' => $nuevoId,
-                'id_sucursal' => $request->id_sucursal,
-                'num_chasis' => $bici['num_chasis'],
-                'fecha_envio' => now(),
-            ]);
-        }
-
-        return redirect()->route('pedido.pdf', $nuevoId);
+    if (empty($bicis)) {
+        return back()->with('error', 'No se han agregado bicicletas al pedido.');
     }
+
+    // Generar ID incremental del pedido
+    $ultimo = Pedidos::orderBy('id_pedido', 'desc')->first();
+    $nuevoId = 'PED001';
+
+    if ($ultimo && preg_match('/^PED(\d+)$/', $ultimo->id_pedido, $match)) {
+        $numero = (int)$match[1] + 1;
+        $nuevoId = 'PED' . str_pad($numero, 3, '0', STR_PAD_LEFT);
+    }
+
+    // Crear un solo pedido
+    $pedido = Pedidos::create([
+        'id_pedido' => $nuevoId,
+        'id_sucursal' => $request->id_sucursal,
+        'num_chasis' => null, // opcional: ya no lo necesitas aquí
+        'fecha_envio' => now(),
+    ]);
+
+    // Actualizar cada bicicleta con el ID del pedido
+    foreach ($bicis as $bici) {
+        Bicicleta::where('num_chasis', $bici['num_chasis'])->update([
+            'id_pedido' => $nuevoId
+        ]);
+    }
+
+    return redirect()->route('pedido.pdf', $nuevoId);
+}
 
     // Generar PDF del pedido
     public function generarPDF($id_pedido)
-    {
-        $pedidos = Pedidos::with(['sucursal', 'bicicleta'])->where('id_pedido', $id_pedido)->get();
-        $pdf = Pdf::loadView('pedido.pdf', compact('pedidos'));
-        return $pdf->download("Pedido_{$id_pedido}.pdf");
-    }
+{
+    $pedido = Pedidos::with([
+        'sucursal',
+        'bicicletas.modelo',
+        'bicicletas.color',
+    ])->where('id_pedido', $id_pedido)->firstOrFail();
+
+    $pdf = Pdf::loadView('pedido.pdf', compact('pedido'));
+    return $pdf->download("Pedido_{$id_pedido}.pdf");
+}
+
+
 }

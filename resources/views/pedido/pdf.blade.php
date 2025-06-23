@@ -121,17 +121,18 @@
         </thead>
         <tbody>
             @foreach($pedido->bicicletas as $index => $bicicleta)
-            <tr>
-                <td>{{ $index + 1 }}</td>
-                <td>{{ $bicicleta->num_chasis }}</td>
-                <td>{{ $bicicleta->modelo->nombre_modelo ?? 'N/D' }}</td>
-                <td>{{ $bicicleta->color->nombre_color ?? 'N/D' }}</td>
-                <td>
-                    {{ $bicicleta->voltaje ?? '' }}
-                    {{ $bicicleta->observaciones ?? '' }}
-                </td>
-            </tr>
-            @endforeach
+    <tr>
+        <td>{{ $index + 1 }}</td>
+        <td>{{ $bicicleta->num_chasis }}</td>
+        <td>{{ $bicicleta->modelo->nombre_modelo ?? 'N/D' }}</td>
+        <td>{{ $bicicleta->color->nombre_color ?? 'N/D' }}</td>
+        <td>
+            {{ $bicicleta->voltaje ?? '' }}
+            {{ $bicicleta->observaciones ?? '' }}
+        </td>
+    </tr>
+@endforeach
+
             <tr class="total-row">
                 <td colspan="4"><strong>TOTAL BICICLETAS</strong></td>
                 <td><strong>{{ count($pedido->bicicletas) }}</strong></td>

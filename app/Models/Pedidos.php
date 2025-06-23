@@ -34,8 +34,9 @@ protected $casts = [
     }
 
     // Relación: un pedido tiene una bicicleta (por su número de chasis)
-    public function bicicleta()
-    {
-        return $this->belongsTo(Bicicleta::class, 'num_chasis', 'num_chasis');
-    }
+    public function bicicletas()
+{
+    return $this->hasMany(Bicicleta::class, 'id_pedido', 'id_pedido');
+}
+
 }

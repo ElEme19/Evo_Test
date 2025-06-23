@@ -45,4 +45,10 @@ class Bicicleta extends Model
     {
         return $this->belongsTo(TipoStock::class, 'id_tipoStock', 'id_tipoStock');
     }
+
+    public function pedido()
+{
+    return $this->belongsTo(Pedidos::class, 'id_pedido', 'id_pedido');
+}
+
 }
