@@ -1,73 +1,119 @@
 @extends('layout.app')
 
 @section('conten')
+<div class="container px-0 px-md-3 py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8">
 
-<div class="container mt-4">
-    <h3 class="text-center mb-3">
-        Crear Nuevo Pedido
-        <span class="badge bg-success">Nuevo</span>
-    </h3>
+            <!-- Encabezado -->
+            <header class="text-center mb-4">
+                <h1 class="h3 fw-bold text-primary">
+                    <i class="bi bi-cart-plus me-2"></i>Nuevo Pedido
+                </h1>
+                <div class="badge bg-primary bg-opacity-10 text-primary fs-6 fw-normal px-3 py-2">
+                    <i class="bi bi-info-circle me-1"></i>Escanea las bicicletas para el pedido
+                </div>
+            </header>
 
-    @if(session('error'))
-        <div class="alert alert-danger text-center">{{ session('error') }}</div>
-    @endif
+            <!-- Alertas -->
+            <div class="alert-container mb-4">
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+            </div>
 
-    @if(session('success'))
-        <div class="alert alert-success text-center">{{ session('success') }}</div>
-    @endif
+            <!-- Formulario -->
+            <form method="POST" action="{{ route('pedido.store') }}" id="formPedido" class="bg-white p-4 rounded-3 shadow-sm">
+                @csrf
 
-    <form method="POST" action="{{ route('pedido.store') }}" id="formPedido">
-        @csrf
+                <!-- Selección de Sucursal -->
+                <div class="mb-4">
+                    <label for="id_sucursal" class="form-label fw-semibold">
+                        <i class="bi bi-shop me-1"></i>Sucursal Destino
+                    </label>
+                    <select name="id_sucursal" id="id_sucursal" class="form-select form-select-lg" required>
+                        <option value="" selected disabled>Seleccione una sucursal</option>
+                        @foreach($sucursales as $sucursal)
+                            <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre_sucursal }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-        <div class="mb-3">
-            <label for="id_sucursal" class="form-label">Sucursal</label>
-            <select name="id_sucursal" id="id_sucursal" class="form-select" required>
-                <option value="">Seleccione una sucursal</option>
-                @foreach($sucursales as $sucursal)
-                    <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre_sucursal }}</option>
-                @endforeach
-            </select>
+                <!-- Escáner de Bicicletas -->
+                <div class="mb-4">
+                    <label for="num_chasis" class="form-label fw-semibold">
+                        <i class="bi bi-upc-scan me-1"></i>Escanea Bicicleta
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" id="num_chasis" class="form-control form-control-lg" 
+                               autocomplete="off" 
+                               placeholder="N° de Serie completo o últimos 4 dígitos"
+                               disabled>
+                    </div>
+                    <small class="text-muted">Presiona Enter después de escanear/escribir</small>
+                </div>
+
+                <!-- Tabla de Bicicletas -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h6 fw-semibold text-muted mb-0">
+                            <i class="bi bi-bicycle me-2"></i>Bicicletas en el pedido
+                        </h2>
+                        <span class="badge bg-primary rounded-pill fs-6" id="contadorBicis">0</span>
+                    </div>
+                    
+                    <div class="table-responsive rounded-3 border">
+                        <table class="table table-hover align-middle mb-0" id="tablaBicicletas">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th width="50px">#</th>
+                                    <th>N° Serie</th>
+                                    <th>Modelo</th>
+                                    <th>Color</th>
+                                    <th width="100px" class="text-end">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Botón de Envío -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg px-4 py-2 shadow-sm" id="btnFinalizar" disabled>
+                        <i class="bi bi-check-circle me-2"></i>Finalizar Pedido
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <div class="mb-3">
-            <label for="num_chasis" class="form-label">Escanea Bicicleta (N° de Serie o últimos 4 dígitos)</label>
-            <input type="text" id="num_chasis" class="form-control" autocomplete="off" placeholder="Escanea o escribe el número de serie o últimos 4 dígitos" disabled>
-        </div>
-
-        <div class="table-responsive mb-3">
-            <table class="table table-bordered text-center align-middle" id="tablaBicicletas">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Número de Serie</th>
-                        <th>Modelo</th>
-                        <th>Color</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-        <div class="text-center">
-            <button type="submit" class="btn btn-success" id="btnFinalizar" disabled>Finalizar Pedido</button>
-        </div>
-    </form>
+    </div>
 </div>
 
-<div class="modal fade" id="modalResultadoBusqueda" tabindex="-1" aria-labelledby="modalResultadoBusquedaLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalResultadoBusquedaLabel">Resultado de la búsqueda</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body" id="modalBodyMensaje"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-      </div>
+<!-- Modal de Resultados -->
+<div class="modal fade" id="modalResultadoBusqueda" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title">
+                    <i class="bi bi-search me-2"></i>Resultado de búsqueda
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body py-4" id="modalBodyMensaje"></div>
+        </div>
     </div>
-  </div>
 </div>
 
 <script>
@@ -79,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalBody = document.getElementById('modalBodyMensaje');
     const btnFinalizar = document.getElementById('btnFinalizar');
     const formPedido = document.getElementById('formPedido');
+    const contadorBicis = document.getElementById('contadorBicis');
 
     let listaBicis = [];
 
@@ -98,22 +145,18 @@ document.addEventListener('DOMContentLoaded', () => {
     numChasisInput.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            const valor = numChasisInput.value.trim().toUpperCase();
-            if (!valor) return;
-
-            if (listaBicis.some(b => b.num_chasis.toUpperCase() === valor)) {
-                mostrarModal('Esta bicicleta ya fue agregada al pedido.', 'warning');
-                numChasisInput.value = '';
-                return;
-            }
-
-            if (valor.length === 4 || valor.length === 17) {
-                await buscarBicicleta(valor);
-            }
+            await procesarBusqueda();
         }
     });
 
     numChasisInput.addEventListener('input', async () => {
+        const valor = numChasisInput.value.trim().toUpperCase();
+        if (valor.length === 4 || valor.length === 17) {
+            await procesarBusqueda();
+        }
+    });
+
+    async function procesarBusqueda() {
         const valor = numChasisInput.value.trim().toUpperCase();
         if (!valor) return;
 
@@ -123,16 +166,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (valor.length === 4 || valor.length === 17) {
-            await buscarBicicleta(valor);
-        }
-    });
+        await buscarBicicleta(valor);
+    }
 
     function renderizarTabla() {
         tabla.innerHTML = '';
         const repeticiones = {};
 
-        // contar repeticiones
+        // Contar repeticiones
         listaBicis.forEach(b => {
             const key = b.num_chasis.toUpperCase();
             repeticiones[key] = (repeticiones[key] || 0) + 1;
@@ -146,14 +187,23 @@ document.addEventListener('DOMContentLoaded', () => {
             tr.className = claseRoja;
             tr.innerHTML = `
                 <td>${i + 1}</td>
-                <td>${bici.num_chasis}</td>
+                <td class="fw-semibold">${bici.num_chasis}</td>
                 <td>${bici.modelo}</td>
-                <td>${bici.color}</td>
-                <td><button type="button" class="btn btn-sm btn-danger" onclick="quitarBici('${bici.num_chasis}')">Quitar</button></td>
+                <td>
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary">${bici.color}</span>
+                </td>
+                <td class="text-end">
+                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" 
+                            onclick="quitarBici('${bici.num_chasis}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
             `;
             tabla.appendChild(tr);
         });
+        
         btnFinalizar.disabled = listaBicis.length === 0;
+        contadorBicis.textContent = listaBicis.length;
     }
 
     window.quitarBici = function(num_chasis) {
@@ -162,77 +212,84 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     async function buscarBicicleta(numSerie) {
-    try {
-        const url = numSerie.length === 4 
-            ? `/Bicicleta/buscar-por-ultimos4?ult4=${encodeURIComponent(numSerie)}`
-            : `/Bicicleta/buscarC?num_chasis=${encodeURIComponent(numSerie)}`;
+        try {
+            const url = numSerie.length === 4 
+                ? `/Bicicleta/buscar-por-ultimos4?ult4=${encodeURIComponent(numSerie)}`
+                : `/Bicicleta/buscarC?num_chasis=${encodeURIComponent(numSerie)}`;
 
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Error en la respuesta del servidor');
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Error en la respuesta del servidor');
 
-        const data = await res.json();
-        const biciData = data.bicicleta || data.bici;
+            const data = await res.json();
+            const biciData = data.bicicleta || data.bici;
 
-        if (!biciData || !biciData.num_chasis) {
-            mostrarModal('No se encontró ninguna bicicleta con ese número', 'error');
-            return;
-        }
-
-        // Verifica si ya tiene pedido asociado
-        if (biciData.pedido_asociado) {
-            mostrarModal('Esta bicicleta ya tiene un pedido registrado y no puede agregarse.', 'warning');
-            numChasisInput.value = '';
-            return;
-        }
-
-        // Verifica duplicados con num_chasis completo
-        const yaExiste = listaBicis.some(b => b.num_chasis.toUpperCase() === biciData.num_chasis.toUpperCase());
-        if (yaExiste) {
-            mostrarModal('Esta bicicleta ya fue agregada al pedido.', 'warning');
-            numChasisInput.value = '';
-            return;
-        }
-
-        const modelo = biciData.modelo?.nombre_modelo || biciData.modelo || 'N/D';
-        const color = biciData.color?.nombre_color || biciData.color || 'N/D';
-
-        modalBody.innerHTML = `
-            <div class="alert alert-success">
-                <strong>Bicicleta encontrada:</strong>
-                <ul class="mt-2 mb-3">
-                    <li><strong>N° Serie:</strong> ${biciData.num_chasis}</li>
-                    <li><strong>Modelo:</strong> ${modelo}</li>
-                    <li><strong>Color:</strong> ${color}</li>
-                </ul>
-            </div>
-            <div class="text-center">
-                <button id="confirmAdd" class="btn btn-success me-2">Agregar</button>
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            </div>
-        `;
-
-        modal.show();
-
-        setTimeout(() => {
-            const btn = document.getElementById('confirmAdd');
-            if (btn) {
-                btn.onclick = () => {
-                    agregarBicicleta({
-                        num_chasis: biciData.num_chasis,
-                        modelo: modelo,
-                        color: color
-                    });
-                    modal.hide();
-                };
+            if (!biciData || !biciData.num_chasis) {
+                mostrarModal('No se encontró ninguna bicicleta con ese número', 'error');
+                return;
             }
-        }, 0);
 
-    } catch (error) {
-        console.error('Error:', error);
-        mostrarModal('Error al buscar la bicicleta: ' + error.message, 'error');
+            // Verificar si ya tiene pedido asociado
+            if (biciData.pedido_asociado) {
+                mostrarModal('Esta bicicleta ya tiene un pedido registrado y no puede agregarse.', 'warning');
+                numChasisInput.value = '';
+                return;
+            }
+
+            // Verificar duplicados
+            const yaExiste = listaBicis.some(b => b.num_chasis.toUpperCase() === biciData.num_chasis.toUpperCase());
+            if (yaExiste) {
+                mostrarModal('Esta bicicleta ya fue agregada al pedido.', 'warning');
+                numChasisInput.value = '';
+                return;
+            }
+
+            const modelo = biciData.modelo?.nombre_modelo || biciData.modelo || 'N/D';
+            const color = biciData.color?.nombre_color || biciData.color || 'N/D';
+
+            modalBody.innerHTML = `
+                <div class="alert alert-success mb-0">
+                    <div class="d-flex">
+                        <i class="bi bi-check-circle-fill fs-3 me-3"></i>
+                        <div>
+                            <h5 class="alert-heading">¡Bicicleta encontrada!</h5>
+                            <hr>
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <span class="fw-semibold">N° Serie:</span> 
+                                    <span class="badge bg-success bg-opacity-10 text-success">${biciData.num_chasis}</span>
+                                </div>
+                                <div class="col-12">
+                                    <span class="fw-semibold">Modelo:</span> ${modelo}
+                                </div>
+                                <div class="col-12">
+                                    <span class="fw-semibold">Color:</span> ${color}
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2 mt-3">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button id="confirmAdd" class="btn btn-success">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            modal.show();
+
+            document.getElementById('confirmAdd').onclick = () => {
+                agregarBicicleta({
+                    num_chasis: biciData.num_chasis,
+                    modelo: modelo,
+                    color: color
+                });
+                modal.hide();
+            };
+
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarModal('Error al buscar la bicicleta: ' + error.message, 'error');
+        }
     }
-}
-
 
     function agregarBicicleta(bici) {
         listaBicis.push(bici);
@@ -248,7 +305,15 @@ document.addEventListener('DOMContentLoaded', () => {
             'success': 'alert-success',
             'info': 'alert-info'
         }[tipo];
-        modalBody.innerHTML = `<div class="alert ${alertClass} mb-0">${mensaje}</div>`;
+        modalBody.innerHTML = `
+            <div class="alert ${alertClass} mb-0">
+                <i class="bi ${tipo === 'error' ? 'bi-exclamation-octagon-fill' : 
+                              tipo === 'warning' ? 'bi-exclamation-triangle-fill' : 
+                              tipo === 'success' ? 'bi-check-circle-fill' : 'bi-info-circle-fill'} 
+                    me-2"></i>
+                ${mensaje}
+            </div>
+        `;
         modal.show();
     }
 
@@ -269,6 +334,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
-
-
 @endsection
