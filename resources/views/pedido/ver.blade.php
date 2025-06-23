@@ -1,6 +1,47 @@
 @extends('layout.app')
 
 @section('conten-wrapper')
+<style>
+    /* Reduce paddings verticales en la tabla para filas compactas */
+    .table > :not(caption) > * > * {
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.25rem !important;
+    }
+
+    /* Reduce margen inferior de encabezados para que queden más juntos */
+    thead th {
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.25rem !important;
+    }
+
+    /* Reduce margen de títulos dentro del header */
+    header.d-flex h1.h3 {
+        margin-bottom: 0.25rem !important;
+    }
+
+    /* Reduce margen de alertas */
+    .alert-container {
+        margin-bottom: 0.75rem !important;
+    }
+
+    /* Reduce padding en la card-header */
+    .card-header {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    /* Reduce padding en el card-footer */
+    .card-footer {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    /* Reduce espacio entre líneas para que texto se vea más compacto */
+    .table-hover tbody tr {
+        line-height: 1.1 !important;
+    }
+</style>
+
 <div class="container px-0 px-md-3 mt-4">
     <div class="row justify-content-center">
         <div class="col-12 col-xl-10">
