@@ -1,16 +1,16 @@
 @extends('layout.app')
 
 @section('conten')
-<div class="container px-0 px-md-3 py-4">
+<div class="container-fluid px-0 px-md-3 py-4">
     <div class="row justify-content-center">
-        <div class="col-12 col-lg-10 col-xl-8">
+        <div class="col-12 col-md-10 col-lg-8 col-xl-6">
 
             <!-- Encabezado -->
             <header class="text-center mb-4">
                 <h1 class="h3 fw-bold text-success">
                     <i class="bi bi-cart-plus me-2"></i>Nuevo Pedido
                 </h1>
-                <div class="badge bg-success bg-opacity-10 text-success fs-6 fw-normal px-3 py-2">
+                <div class="badge bg-success bg-opacity-10 text-dark fs-6 fw-normal px-3 py-2">
                     <i class="bi bi-info-circle me-1"></i>Escanea las bicicletas para el pedido
                 </div>
             </header>
@@ -173,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
         tabla.innerHTML = '';
         const repeticiones = {};
 
-        // Contar repeticiones
         listaBicis.forEach(b => {
             const key = b.num_chasis.toUpperCase();
             repeticiones[key] = (repeticiones[key] || 0) + 1;
@@ -228,17 +227,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Verificar si ya tiene pedido asociado
             if (biciData.pedido_asociado) {
                 mostrarModal('Esta bicicleta ya tiene un pedido registrado y no puede agregarse.', 'warning');
-                numChasisInput.value = '';
-                return;
-            }
-
-            // Verificar duplicados
-            const yaExiste = listaBicis.some(b => b.num_chasis.toUpperCase() === biciData.num_chasis.toUpperCase());
-            if (yaExiste) {
-                mostrarModal('Esta bicicleta ya fue agregada al pedido.', 'warning');
                 numChasisInput.value = '';
                 return;
             }
@@ -307,10 +297,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }[tipo];
         modalBody.innerHTML = `
             <div class="alert ${alertClass} mb-0">
-                <i class="bi ${tipo === 'error' ? 'bi-exclamation-octagon-fill' : 
-                              tipo === 'warning' ? 'bi-exclamation-triangle-fill' : 
-                              tipo === 'success' ? 'bi-check-circle-fill' : 'bi-info-circle-fill'} 
-                    me-2"></i>
+                <i class="bi ${{
+                    'error': 'bi-exclamation-octagon-fill',
+                    'warning': 'bi-exclamation-triangle-fill',
+                    'success': 'bi-check-circle-fill',
+                    'info': 'bi-info-circle-fill'
+                }[tipo]} me-2"></i>
                 ${mensaje}
             </div>
         `;
