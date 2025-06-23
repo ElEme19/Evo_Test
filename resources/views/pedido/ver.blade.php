@@ -1,63 +1,113 @@
 @extends('layout.app')
 
 @section('conten-wrapper')
-<div class="container mt-4">
+<div class="container px-0 px-md-3 mt-4">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
+        <div class="col-12 col-xl-10">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="mb-0">Pedidos Registrados</h3>
-                <a href="{{ route('pedido.crear') }}" class="btn btn-outline-primary">
-                    <i class="bi bi-plus-circle me-1"></i> Crear Nuevo Pedido
+            <!-- Encabezado con título y botón -->
+            <header class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
+                <h1 class="h3 mb-0 text-primary fw-bold">
+                    <i class="bi bi-truck me-2"></i>Gestión de Pedidos
+                </h1>
+                <a href="{{ route('pedido.crear') }}" class="btn btn-primary shadow-sm">
+                    <i class="bi bi-plus-circle me-2"></i>Nuevo Pedido
                 </a>
+            </header>
+
+            <!-- Alertas -->
+            <div class="alert-container mb-4">
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
             </div>
 
-            @if (session('success'))
-                <div class="alert alert-success text-center">{{ session('success') }}</div>
-            @endif
-            @if (session('error'))
-                <div class="alert alert-danger text-center">{{ session('error') }}</div>
-            @endif
-
-            <div class="card shadow-sm border-0">
+            <!-- Tarjeta de tabla -->
+            <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h2 class="h6 mb-0 text-secondary">
+                        <i class="bi bi-list-check me-2"></i>Pedidos Registrados
+                    </h2>
+                </div>
+                
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover text-center mb-0">
-                            <thead class="table-light">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
                                 <tr>
-                                    <th>ID Pedido</th>
-                                    <th>Sucursal</th>
-                                    <th>Cantidad de Bicicletas</th>
-                                    <th>Fecha Envío</th>
-                                    <th>Acciones</th>
+                                    <th class="fw-semibold text-nowrap">ID Pedido</th>
+                                    <th class="fw-semibold">Sucursal</th>
+                                    <th class="fw-semibold text-center">Bicicletas</th>
+                                    <th class="fw-semibold text-nowrap">Fecha Envío</th>
+                                    <th class="fw-semibold text-end">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($pedidos as $pedidoGroup)
-                                    <tr>
-                                        <td>{{ $pedidoGroup->id_pedido }}</td>
-                                        <td>{{ $pedidoGroup->sucursal->nombre_sucursal ?? 'N/A' }}</td>
-                                        <td>{{ \App\Models\Pedidos::where('id_pedido', $pedidoGroup->id_pedido)->count() }}</td>
-                                        <td>{{ $pedidoGroup->fecha_envio->format('d/m/Y H:i') }}</td>
+                                    <tr class="border-top">
+                                        <td class="text-muted">#{{ $pedidoGroup->id_pedido }}</td>
                                         <td>
-                                            <a href="{{ route('pedido.pdf', $pedidoGroup->id_pedido) }}" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-filetype-pdf"></i> PDF
+                                            <span class="d-block">{{ $pedidoGroup->sucursal->nombre_sucursal ?? 'N/A' }}</span>
+                                            <small class="text-muted">{{ $pedidoGroup->sucursal->direccion ?? '' }}</small>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary rounded-pill">
+                                                {{ \App\Models\Pedidos::where('id_pedido', $pedidoGroup->id_pedido)->count() }}
+                                            </span>
+                                        </td>
+                                        <td class="text-nowrap">
+                                            <i class="bi bi-calendar-event me-1 text-muted"></i>
+                                            {{ $pedidoGroup->fecha_envio->format('d/m/Y') }}
+                                            <br>
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock me-1"></i>
+                                                {{ $pedidoGroup->fecha_envio->format('H:i') }}
+                                            </small>
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{{ route('pedido.pdf', $pedidoGroup->id_pedido) }}" 
+                                               class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                               data-bs-toggle="tooltip" 
+                                               title="Generar PDF">
+                                                <i class="bi bi-filetype-pdf me-1"></i>PDF
                                             </a>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-muted py-4">No hay pedidos registrados.</td>
+                                        <td colspan="5" class="text-center py-5">
+                                            <div class="d-flex flex-column align-items-center text-muted">
+                                                <i class="bi bi-box-seam display-5 mb-3"></i>
+                                                <span>No hay pedidos registrados</span>
+                                                <a href="{{ route('pedido.crear') }}" class="btn btn-link mt-2">
+                                                    Crear primer pedido
+                                                </a>
+                                            </div>
+                                        </td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-
-            <div class="mt-3">
-                {{ $pedidos->links('pagination::bootstrap-4') }}
+                
+                <!-- Pie de tabla con paginación -->
+                @if($pedidos->hasPages())
+                <div class="card-footer bg-white py-3">
+                    <div class="d-flex justify-content-center">
+                        {{ $pedidos->links('pagination::bootstrap-4') }}
+                    </div>
+                </div>
+                @endif
             </div>
 
         </div>
