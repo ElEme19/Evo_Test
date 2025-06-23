@@ -82,28 +82,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let listaBicis = [];
 
-    // Configuración inicial
-    numChasisInput.disabled = true;
-
-    // Habilitar campo de búsqueda cuando se selecciona sucursal
     sucursalSelect.addEventListener('change', () => {
         if (sucursalSelect.value) {
             numChasisInput.disabled = false;
             numChasisInput.focus();
-            
-            // Configurar autofocus y manejo de entrada similar a bicicleta.crear
-            numChasisInput.addEventListener('input', handleChasisInput);
         } else {
             numChasisInput.disabled = true;
             numChasisInput.value = '';
-            numChasisInput.removeEventListener('input', handleChasisInput);
             listaBicis = [];
             renderizarTabla();
             btnFinalizar.disabled = true;
         }
     });
 
-    // Renderizar la tabla
+    numChasisInput.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const valor = numChasisInput.value.trim();
+            if (valor.length === 4 || valor.length === 17) {
+                await buscarBicicleta(valor);
+            }
+        }
+    });
+
+    numChasisInput.addEventListener('input', async () => {
+        const valor = numChasisInput.value.trim();
+        if (valor.length === 4 || valor.length === 17) {
+            await buscarBicicleta(valor);
+        }
+    });
+
     function renderizarTabla() {
         tabla.innerHTML = '';
         listaBicis.forEach((bici, i) => {
@@ -120,81 +128,76 @@ document.addEventListener('DOMContentLoaded', () => {
         btnFinalizar.disabled = listaBicis.length === 0;
     }
 
-    // Función global para quitar bicicletas
     window.quitarBici = function(num_chasis) {
         listaBicis = listaBicis.filter(b => b.num_chasis !== num_chasis);
         renderizarTabla();
-    }
+    };
 
-    // Manejador de entrada similar al de bicicleta.crear
-    async function handleChasisInput(e) {
-        const numSerie = numChasisInput.value.trim();
-        
-        // Solo buscar cuando se ingresen 4 caracteres o el chasis completo
-        if (numSerie.length === 4 || numSerie.length > 10) {
-            await buscarBicicleta(numSerie);
-        }
-    }
-
-    // Función de búsqueda unificada
     async function buscarBicicleta(numSerie) {
-        if (listaBicis.some(b => b.num_chasis === numSerie)) {
-            mostrarModal('Esta bicicleta ya fue agregada al pedido.', 'warning');
-            numChasisInput.value = '';
+    const yaAgregada = listaBicis.some(b => b.num_chasis.toUpperCase() === numSerie.toUpperCase());
+    if (yaAgregada) {
+        mostrarModal('Esta bicicleta ya fue agregada al pedido.', 'warning');
+        numChasisInput.value = '';
+        return;
+    }
+
+    try {
+        const url = numSerie.length === 4 
+            ? `/Bicicleta/buscar-por-ultimos4?ult4=${encodeURIComponent(numSerie)}`
+            : `/Bicicleta/buscarC?num_chasis=${encodeURIComponent(numSerie)}`;
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Error en la respuesta del servidor');
+
+        const data = await res.json();
+        const biciData = data.bicicleta || data.bici;
+
+        if (!biciData || !biciData.num_chasis) {
+            mostrarModal('No se encontró ninguna bicicleta con ese número', 'error');
             return;
         }
 
-        try {
-            const url = numSerie.length === 4 
-                ? `/Bicicleta/buscar-por-ultimos4?ult4=${encodeURIComponent(numSerie)}`
-                : `/Bicicleta/buscarC?num_chasis=${encodeURIComponent(numSerie)}`;
+        const modelo = biciData.modelo?.nombre_modelo || biciData.modelo || 'N/D';
+        const color = biciData.color?.nombre_color || biciData.color || 'N/D';
 
-            const res = await fetch(url);
-            
-            if (!res.ok) throw new Error('Error en la respuesta del servidor');
-            
-            const data = await res.json();
-            
-            // Manejar ambas estructuras de respuesta
-            const biciData = data.bicicleta || data.bici;
-            
-            if (!biciData) {
-                mostrarModal('No se encontró ninguna bicicleta con ese número', 'error');
-                return;
+        modalBody.innerHTML = `
+            <div class="alert alert-success">
+                <strong>Bicicleta encontrada:</strong>
+                <ul class="mt-2 mb-3">
+                    <li><strong>N° Serie:</strong> ${biciData.num_chasis}</li>
+                    <li><strong>Modelo:</strong> ${modelo}</li>
+                    <li><strong>Color:</strong> ${color}</li>
+                </ul>
+            </div>
+            <div class="text-center">
+                <button id="confirmAdd" class="btn btn-success me-2">Agregar</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        `;
+
+        modal.show();
+
+        setTimeout(() => {
+            const btn = document.getElementById('confirmAdd');
+            if (btn) {
+                btn.onclick = () => {
+                    agregarBicicleta({
+                        num_chasis: biciData.num_chasis,
+                        modelo: modelo,
+                        color: color
+                    });
+                    modal.hide();
+                };
             }
+        }, 0);
 
-            // Mostrar resultados en modal
-            modalBody.innerHTML = `
-                <div class="alert alert-success">
-                    <strong>Bicicleta encontrada:</strong>
-                    <ul class="mt-2 mb-3">
-                        <li><strong>N° Serie:</strong> ${biciData.num_chasis}</li>
-                        <li><strong>Modelo:</strong> ${biciData.modelo?.nombre_modelo || biciData.modelo}</li>
-                        <li><strong>Color:</strong> ${biciData.color?.nombre_color || biciData.color}</li>
-                    </ul>
-                </div>
-                <div class="text-center">
-                    <button id="confirmAdd" class="btn btn-success me-2">Agregar</button>
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                </div>
-            `;
-            
-            modal.show();
-            
-            document.getElementById('confirmAdd').onclick = () => {
-                agregarBicicleta({
-                    num_chasis: biciData.num_chasis,
-                    modelo: biciData.modelo?.nombre_modelo || biciData.modelo,
-                    color: biciData.color?.nombre_color || biciData.color
-                });
-                modal.hide();
-            };
-            
-        } catch (error) {
-            console.error('Error:', error);
-            mostrarModal('Error al buscar la bicicleta: ' + error.message, 'error');
-        }
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarModal('Error al buscar la bicicleta: ' + error.message, 'error');
     }
+
+}
+
 
     function agregarBicicleta(bici) {
         listaBicis.push(bici);
@@ -209,28 +212,24 @@ document.addEventListener('DOMContentLoaded', () => {
             'warning': 'alert-warning',
             'success': 'alert-success',
             'info': 'alert-info'
-        }[type];
-        
+        }[tipo];
         modalBody.innerHTML = `<div class="alert ${alertClass} mb-0">${mensaje}</div>`;
         modal.show();
     }
 
-    // Manejar envío del formulario
     formPedido.addEventListener('submit', (e) => {
         e.preventDefault();
-        
         if (listaBicis.length === 0) {
             mostrarModal('Debe agregar al menos una bicicleta al pedido', 'warning');
             return;
         }
-        
-        // Agregar bicicletas como campo oculto
+
         const inputHidden = document.createElement('input');
         inputHidden.type = 'hidden';
         inputHidden.name = 'bicis_json';
         inputHidden.value = JSON.stringify(listaBicis);
         formPedido.appendChild(inputHidden);
-        
+
         formPedido.submit();
     });
 });
