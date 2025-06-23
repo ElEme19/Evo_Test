@@ -7,10 +7,10 @@
 
             <!-- Encabezado con título y botón -->
             <header class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
-                <h1 class="h3 mb-0 text-primary fw-bold">
+                <h1 class="h3 mb-0 text-success fw-bold">
                     <i class="bi bi-truck me-2"></i>Gestión de Pedidos
                 </h1>
-                <a href="{{ route('pedido.crear') }}" class="btn btn-primary shadow-sm">
+                <a href="{{ route('pedido.crear') }}" class="btn btn-success shadow-sm">
                     <i class="bi bi-plus-circle me-2"></i>Nuevo Pedido
                 </a>
             </header>
