@@ -49,7 +49,7 @@
             <!-- Encabezado con título y botón -->
             <header class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
                 <h1 class="h3 mb-0 text-success fw-bold">
-                    <i class="bi bi-truck me-2"></i>Gestión de Pedidos
+                    <i class="bi bi-search me-2"></i>Gestión de Pedidos
                 </h1>
                 <a href="{#}" class="btn btn-success shadow-sm">
                     <i class="bi bi-plus-circle me-2"></i>Buscar Pedido
