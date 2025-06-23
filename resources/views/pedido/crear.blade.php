@@ -251,13 +251,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const tr = document.createElement('tr');
             tr.className = claseRoja;
             tr.innerHTML = `
-                <td>${i + 1}</td>
-                <td class="fw-semibold">${bici.num_chasis}</td>
-                <td>${bici.modelo}</td>
-                <td>
+                <td class="text-center">${i + 1}</td>
+                <td class="fw-semibold text-center">${bici.num_chasis}</td>
+                <td class="text-center">${bici.modelo}</td>
+                <td class="text-center">
                     <span class="badge bg-light text-dark border">${bici.color}</span>
                 </td>
-                <td class="text-end">
+                <td class="text-end text-center">
                     <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" 
                             onclick="quitarBici('${bici.num_chasis}')">
                         <i class="bi bi-trash"></i>
