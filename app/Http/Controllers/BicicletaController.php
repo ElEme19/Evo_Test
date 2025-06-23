@@ -11,7 +11,6 @@ use App\Models\modelos_bici;
 use App\Models\ColorModelo;
 use App\Models\Lote;
 use App\Models\TipoStock;
-use App\Jobs\EnviarTrabajoImpresion;
 use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
 use Mike42\Escpos\Printer;
 
@@ -198,29 +197,43 @@ return [
      * Búsqueda por número de chasis completo
      */
     public function buscarC(Request $request)
-    {
-        $numChasis = $request->query('num_chasis');
-        if (! $numChasis) {
-            return response()->json(['success' => false, 'message' => 'Debe ingresar un número de chasis', 'bici' => null]);
-        }
-        try {
-            $bici = Bicicleta::where('num_chasis', $numChasis)
-                        ->with(['modelo','color'])
-                        ->first();
-            if (! $bici) {
-                return response()->json(['success'=>false,'message'=>'Bicicleta no encontrada','bici'=>null]);
-            }
-            return response()->json(['success'=>true,'bici'=>[
-                'num_chasis'=>$bici->num_chasis,
-                'modelo'=>$bici->modelo->nombre_modelo,
-                'color'=>$bici->color->nombre_color,
-                'id_modelo'=>$bici->id_modelo,
-                'id_color'=>$bici->id_color,
-            ]]);
-        } catch (\Exception $e) {
-            return response()->json(['success'=>false,'message'=>'Error en el servidor:'.$e->getMessage(),'bici'=>null],500);
-        }
+{
+    $numChasis = $request->query('num_chasis');
+
+    if (! $numChasis) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Debe ingresar un número de chasis',
+            'bici'    => null
+        ]);
     }
+
+    try {
+        $bici = Bicicleta::where('num_chasis', $numChasis)
+                    ->with(['modelo', 'color', 'tipoStock'])
+                    ->first();
+
+        if (! $bici) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bicicleta no encontrada',
+                'bici'    => null
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'bici'    => $bici   // ahora envías el objeto completo con relaciones
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error en el servidor: '.$e->getMessage(),
+            'bici'    => null
+        ], 500);
+    }
+}
+
 
     /**
      * Búsqueda por número de motor
@@ -236,6 +249,20 @@ return [
                 ->first();
         return response()->json(['bici'=>$bici]);
     }
+
+    
+public function buscarPorStock(Request $request)
+{
+    $idStock = $request->query('stock');
+    if (! $idStock) {
+        $stocks = TipoStock::all(['id_tipoStock','nombre_stock']);
+        return response()->json(['stocks' => $stocks, 'bicis' => []]);
+    }
+    $bicis = Bicicleta::with(['modelo','color','tipoStock'])
+             ->where('id_tipoStock', $idStock)
+             ->paginate(6); 
+    return response()->json(['stocks'=>[], 'bicis'=>$bicis]);
+}
 
     /**
      * Búsqueda por modelo

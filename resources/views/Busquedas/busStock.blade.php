@@ -4,6 +4,9 @@
     background-color: #f8f9fa; /* Fondo claro */
     border-color: #dee2e6;
     transition: all 0.2s ease-in-out;
+    margin: 0 2px;
+    min-width: 38px;
+    text-align: center;
   }
 
   .pagination .page-link:hover {
@@ -22,9 +25,35 @@
     background-color: #e9ecef;
     border-color: #dee2e6;
   }
+
+  /* Estilos para el contenedor de paginación */
+  .pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .pagination-info {
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+
+  /* Ajustes para la tabla */
+  .table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+  }
+
+  .table-container thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
+  }
 </style>
-
-
 
 <!-- Modal: Buscar por Stock -->
 <div class="modal fade" id="modalBuscarBiciStock" tabindex="-1" aria-labelledby="buscarStockLabel" aria-hidden="true">
@@ -48,102 +77,210 @@
         </form>
 
         <div id="resultadoBusquedaStock" class="mt-4"></div>
-       <nav id="paginacionStock" class="d-flex justify-content-center mt-3" aria-label="Paginación de Bicicletas">
-
+        <div id="paginacionStock" class="pagination-container"></div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
+  // Variables para controlar la paginación
+  let currentStockPage = 1;
+  let totalStockPages = 1;
+  let currentStockId = null;
+
   // Cargar tipos de stock cuando se abra el modal
   async function fetchStocks() {
-    const response = await fetch("{{ route('Busquedas.busStock') }}");
-    const data = await response.json();
-    const select = document.getElementById('stock_buscar');
-    select.innerHTML = '<option value="" disabled selected>Elige Stock</option>';
-    (data.stocks || []).forEach(stock => {
-      const option = document.createElement('option');
-      option.value = stock.id_tipoStock;
-      option.textContent = stock.nombre_stock;
-      select.appendChild(option);
-    });
-    // Limpiar resultados previos
-    document.getElementById('resultadoBusquedaStock').innerHTML = '';
-    document.getElementById('paginacionStock').innerHTML = '';
+    try {
+      const response = await fetch("{{ route('Busquedas.busStock') }}");
+      const data = await response.json();
+      const select = document.getElementById('stock_buscar');
+      select.innerHTML = '<option value="" disabled selected>Elige Stock</option>';
+      (data.stocks || []).forEach(stock => {
+        const option = document.createElement('option');
+        option.value = stock.id_tipoStock;
+        option.textContent = stock.nombre_stock;
+        select.appendChild(option);
+      });
+      
+      // Limpiar resultados previos
+      document.getElementById('resultadoBusquedaStock').innerHTML = '';
+      document.getElementById('paginacionStock').innerHTML = '';
+    } catch (error) {
+      console.error('Error al cargar stocks:', error);
+    }
   }
 
   document.getElementById('modalBuscarBiciStock')
     .addEventListener('show.bs.modal', fetchStocks);
 
+  // Función para generar los botones de paginación
+  function generatePagination(current, last) {
+    let paginationHtml = '';
+    const maxVisiblePages = 5; // Máximo número de páginas visibles
+    
+    // Mostrar información de paginación
+    paginationHtml += `
+      <div class="pagination-info">
+        Página ${current} de ${last}
+      </div>
+      <nav aria-label="Paginación">
+        <ul class="pagination pagination-sm flex-wrap justify-content-center">
+    `;
+    
+    // Botón Anterior
+    paginationHtml += `
+      <li class="page-item ${current === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" data-page="${current - 1}" aria-label="Anterior">
+          &laquo;
+        </a>
+      </li>
+    `;
+    
+    // Mostrar páginas cercanas a la actual
+    let startPage = Math.max(1, current - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(last, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    // Mostrar primera página si no está visible
+    if (startPage > 1) {
+      paginationHtml += `
+        <li class="page-item">
+          <a class="page-link" href="#" data-page="1">1</a>
+        </li>
+        ${startPage > 2 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
+      `;
+    }
+    
+    // Páginas numeradas
+    for (let p = startPage; p <= endPage; p++) {
+      paginationHtml += `
+        <li class="page-item ${p === current ? 'active' : ''}">
+          <a class="page-link" href="#" data-page="${p}">${p}</a>
+        </li>
+      `;
+    }
+    
+    // Mostrar última página si no está visible
+    if (endPage < last) {
+      paginationHtml += `
+        ${endPage < last - 1 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
+        <li class="page-item">
+          <a class="page-link" href="#" data-page="${last}">${last}</a>
+        </li>
+      `;
+    }
+    
+    // Botón Siguiente
+    paginationHtml += `
+      <li class="page-item ${current === last ? 'disabled' : ''}">
+        <a class="page-link" href="#" data-page="${current + 1}" aria-label="Siguiente">
+          &raquo;
+        </a>
+      </li>
+    `;
+    
+    paginationHtml += `
+        </ul>
+      </nav>
+    `;
+    
+    return paginationHtml;
+  }
+
   // Función para obtener y mostrar bicis paginadas
   async function fetchBicisPorStock(page = 1) {
     const idStock = document.getElementById('stock_buscar').value;
+    if (!idStock) return;
+    
     const resultadoDiv = document.getElementById('resultadoBusquedaStock');
-    const nav = document.getElementById('paginacionStock');
-    resultadoDiv.innerHTML = '<div class="text-center py-3"><em>Buscando…</em></div>';
-    nav.innerHTML = '';
-
-    const response = await fetch(
-      `{{ route('Busquedas.busStock') }}?stock=${encodeURIComponent(idStock)}&page=${page}`
-    );
-    const data = await response.json();
-    const bicis = data.bicis.data || [];
-
-    if (bicis.length > 0) {
-      let html = `
-        <table class="table table-striped table-bordered">
-          <thead class="table-light">
-            <tr>
-              <th>Num. Serie</th>
-              <th>Motor</th>
-              <th>Modelo</th>
-              <th>Color</th>
-              <th>Voltaje</th>
-              <th>Stock</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-      bicis.forEach(b => {
-        html += `
-          <tr>
-            <td>${b.num_chasis}</td>
-            <td>${b.num_motor || 'N/A'}</td>
-            <td>${b.modelo?.nombre_modelo || 'N/A'}</td>
-            <td>${b.color?.nombre_color || 'N/A'}</td>
-            <td>${b.voltaje || 'N/A'}</td>
-            <td>${b.tipo_stock?.nombre_stock || 'N/A'}</td>
-          </tr>
+    const paginationDiv = document.getElementById('paginacionStock');
+    
+    resultadoDiv.innerHTML = `
+      <div class="text-center py-3">
+        <div class="spinner-border text-success" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Buscando bicicletas...</p>
+      </div>
+    `;
+    paginationDiv.innerHTML = '';
+    
+    try {
+      const response = await fetch(
+        `{{ route('Busquedas.busStock') }}?stock=${encodeURIComponent(idStock)}&page=${page}`
+      );
+      const data = await response.json();
+      const bicis = data.bicis.data || [];
+      currentStockPage = data.bicis.current_page;
+      totalStockPages = data.bicis.last_page;
+      currentStockId = idStock;
+      
+      if (bicis.length > 0) {
+        let html = `
+          <div class="table-container">
+            <table class="table table-striped table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>Num. Serie</th>
+                  <th>Motor</th>
+                  <th>Modelo</th>
+                  <th>Color</th>
+                  <th>Voltaje</th>
+                  <th>Stock</th>
+                </tr>
+              </thead>
+              <tbody>
         `;
-      });
-      html += '</tbody></table>';
-      resultadoDiv.innerHTML = html;
-
-      // Generar paginación
-      const { current_page, last_page } = data.bicis;
-      let pagHtml = '<ul class="pagination justify-content-center">';
-      for (let p = 1; p <= last_page; p++) {
-        pagHtml += `
-          <li class="page-item ${p === current_page ? 'active' : ''}">
-            <a class="page-link" href="#" data-page="${p}">${p}</a>
-          </li>
+        
+        bicis.forEach(b => {
+          html += `
+            <tr>
+              <td>${b.num_chasis || 'N/A'}</td>
+              <td>${b.num_motor || 'N/A'}</td>
+              <td>${b.modelo?.nombre_modelo || 'N/A'}</td>
+              <td>${b.color?.nombre_color || 'N/A'}</td>
+              <td>${b.voltaje || 'N/A'}</td>
+              <td>${b.tipo_stock?.nombre_stock || 'N/A'}</td>
+            </tr>
+          `;
+        });
+        
+        html += '</tbody></table></div>';
+        resultadoDiv.innerHTML = html;
+        
+        // Generar paginación solo si hay más de una página
+        if (totalStockPages > 1) {
+          paginationDiv.innerHTML = generatePagination(currentStockPage, totalStockPages);
+          
+          // Vincular eventos de paginación
+          paginationDiv.querySelectorAll('a.page-link[data-page]').forEach(link => {
+            link.addEventListener('click', e => {
+              e.preventDefault();
+              const p = parseInt(e.target.getAttribute('data-page'), 10);
+              if (p !== currentStockPage) {
+                fetchBicisPorStock(p);
+              }
+            });
+          });
+        }
+      } else {
+        resultadoDiv.innerHTML = `
+          <div class="alert alert-warning text-center">
+            No se encontraron bicicletas para el stock seleccionado.
+          </div>
         `;
       }
-      pagHtml += '</ul>';
-      nav.innerHTML = pagHtml;
-
-      // Vincular clicks de paginación
-      nav.querySelectorAll('a.page-link').forEach(link => {
-        link.addEventListener('click', e => {
-          e.preventDefault();
-          const p = parseInt(e.target.dataset.page, 10);
-          if (p !== current_page) fetchBicisPorStock(p);
-        });
-      });
-
-    } else {
-      resultadoDiv.innerHTML = `<p class="text-danger">No se encontraron bicicletas para el stock seleccionado.</p>`;
+    } catch (error) {
+      console.error('Error al buscar bicicletas:', error);
+      resultadoDiv.innerHTML = `
+        <div class="alert alert-danger text-center">
+          Error al cargar los resultados. Por favor, intente nuevamente.
+        </div>
+      `;
     }
   }
 

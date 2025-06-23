@@ -1,23 +1,19 @@
 <!-- Modal -->
 <div class="modal fade" id="modalBuscarBici" tabindex="-1" aria-labelledby="buscarModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg"> <!-- Más ancho -->
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title " id="buscarModalLabel">Buscar Bicicleta Num. Serie</h5>
+        <h5 class="modal-title" id="buscarModalLabel">Buscar Bicicleta Num. Serie</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
         <form id="formBuscarBiciChasis">
-
           <div class="mb-3 d-flex justify-content-center">
-        <div class="w-50"> 
-          <label for="num_chasis_buscar" class="form-label">Número de Chasis</label>
-          <input type="text" id="num_chasis_buscar" name="num_chasis" class="form-control form-control-sm" required>
-        </div>
-      </div>
-
-    
-
+            <div class="w-50"> 
+              <label for="num_chasis_buscar" class="form-label">Número de Chasis</label>
+              <input type="text" id="num_chasis_buscar" name="num_chasis" class="form-control form-control-sm" required>
+            </div>
+          </div>
           <button type="submit" class="btn btn-outline-success w-10">Buscar</button>
         </form>
 
@@ -36,6 +32,16 @@
             .then(data => {
               if (data.bici) {
                 const bici = data.bici;
+
+                // Para debug: fijate en la consola cómo vienen las propiedades
+                console.log('Respuesta bici:', bici);
+
+                // Intentamos obtener el stock desde la relación tipoStock
+                const nombreStock =
+                  bici.tipoStock?.nombre_stock
+                  ?? bici.tipo_stock?.nombre_stock
+                  ?? 'N/A';
+
                 resultadoDiv.innerHTML = `
                   <hr>
                   <div class="table-responsive">
@@ -57,7 +63,7 @@
                           <td>${bici.modelo?.nombre_modelo || 'N/A'}</td>
                           <td>${bici.color?.nombre_color || 'N/A'}</td>
                           <td>${bici.voltaje || 'N/A'}</td>
-                          <td>${bici.tipo_stock?.nombre_stock || 'N/A'}</td>
+                          <td>${nombreStock}</td>
                         </tr>
                       </tbody>
                     </table>
