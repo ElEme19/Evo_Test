@@ -1,102 +1,85 @@
 @extends('layout.app')
 
 @section('conten')
-<div class="container px-0 px-md-3 py-4">
+<div class="container px-2 px-md-3 py-3">
     <div class="row justify-content-center">
-        <div class="col-12 col-lg-10 col-xl-8">
+        <div class="col-12 col-md-10 col-lg-9 col-xl-8">
 
             <!-- Encabezado -->
-            <header class="text-center mb-4">
-                <h1 class="h2 fw-bold text-success">
-                    <i class="bi bi-truck me-2"></i>Nuevo Pedido de Bicicletas
+            <header class="text-center mb-3">
+                <h1 class="h5 fw-bold text-success">
+                    <i class="bi bi-truck me-2"></i>Nuevo Pedido
                 </h1>
-                <div class="badge bg-success bg-opacity-10 text-success fs-5 fw-normal px-3 py-2">
-                    <i class="bi bi-info-circle me-1"></i>Escanea las bicicletas para generar el pedido
+                <div class="badge bg-success bg-opacity-10 text-success fs-6 px-2 py-1">
+                    <i class="bi bi-info-circle me-1"></i>Escanea las bicicletas
                 </div>
             </header>
 
-            <!-- Alertas personalizadas -->
-            <div class="mb-4">
+            <!-- Alertas -->
+            <div class="mb-3">
                 @if (session('success'))
-                    <div class="text-center">
-                        <div class="alert alert-success d-inline-flex align-items-center py-2 px-3 rounded-3 shadow-sm border border-success border-opacity-25" role="alert">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi me-2" viewBox="0 0 16 16">
-                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                            </svg>
-                            <span class="fw-semibold">{{ session('success') }}</span>
-                        </div>
+                    <div class="alert alert-success py-2 px-3 small" role="alert">
+                        <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
                     </div>
                 @endif
-
                 @if (session('error'))
-                    <div class="text-center">
-                        <div class="alert alert-danger d-inline-flex align-items-center py-2 px-3 rounded-3 shadow-sm border border-danger border-opacity-25" role="alert">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi me-2" viewBox="0 0 16 16">
-                                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-                            </svg>
-                            <span class="fw-semibold">{{ session('error') }}</span>
-                        </div>
+                    <div class="alert alert-danger py-2 px-3 small" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}
                     </div>
                 @endif
             </div>
 
             <!-- Formulario -->
-            <form method="POST" action="{{ route('pedido.store') }}" id="formPedido" class="bg-white p-4 rounded-3 shadow-sm border border-success border-opacity-25">
+            <form method="POST" action="{{ route('pedido.store') }}" id="formPedido" class="bg-white p-3 rounded-3 shadow-sm border border-success border-opacity-25">
                 @csrf
 
-                <!-- Selección de Sucursal - Versión Grande -->
-                <div class="mb-4">
-                    <label for="id_sucursal" class="form-label fw-semibold fs-5 text-success">
-                        <i class="bi bi-shop me-2"></i>Sucursal Destino
+                <!-- Sucursal -->
+                <div class="mb-3">
+                    <label for="id_sucursal" class="form-label fw-semibold text-success small">
+                        <i class="bi bi-shop me-1"></i>Sucursal Destino
                     </label>
-                    <select name="id_sucursal" id="id_sucursal" class="form-select form-select-lg border-success border-opacity-50" required>
+                    <select name="id_sucursal" id="id_sucursal" class="form-select form-select-sm border-success" required>
                         <option value="" selected disabled>Seleccione una sucursal</option>
                         @foreach($sucursales as $sucursal)
                             <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre_sucursal }}</option>
                         @endforeach
                     </select>
-                    <div class="mt-2 fs-4 fw-bold text-success" id="nombreSucursalSeleccionada">
-                        <!-- Aquí se mostrará el nombre de la sucursal seleccionada -->
-                    </div>
+                    <div class="mt-1 small text-success fw-semibold" id="nombreSucursalSeleccionada"></div>
                 </div>
 
-                <!-- Escáner de Bicicletas - Versión Grande -->
-                <div class="mb-4 bg-success bg-opacity-05 p-4 rounded-3">
-                    <label for="num_chasis" class="form-label fw-semibold fs-5 text-success">
-                        <i class="bi bi-upc-scan me-2"></i>Escanea Bicicleta
+                <!-- Escáner Bicicleta -->
+                <div class="mb-3 p-2 bg-light border border-success rounded">
+                    <label for="num_chasis" class="form-label text-success small">
+                        <i class="bi bi-upc-scan me-1"></i>Escanea Bicicleta
                     </label>
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-success bg-opacity-10 border-success border-opacity-50">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light border-success">
                             <i class="bi bi-upc-scan text-success"></i>
                         </span>
-                        <input type="text" id="num_chasis" class="form-control form-control-lg border-success border-opacity-50" 
-                               autocomplete="off" 
-                               placeholder="N° de Serie completo o últimos 4 dígitos"
-                               disabled>
+                        <input type="text" id="num_chasis" class="form-control border-success" 
+                               autocomplete="off" placeholder="Serie completa o últimos 4" disabled>
                     </div>
-                    <div class="mt-2 text-muted fs-6">
-                        <i class="bi bi-keyboard-fill text-success"></i> Presiona Enter después de escanear/escribir
-                    </div>
+                    <small class="text-muted"><i class="bi bi-keyboard"></i> Presiona Enter</small>
                 </div>
 
-                <!-- Tabla de Bicicletas -->
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h5 fw-semibold text-success mb-0">
-                            <i class="bi bi-list-check me-2"></i>Bicicletas en el pedido
-                            <span class="badge bg-success rounded-pill fs-6 ms-2" id="contadorBicis">0</span>
+                <!-- Tabla Bicicletas -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h2 class="h6 fw-semibold text-success mb-0">
+                            <i class="bi bi-list-check me-2"></i>Bicicletas
                         </h2>
+                        <span class="badge bg-success text-white small" id="contadorBicis">0</span>
                     </div>
-                    
-                    <div class="table-responsive rounded-3 border border-success border-opacity-25">
-                        <table class="table table-hover align-middle mb-0" id="tablaBicicletas">
-                            <thead class="bg-success bg-opacity-10">
-                                <tr>
-                                    <th width="60px" class="fs-5">#</th>
-                                    <th class="fs-5">N° Serie</th>
-                                    <th class="fs-5">Modelo</th>
-                                    <th class="fs-5">Color</th>
-                                    <th width="100px" class="text-end fs-5">Acción</th>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered table-hover align-middle" id="tablaBicicletas">
+                            <thead class="table-success">
+                                <tr class="text-center small">
+                                    <th>#</th>
+                                    <th>N° Serie</th>
+                                    <th>Modelo</th>
+                                    <th>Color</th>
+                                    <th>Acción</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -104,10 +87,10 @@
                     </div>
                 </div>
 
-                <!-- Botón de Envío -->
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success btn-lg px-5 py-3 fs-4 shadow-sm" id="btnFinalizar" disabled>
-                        <i class="bi bi-check2-circle me-2"></i>Finalizar Pedido
+                <!-- Botón Finalizar -->
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-success px-4 py-2 small" id="btnFinalizar" disabled>
+                        <i class="bi bi-check-circle me-1"></i>Finalizar
                     </button>
                 </div>
             </form>
@@ -115,20 +98,26 @@
     </div>
 </div>
 
-<!-- Modal de Resultados -->
+<!-- Modal -->
 <div class="modal fade" id="modalResultadoBusqueda" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-success border-2">
             <div class="modal-header bg-success bg-opacity-10">
                 <h5 class="modal-title text-success">
-                    <i class="bi bi-search me-2"></i>Resultado de búsqueda
+                    <i class="bi bi-search me-2"></i>Resultado
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body py-4" id="modalBodyMensaje"></div>
+            <div class="modal-body" id="modalBodyMensaje"></div>
         </div>
     </div>
 </div>
+
+<!-- Scripts -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
