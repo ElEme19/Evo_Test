@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Pedidos;
 use App\Models\Sucursal;
 use App\Models\Bicicleta;
+use App\Models\modelos_bici;
+use App\Models\ColorModelo;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PedidosController extends Controller

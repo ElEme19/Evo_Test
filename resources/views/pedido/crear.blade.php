@@ -82,28 +82,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let listaBicis = [];
 
-    // Configuración inicial
-    numChasisInput.disabled = true;
-
-    // Habilitar campo de búsqueda cuando se selecciona sucursal
     sucursalSelect.addEventListener('change', () => {
         if (sucursalSelect.value) {
             numChasisInput.disabled = false;
             numChasisInput.focus();
-            
-            // Configurar autofocus y manejo de entrada similar a bicicleta.crear
-            numChasisInput.addEventListener('input', handleChasisInput);
         } else {
             numChasisInput.disabled = true;
             numChasisInput.value = '';
-            numChasisInput.removeEventListener('input', handleChasisInput);
             listaBicis = [];
             renderizarTabla();
             btnFinalizar.disabled = true;
         }
     });
 
-    // Renderizar la tabla
+    numChasisInput.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const valor = numChasisInput.value.trim();
+            if (valor.length === 4 || valor.length === 17) {
+                await buscarBicicleta(valor);
+            }
+        }
+    });
+
+    numChasisInput.addEventListener('input', async () => {
+        const valor = numChasisInput.value.trim();
+        if (valor.length === 4 || valor.length === 17) {
+            await buscarBicicleta(valor);
+        }
+    });
+
     function renderizarTabla() {
         tabla.innerHTML = '';
         listaBicis.forEach((bici, i) => {
@@ -120,25 +128,14 @@ document.addEventListener('DOMContentLoaded', () => {
         btnFinalizar.disabled = listaBicis.length === 0;
     }
 
-    // Función global para quitar bicicletas
     window.quitarBici = function(num_chasis) {
         listaBicis = listaBicis.filter(b => b.num_chasis !== num_chasis);
         renderizarTabla();
-    }
+    };
 
-    // Manejador de entrada similar al de bicicleta.crear
-    async function handleChasisInput(e) {
-        const numSerie = numChasisInput.value.trim();
-        
-        // Solo buscar cuando se ingresen 4 caracteres o el chasis completo
-        if (numSerie.length === 4 || numSerie.length > 10) {
-            await buscarBicicleta(numSerie);
-        }
-    }
-
-    // Función de búsqueda unificada
     async function buscarBicicleta(numSerie) {
-        if (listaBicis.some(b => b.num_chasis === numSerie)) {
+        const yaAgregada = listaBicis.some(b => b.num_chasis.toUpperCase() === numSerie.toUpperCase());
+        if (yaAgregada) {
             mostrarModal('Esta bicicleta ya fue agregada al pedido.', 'warning');
             numChasisInput.value = '';
             return;
@@ -150,27 +147,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 : `/Bicicleta/buscarC?num_chasis=${encodeURIComponent(numSerie)}`;
 
             const res = await fetch(url);
-            
             if (!res.ok) throw new Error('Error en la respuesta del servidor');
-            
             const data = await res.json();
-            
-            // Manejar ambas estructuras de respuesta
+
             const biciData = data.bicicleta || data.bici;
-            
             if (!biciData) {
                 mostrarModal('No se encontró ninguna bicicleta con ese número', 'error');
                 return;
             }
 
-            // Mostrar resultados en modal
+            const necesitaColor = !biciData.color || !biciData.color.nombre_color;
+            let colorHtml = `<strong>Color:</strong> ${biciData.color?.nombre_color || 'NULO'}`;
+
+            if (necesitaColor) {
+                const colores = await fetch(`/colores-por-modelo/${biciData.modelo?.id_modelo || biciData.id_modelo}`)
+                    .then(r => r.json());
+
+                const selectColor = `
+                    <div class="col-md-6">
+        <label for="id_color" class="form-label">Color (Disponible según modelo)</label>
+        <select name="id_color" id="id_color" class="form-select" disabled required>
+            <option value="">Seleccione un color</option>
+        </select>
+    </div>
+                `;
+                colorHtml = selectColor;
+            }
+
             modalBody.innerHTML = `
                 <div class="alert alert-success">
                     <strong>Bicicleta encontrada:</strong>
                     <ul class="mt-2 mb-3">
                         <li><strong>N° Serie:</strong> ${biciData.num_chasis}</li>
                         <li><strong>Modelo:</strong> ${biciData.modelo?.nombre_modelo || biciData.modelo}</li>
-                        <li><strong>Color:</strong> ${biciData.color?.nombre_color || biciData.color}</li>
+                        <li>${colorHtml}</li>
                     </ul>
                 </div>
                 <div class="text-center">
@@ -178,18 +188,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 </div>
             `;
-            
+
             modal.show();
-            
+
             document.getElementById('confirmAdd').onclick = () => {
+                const colorFinal = necesitaColor 
+                    ? document.getElementById('colorSelect').value || 'SIN COLOR'
+                    : biciData.color?.nombre_color || biciData.color;
+
                 agregarBicicleta({
                     num_chasis: biciData.num_chasis,
                     modelo: biciData.modelo?.nombre_modelo || biciData.modelo,
-                    color: biciData.color?.nombre_color || biciData.color
+                    color: colorFinal
                 });
                 modal.hide();
             };
-            
+
         } catch (error) {
             console.error('Error:', error);
             mostrarModal('Error al buscar la bicicleta: ' + error.message, 'error');
@@ -209,28 +223,24 @@ document.addEventListener('DOMContentLoaded', () => {
             'warning': 'alert-warning',
             'success': 'alert-success',
             'info': 'alert-info'
-        }[type];
-        
+        }[tipo];
         modalBody.innerHTML = `<div class="alert ${alertClass} mb-0">${mensaje}</div>`;
         modal.show();
     }
 
-    // Manejar envío del formulario
     formPedido.addEventListener('submit', (e) => {
         e.preventDefault();
-        
         if (listaBicis.length === 0) {
             mostrarModal('Debe agregar al menos una bicicleta al pedido', 'warning');
             return;
         }
-        
-        // Agregar bicicletas como campo oculto
+
         const inputHidden = document.createElement('input');
         inputHidden.type = 'hidden';
         inputHidden.name = 'bicis_json';
         inputHidden.value = JSON.stringify(listaBicis);
         formPedido.appendChild(inputHidden);
-        
+
         formPedido.submit();
     });
 });
