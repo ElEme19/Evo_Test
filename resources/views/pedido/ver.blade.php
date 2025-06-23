@@ -38,12 +38,21 @@
                 <h1 class="h3 mb-0 text-success fw-bold">
                     <i class="bi bi-truck me-2"></i>Gestión de Pedidos
                 </h1>
-                <a href="{#}" class="btn btn-success shadow-sm">
-                    <i class="bi bi-plus-circle me-2"></i>Buscar Pedido
-                </a>
-                <a href="{{ route('pedido.crear') }}" class="btn btn-success shadow-sm">
-                    <i class="bi bi-plus-circle me-2"></i>Nuevo Pedido
-                </a>
+
+                <div class="d-flex gap-2 flex-wrap align-items-center">
+                    <form action="{{ route('pedido.buscar') }}" method="GET" class="d-flex gap-2 align-items-center flex-wrap">
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="🔍 Buscar pedido o sucursal"
+                               class="form-control form-control-sm rounded-pill shadow-sm"
+                               style="max-width: 230px;">
+                        <button type="submit" class="btn btn-outline-success btn-sm rounded-pill shadow-sm">
+                            <i class="bi bi-search-heart-fill me-1"></i>Buscar
+                        </button>
+                    </form>
+
+                    <a href="{{ route('pedido.crear') }}" class="btn btn-success shadow-sm">
+                        <i class="bi bi-plus-circle me-2"></i>Nuevo Pedido
+                    </a>
+                </div>
             </header>
 
             <!-- Mensaje de búsqueda -->
