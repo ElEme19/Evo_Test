@@ -160,20 +160,19 @@ document.addEventListener('DOMContentLoaded', () => {
             fetch(`/Bicicleta/buscar-por-ultimos4?ult4=${val}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.bicicleta) {
-                        modeloSelect.value = data.bicicleta.id_modelo;
-                        modeloSelect.disabled = true;
+    if (data.bici) {
+        modeloSelect.value = data.bici.id_modelo;
+        modeloSelect.disabled = true;
 
-                        cargarColores(data.bicicleta.id_modelo, data.bicicleta.id_color);
+        cargarColores(data.bici.id_modelo, data.bici.id_color);
 
-                        numChasisFullInput.value = data.bicicleta.num_chasis;
-                        btnGuardar.disabled = false;
+        numChasisFullInput.value = data.bici.num_chasis;
+        btnGuardar.disabled = false;
 
-                        modalBodyMensaje.innerHTML = `
-                          <p><strong>¡Número de serie encontrado!</strong></p>
-                          <p><strong>Chasis:</strong> ${data.bicicleta.num_chasis}</p>
-                          
-                        `;
+        modalBodyMensaje.innerHTML = `
+            <p><strong>¡Número de serie encontrado!</strong></p>
+            <p><strong>Chasis:</strong> ${data.bici.num_chasis}</p>
+        `;
                     } else {
                         modeloSelect.value = "";
                         modeloSelect.disabled = false;
