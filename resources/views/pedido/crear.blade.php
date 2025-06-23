@@ -98,7 +98,15 @@ document.addEventListener('DOMContentLoaded', () => {
     numChasisInput.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            const valor = numChasisInput.value.trim();
+            const valor = numChasisInput.value.trim().toUpperCase();
+            if (!valor) return;
+
+            if (listaBicis.some(b => b.num_chasis.toUpperCase() === valor)) {
+                mostrarModal('Esta bicicleta ya fue agregada al pedido.', 'warning');
+                numChasisInput.value = '';
+                return;
+            }
+
             if (valor.length === 4 || valor.length === 17) {
                 await buscarBicicleta(valor);
             }
@@ -106,7 +114,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     numChasisInput.addEventListener('input', async () => {
-        const valor = numChasisInput.value.trim();
+        const valor = numChasisInput.value.trim().toUpperCase();
+        if (!valor) return;
+
+        if (listaBicis.some(b => b.num_chasis.toUpperCase() === valor)) {
+            mostrarModal('Esta bicicleta ya fue agregada al pedido.', 'warning');
+            numChasisInput.value = '';
+            return;
+        }
+
         if (valor.length === 4 || valor.length === 17) {
             await buscarBicicleta(valor);
         }
@@ -114,8 +130,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderizarTabla() {
         tabla.innerHTML = '';
+        const repeticiones = {};
+
+        // contar repeticiones
+        listaBicis.forEach(b => {
+            const key = b.num_chasis.toUpperCase();
+            repeticiones[key] = (repeticiones[key] || 0) + 1;
+        });
+
         listaBicis.forEach((bici, i) => {
+            const key = bici.num_chasis.toUpperCase();
+            const claseRoja = repeticiones[key] > 1 ? 'table-danger' : '';
+
             const tr = document.createElement('tr');
+            tr.className = claseRoja;
             tr.innerHTML = `
                 <td>${i + 1}</td>
                 <td>${bici.num_chasis}</td>
@@ -134,70 +162,68 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     async function buscarBicicleta(numSerie) {
-    const yaAgregada = listaBicis.some(b => b.num_chasis.toUpperCase() === numSerie.toUpperCase());
-    if (yaAgregada) {
-        mostrarModal('Esta bicicleta ya fue agregada al pedido.', 'warning');
-        numChasisInput.value = '';
-        return;
-    }
-
-    try {
-        const url = numSerie.length === 4 
-            ? `/Bicicleta/buscar-por-ultimos4?ult4=${encodeURIComponent(numSerie)}`
-            : `/Bicicleta/buscarC?num_chasis=${encodeURIComponent(numSerie)}`;
-
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Error en la respuesta del servidor');
-
-        const data = await res.json();
-        const biciData = data.bicicleta || data.bici;
-
-        if (!biciData || !biciData.num_chasis) {
-            mostrarModal('No se encontró ninguna bicicleta con ese número', 'error');
+        const yaAgregada = listaBicis.some(b => b.num_chasis.toUpperCase() === numSerie.toUpperCase());
+        if (yaAgregada) {
+            mostrarModal('Esta bicicleta ya fue agregada al pedido.', 'warning');
+            numChasisInput.value = '';
             return;
         }
 
-        const modelo = biciData.modelo?.nombre_modelo || biciData.modelo || 'N/D';
-        const color = biciData.color?.nombre_color || biciData.color || 'N/D';
+        try {
+            const url = numSerie.length === 4 
+                ? `/Bicicleta/buscar-por-ultimos4?ult4=${encodeURIComponent(numSerie)}`
+                : `/Bicicleta/buscarC?num_chasis=${encodeURIComponent(numSerie)}`;
 
-        modalBody.innerHTML = `
-            <div class="alert alert-success">
-                <strong>Bicicleta encontrada:</strong>
-                <ul class="mt-2 mb-3">
-                    <li><strong>N° Serie:</strong> ${biciData.num_chasis}</li>
-                    <li><strong>Modelo:</strong> ${modelo}</li>
-                    <li><strong>Color:</strong> ${color}</li>
-                </ul>
-            </div>
-            <div class="text-center">
-                <button id="confirmAdd" class="btn btn-success me-2">Agregar</button>
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            </div>
-        `;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Error en la respuesta del servidor');
 
-        modal.show();
+            const data = await res.json();
+            const biciData = data.bicicleta || data.bici;
 
-        setTimeout(() => {
-            const btn = document.getElementById('confirmAdd');
-            if (btn) {
-                btn.onclick = () => {
-                    agregarBicicleta({
-                        num_chasis: biciData.num_chasis,
-                        modelo: modelo,
-                        color: color
-                    });
-                    modal.hide();
-                };
+            if (!biciData || !biciData.num_chasis) {
+                mostrarModal('No se encontró ninguna bicicleta con ese número', 'error');
+                return;
             }
-        }, 0);
 
-    } catch (error) {
-        console.error('Error:', error);
-        mostrarModal('Error al buscar la bicicleta: ' + error.message, 'error');
+            const modelo = biciData.modelo?.nombre_modelo || biciData.modelo || 'N/D';
+            const color = biciData.color?.nombre_color || biciData.color || 'N/D';
+
+            modalBody.innerHTML = `
+                <div class="alert alert-success">
+                    <strong>Bicicleta encontrada:</strong>
+                    <ul class="mt-2 mb-3">
+                        <li><strong>N° Serie:</strong> ${biciData.num_chasis}</li>
+                        <li><strong>Modelo:</strong> ${modelo}</li>
+                        <li><strong>Color:</strong> ${color}</li>
+                    </ul>
+                </div>
+                <div class="text-center">
+                    <button id="confirmAdd" class="btn btn-success me-2">Agregar</button>
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            `;
+
+            modal.show();
+
+            setTimeout(() => {
+                const btn = document.getElementById('confirmAdd');
+                if (btn) {
+                    btn.onclick = () => {
+                        agregarBicicleta({
+                            num_chasis: biciData.num_chasis,
+                            modelo: modelo,
+                            color: color
+                        });
+                        modal.hide();
+                    };
+                }
+            }, 0);
+
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarModal('Error al buscar la bicicleta: ' + error.message, 'error');
+        }
     }
-
-}
-
 
     function agregarBicicleta(bici) {
         listaBicis.push(bici);
@@ -234,5 +260,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
+
 
 @endsection
