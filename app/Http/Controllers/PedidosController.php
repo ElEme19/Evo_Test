@@ -18,12 +18,18 @@ class PedidosController extends Controller
 
     // Mostrar lista de pedidos con sucursal y bicicletas cargadas
     public function index()
-    {
-        $pedidos = Pedidos::with(['sucursal', 'bicicletas'])
-                    ->orderBy('fecha_envio', 'desc')
-                    ->paginate(10);
-        return view('pedido.ver', compact('pedidos'));
-    }
+{
+    $pedidos = Pedidos::with([
+        'sucursal',
+        'bicicletas.modelo',
+        'bicicletas.color'
+    ])
+    ->orderBy('fecha_envio', 'desc')
+    ->paginate(10);
+
+    return view('pedido.ver', compact('pedidos'));
+}
+
 
     // Formulario para crear nuevo pedido
     public function crear()

@@ -102,43 +102,69 @@
                             </thead>
                             <tbody>
                                 @forelse ($pedidos as $pedidoGroup)
-                                    <tr class="border-top">
-                                        <td class="text-muted">#{{ $pedidoGroup->id_pedido }}</td>
-                                        <td>
-                                            <span class="d-block">{{ $pedidoGroup->sucursal->nombre_sucursal ?? 'N/A' }}</span>
-                                            <small class="text-muted">{{ $pedidoGroup->sucursal->direccion ?? '' }}</small>
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="badge bg-primary rounded-pill">
-                                                {{ $pedidoGroup->bicicletas->count() ?? 0 }}
-                                            </span>
-                                        </td>
-                                        <td class="text-nowrap">
-                                            <i class="bi bi-calendar-event me-1 text-muted"></i>
-                                            {{ $pedidoGroup->fecha_envio->format('d/m/Y') }}
-                                        </td>
-                                        <td class="text-end">
-                                            <a href="{{ route('pedido.pdf', $pedidoGroup->id_pedido) }}" 
-                                               class="btn btn-sm btn-outline-danger rounded-pill px-3"
-                                               data-bs-toggle="tooltip" 
-                                               title="Generar PDF">
-                                                <i class="bi bi-filetype-pdf me-1"></i>PDF
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center py-5">
-                                            <div class="d-flex flex-column align-items-center text-muted">
-                                                <i class="bi bi-box-seam display-5 mb-3"></i>
-                                                <span>No hay pedidos registrados</span>
-                                                <a href="{{ route('pedido.crear') }}" class="btn btn-link mt-2">
-                                                    Crear primer pedido
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
+    <tr class="border-top">
+        <td class="text-muted">#{{ $pedidoGroup->id_pedido }}</td>
+        <td>
+            <span class="d-block">{{ $pedidoGroup->sucursal->nombre_sucursal ?? 'N/A' }}</span>
+            <small class="text-muted">{{ $pedidoGroup->sucursal->direccion ?? '' }}</small>
+        </td>
+        <td class="text-center">
+            <span class="badge bg-primary rounded-pill">
+                {{ $pedidoGroup->bicicletas->count() ?? 0 }}
+            </span>
+        </td>
+        <td class="text-nowrap">
+            <i class="bi bi-calendar-event me-1 text-muted"></i>
+            {{ $pedidoGroup->fecha_envio->format('d/m/Y') }}
+        </td>
+        <td class="text-end">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-toggle="collapse" data-bs-target="#detalle-{{ $loop->index }}">
+                <i class="bi bi-eye me-1"></i>Ver
+            </button>
+            <a href="{{ route('pedido.pdf', $pedidoGroup->id_pedido) }}" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                <i class="bi bi-filetype-pdf me-1"></i>PDF
+            </a>
+        </td>
+    </tr>
+
+    <!-- Fila desplegable con bicicletas -->
+    <tr class="collapse" id="detalle-{{ $loop->index }}">
+        <td colspan="5" class="bg-light">
+            <div class="p-3">
+                <h6 class="text-muted mb-3">
+                    <i class="bi bi-bicycle me-2"></i>Bicicletas del pedido <strong>{{ $pedidoGroup->id_pedido }}</strong>
+                </h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>N° Serie</th>
+                                <th>Modelo</th>
+                                <th>Color</th>
+                                <th>Voltaje</th>
+                                <th>Observaciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($pedidoGroup->bicicletas as $index => $bici)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $bici->num_chasis }}</td>
+                                    <td>{{ $bici->modelo->nombre_modelo ?? 'N/D' }}</td>
+                                    <td>{{ $bici->color->nombre_color ?? 'N/D' }}</td>
+                                    <td>{{ $bici->voltaje ?? '-' }}</td>
+                                    <td>{{ $bici->observaciones ?? '-' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </td>
+    </tr>
+@endforelse
+
                             </tbody>
                         </table>
                     </div>
