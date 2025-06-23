@@ -125,9 +125,9 @@ Route::post('/Precio', [PrecioController::class, 'store'])->name('Precio.store')
 
 //Area
 Route::get('/area/ver', [AreaController::class, 'ver'])->name('area.ver');         // Ver listado
-    Route::post('/area', [AreaController::class, 'store'])->name('area.store');        // Guardar nueva área
-    Route::put('/area/{id}', [AreaController::class, 'update'])->name('area.editar');  // Actualizar área
-    Route::delete('/area/{id}', [AreaController::class, 'eliminar'])->name('area.eliminar'); // Eliminar área
+Route::post('/area', [AreaController::class, 'store'])->name('area.store');        // Guardar nueva área
+Route::put('/area/{id}', [AreaController::class, 'update'])->name('area.editar');  // Actualizar área
+Route::delete('/area/{id}', [AreaController::class, 'eliminar'])->name('area.eliminar'); // Eliminar área
 
 
 Route::get('/Mexico/import',  [ProsesadorController::class, 'formulario'])->name('procesador.import');
