@@ -124,7 +124,7 @@ private function enviarPrintNode(string $codigo): array
         $printer->feed(3);
         $printer->cut();
 
-        $raw = $connector->getData();
+        $raw = $connector->getData();   // ====>  Revisar esta linea
 
         $client = new Client([
             'base_uri' => 'https://api.printnode.com/',
@@ -173,7 +173,7 @@ return [
 
         return response()->json($colores);
     } catch (\Exception $e) {
-        \Log::error('Error al cargar colores:', ['error' => $e->getMessage()]);
+        Log::error('Error al cargar colores:', ['error' => $e->getMessage()]); // ==>  Revisar, la problemas el /Log
         return response()->json([], 500);
     }
 }
@@ -265,13 +265,4 @@ return [
         return view('Bicicleta.vista', compact('bicicletas','modelos','colores','lotes'));
     }
 
-    /**
-     * Dispatch a print job to queue (opcional)
-     */
-    protected function dispatchPrintJob(string $codigo, array $metadata = []): void
-    {
-        EnviarTrabajoImpresion::dispatch($codigo, $metadata)
-            ->onQueue('impresiones')
-            ->delay(now()->addSeconds(5));
-    }
 }
