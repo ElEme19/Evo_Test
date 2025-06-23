@@ -182,16 +182,48 @@ return [
      * Búsqueda por últimos 4 dígitos de chasis
      */
     public function buscarPorUltimos4(Request $request)
-    {
-        $ult4 = $request->query('ult4');
-        if (! $ult4 || strlen($ult4) !== 4) {
-            return response()->json(['bicicleta' => null]);
-        }
-        $bici = Bicicleta::where(DB::raw('RIGHT(num_chasis, 4)'), $ult4)
-                   ->with(['modelo', 'color'])
-                   ->first();
-        return response()->json(['bicicleta' => $bici]);
+{
+    $ult4 = $request->query('ult4');
+
+    if (! $ult4 || strlen($ult4) !== 4) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Debe ingresar los últimos 4 caracteres del número de chasis',
+            'bici'    => null
+        ]);
     }
+
+    try {
+        $bici = Bicicleta::where(DB::raw('RIGHT(num_chasis, 4)'), $ult4)
+                   ->with(['modelo', 'color', 'tipoStock', 'pedido']) // agrego tipoStock y pedido
+                   ->first();
+
+        if (! $bici) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bicicleta no encontrada',
+                'bici'    => null
+            ]);
+        }
+
+        // agrego el campo pedido_asociado
+        $biciData = $bici->toArray();
+        $biciData['pedido_asociado'] = $bici->pedido ? true : false;
+
+        return response()->json([
+            'success' => true,
+            'bici'    => $biciData
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error en el servidor: ' . $e->getMessage(),
+            'bici'    => null
+        ], 500);
+    }
+}
+
 
     /**
      * Búsqueda por número de chasis completo
@@ -210,7 +242,7 @@ return [
 
     try {
         $bici = Bicicleta::where('num_chasis', $numChasis)
-                    ->with(['modelo', 'color', 'tipoStock'])
+                    ->with(['modelo', 'color', 'tipoStock', 'pedido']) // incluimos relación
                     ->first();
 
         if (! $bici) {
@@ -221,18 +253,24 @@ return [
             ]);
         }
 
+        // Agregamos el campo extra a la respuesta
+        $biciData = $bici->toArray();
+        $biciData['pedido_asociado'] = $bici->pedido ? true : false;
+
         return response()->json([
             'success' => true,
-            'bici'    => $bici   // ahora envías el objeto completo con relaciones
+            'bici'    => $biciData
         ]);
+
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
-            'message' => 'Error en el servidor: '.$e->getMessage(),
+            'message' => 'Error en el servidor: ' . $e->getMessage(),
             'bici'    => null
         ], 500);
     }
 }
+
 
 
     /**
