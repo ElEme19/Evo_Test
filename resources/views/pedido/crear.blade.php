@@ -4,7 +4,44 @@
 <div class="container px-2 px-md-3 py-3">
     <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-9 col-xl-8">
-                
+                <style>
+                    .modal-content {
+                        border-radius: 0.8rem;
+                        overflow: hidden;
+                    }
+                    
+                    .modal-header {
+                        border-bottom: none;
+                        padding: 1.25rem 1.5rem;
+                    }
+                    
+                    .modal-icon {
+                        width: 32px;
+                        height: 32px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    
+                    .modal-body {
+                        padding: 1.5rem;
+                        font-size: 1.05rem;
+                    }
+                    
+                    .modal-footer {
+                        border-top: none;
+                        padding: 1rem 1.5rem;
+                    }
+                    
+                    .btn-rounded {
+                        border-radius: 50px;
+                        padding: 0.5rem 1.25rem;
+                    }
+                    
+                    .modal-title {
+                        font-weight: 600;
+                    }
+                </style>
             <!-- Encabezado -->
             <header class="text-center mb-4">
                 <h1 class="h5 fw-bold text-dark">
@@ -108,77 +145,89 @@
     </div>
 </div>
 
-        <!-- Modal de Confirmación -->
-        <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0">
-            <div class="modal-body p-4 text-center">
-                <div class="mb-3">
-                <i class="fas fa-question-circle text-muted fs-1"></i>
+<!-- Modal Confirmación -->
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-light">
+                <div class="modal-icon bg-success text-white rounded-circle me-3">
+                    <i class="fas fa-question"></i>
                 </div>
-                <h5 class="mb-3">Confirmar acción</h5>
-                <p class="text-muted mb-4">¿Desea agregar esta bicicleta al pedido?</p>
-                <div class="d-flex justify-content-center gap-3">
-                <button type="button" class="btn btn-sm btn-outline-secondary px-4" data-bs-dismiss="modal">
-                    Cancelar
-                </button>
-                <button type="button" class="btn btn-sm btn-success px-4" id="confirmAddBtn">
-                    Agregar
-                </button>
+                <h5 class="modal-title text-dark" id="confirmModalLabel">Confirmar acción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4" id="confirmModalBody">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-info-circle text-primary me-3 fs-4"></i>
+                    <p class="mb-0">¿Desea agregar esta bicicleta al pedido?</p>
                 </div>
             </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-success rounded-pill px-4" id="confirmAddBtn">
+                    <i class="fas fa-check me-2"></i>Confirmar
+                </button>
             </div>
         </div>
-        </div>
+    </div>
+</div>
 
-        <!-- Modal de Información -->
-        <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0">
-            <div class="modal-body p-4 text-center">
-                <div class="mb-3">
-                <i class="fas fa-info-circle text-primary fs-1"></i>
+<!-- Modal de Información -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <div class="modal-icon bg-white text-primary rounded-circle me-3">
+                    <i class="fas fa-info-circle"></i>
                 </div>
-                <h5 class="mb-3">Información</h5>
-                <p class="text-muted mb-4" id="infoModalBody">Mensaje de información</p>
-                <button type="button" class="btn btn-sm btn-primary px-4" data-bs-dismiss="modal">
-                Aceptar
+                <h5 class="modal-title" id="infoModalLabel">Información</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4" id="infoModalBody">
+                <div class="d-flex align-items-start">
+                    <i class="fas fa-info-circle text-primary mt-1 me-3 fs-4"></i>
+                    <p class="mb-0">Mensaje de información</p>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-primary rounded-pill px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-thumbs-up me-2"></i>Entendido
                 </button>
             </div>
-            </div>
         </div>
-        </div>
+    </div>
+</div>
 
-        <!-- Modal de Error -->
-        <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0">
-            <div class="modal-body p-4 text-center">
-                <div class="mb-3">
-                <i class="fas fa-exclamation-circle text-danger fs-1"></i>
+<!-- Modal de Error -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white">
+                <div class="modal-icon bg-white text-danger rounded-circle me-3">
+                    <i class="fas fa-exclamation-triangle"></i>
                 </div>
-                <h5 class="mb-3">Error</h5>
-                <p class="text-muted mb-4" id="errorModalBody">Mensaje de error</p>
-                <button type="button" class="btn btn-sm btn-outline-danger px-4" data-bs-dismiss="modal">
-                Cerrar
+                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4" id="errorModalBody">
+                <div class="d-flex align-items-start">
+                    <i class="fas fa-exclamation-circle text-danger mt-1 me-3 fs-4"></i>
+                    <p class="mb-0">Mensaje de error</p>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-danger rounded-pill px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cerrar
                 </button>
             </div>
-            </div>
         </div>
-        </div>
+    </div>
+</div>
 
-        <style>
-        .modal-content {
-            border-radius: 8px;
-        }
-        .modal-body {
-            padding: 2rem;
-        }
-        .btn {
-            border-radius: 4px;
-            min-width: 80px;
-        }
-        </style>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -201,75 +250,152 @@ document.addEventListener('DOMContentLoaded', () => {
     let listaBicis = [];
     let currentBici = null;
 
-    // Habilitar campo de búsqueda cuando se selecciona sucursal
+    // Event Listeners
     sucursalSelect.addEventListener('change', () => {
-        numChasisInput.disabled = !sucursalSelect.value;
         if (sucursalSelect.value) {
+            numChasisInput.disabled = false;
             numChasisInput.focus();
         } else {
+            numChasisInput.disabled = true;
             numChasisInput.value = '';
+            listaBicis = [];
+            renderizarTabla();
+            btnFinalizar.disabled = true;
         }
     });
 
-    // Manejar entrada de búsqueda
     numChasisInput.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            await buscarBicicleta();
+            await procesarBusqueda();
         }
     });
 
-    // Confirmar agregar bicicleta
+    numChasisInput.addEventListener('input', async () => {
+        const valor = numChasisInput.value.trim().toUpperCase();
+        if (valor.length === 4 || valor.length === 17) {
+            await procesarBusqueda();
+        }
+    });
+
     confirmAddBtn.addEventListener('click', () => {
         if (currentBici) {
-            // Verificar duplicados antes de agregar
-            const existe = listaBicis.some(b => b.num_chasis === currentBici.num_chasis);
-            if (!existe) {
-                listaBicis.push(currentBici);
-                renderizarTabla();
-                numChasisInput.value = '';
-                numChasisInput.focus();
-            } else {
-                mostrarErrorModal('Esta bicicleta ya fue agregada');
-            }
+            agregarBicicleta(currentBici);
             confirmModal.hide();
             currentBici = null;
         }
     });
 
-    // Función para buscar bicicleta
-    async function buscarBicicleta() {
-        const numSerie = numChasisInput.value.trim();
-        if (!numSerie) return;
+    // Funciones principales
+    async function procesarBusqueda() {
+        const valor = numChasisInput.value.trim().toUpperCase();
+        if (!valor) return;
 
+        if (listaBicis.some(b => b.num_chasis.toUpperCase() === valor)) {
+            mostrarInfoModal('Esta bicicleta ya fue agregada al pedido.');
+            numChasisInput.value = '';
+            return;
+        }
+
+        await buscarBicicleta(valor);
+    }
+
+    function renderizarTabla() {
+        tabla.innerHTML = '';
+        const repeticiones = {};
+
+        // Contar repeticiones
+        listaBicis.forEach(b => {
+            const key = b.num_chasis.toUpperCase();
+            repeticiones[key] = (repeticiones[key] || 0) + 1;
+        });
+
+        listaBicis.forEach((bici, i) => {
+            const key = bici.num_chasis.toUpperCase();
+            const claseRoja = repeticiones[key] > 1 ? 'table-danger' : '';
+
+            const tr = document.createElement('tr');
+            tr.className = claseRoja;
+            tr.innerHTML = `
+                <td class="text-center">${i + 1}</td>
+                <td class="fw-semibold text-center">${bici.num_chasis}</td>
+                <td class="text-center">${bici.modelo}</td>
+                <td class="text-center">
+                    <span class="badge bg-light text-dark border">${bici.color}</span>
+                </td>
+                <td class="text-end text-center">
+                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" 
+                            onclick="quitarBici('${bici.num_chasis}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+            tabla.appendChild(tr);
+        });
+        
+        btnFinalizar.disabled = listaBicis.length === 0;
+        contadorBicis.textContent = listaBicis.length;
+    }
+
+    window.quitarBici = function(num_chasis) {
+        listaBicis = listaBicis.filter(b => b.num_chasis !== num_chasis);
+        renderizarTabla();
+    };
+
+    async function buscarBicicleta(numSerie) {
         try {
-            const response = await fetch(`/api/bicicletas/buscar?serie=${encodeURIComponent(numSerie)}`);
-            const data = await response.json();
+            const url = numSerie.length === 4 
+                ? `/Bicicleta/buscar-por-ultimos4?ult4=${encodeURIComponent(numSerie)}`
+                : `/Bicicleta/buscarC?num_chasis=${encodeURIComponent(numSerie)}`;
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Error al buscar la bicicleta');
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Error en la respuesta del servidor');
+
+            const data = await res.json();
+            const biciData = data.bicicleta || data.bici;
+
+            if (!biciData || !biciData.num_chasis) {
+                mostrarErrorModal('No se encontró ninguna bicicleta con ese número');
+                return;
             }
 
-            // Verificar si la bicicleta ya está en un pedido
-            if (data.pedido_id) {
-                throw new Error('Esta bicicleta ya está asignada a un pedido');
+            // Verificar si ya tiene pedido asociado
+            if (biciData.pedido_asociado) {
+                mostrarErrorModal('Esta bicicleta ya tiene un pedido registrado y no puede agregarse.');
+                numChasisInput.value = '';
+                return;
             }
 
-            // Mostrar modal de confirmación
+            // Verificar duplicados
+            const yaExiste = listaBicis.some(b => b.num_chasis.toUpperCase() === biciData.num_chasis.toUpperCase());
+            if (yaExiste) {
+                mostrarInfoModal('Esta bicicleta ya fue agregada al pedido.');
+                numChasisInput.value = '';
+                return;
+            }
+
+            const modelo = biciData.modelo?.nombre_modelo || biciData.modelo || 'N/D';
+            const color = biciData.color?.nombre_color || biciData.color || 'N/D';
+
             currentBici = {
-                num_chasis: data.num_chasis,
-                modelo: data.modelo.nombre_modelo || 'N/D',
-                color: data.color.nombre_color || 'N/D',
-                id_bicicleta: data.id_bicicleta
+                num_chasis: biciData.num_chasis,
+                modelo: modelo,
+                color: color
             };
 
+            // Mostrar modal de confirmación
             document.getElementById('confirmModalBody').innerHTML = `
-                <p>¿Agregar esta bicicleta al pedido?</p>
-                <div class="card bg-light mt-2">
-                    <div class="card-body p-2">
-                        <p class="mb-1"><strong>Serie:</strong> ${data.num_chasis}</p>
-                        <p class="mb-1"><strong>Modelo:</strong> ${currentBici.modelo}</p>
-                        <p class="mb-0"><strong>Color:</strong> ${currentBici.color}</p>
+                <div class="mb-3">
+                    <p>¿Agregar esta bicicleta al pedido?</p>
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title">Detalles de la bicicleta</h6>
+                            <ul class="list-unstyled small">
+                                <li><strong>N° Serie:</strong> ${biciData.num_chasis}</li>
+                                <li><strong>Modelo:</strong> ${modelo}</li>
+                                <li><strong>Color:</strong> ${color}</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             `;
@@ -277,58 +403,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('Error:', error);
-            mostrarErrorModal(error.message);
-            numChasisInput.value = '';
-            numChasisInput.focus();
+            mostrarErrorModal('Error al buscar la bicicleta: ' + error.message);
         }
     }
 
-    // Renderizar tabla de bicicletas
-    function renderizarTabla() {
-        tabla.innerHTML = '';
-        
-        listaBicis.forEach((bici, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="text-center">${index + 1}</td>
-                <td class="text-center">${bici.num_chasis}</td>
-                <td class="text-center">${bici.modelo}</td>
-                <td class="text-center">${bici.color}</td>
-                <td class="text-center">
-                    <button class="btn btn-sm btn-outline-danger" onclick="quitarBici(${index})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            `;
-            tabla.appendChild(tr);
-        });
-
-        // Actualizar contador y estado del botón
-        contadorBicis.textContent = listaBicis.length;
-        btnFinalizar.disabled = listaBicis.length === 0;
-    }
-
-    // Función para quitar bicicleta
-    window.quitarBici = function(index) {
-        listaBicis.splice(index, 1);
+    function agregarBicicleta(bici) {
+        listaBicis.push(bici);
         renderizarTabla();
-    };
-
-    // Manejar envío del formulario
-    formPedido.addEventListener('submit', (e) => {
-        if (listaBicis.length === 0) {
-            e.preventDefault();
-            mostrarErrorModal('Debes agregar al menos una bicicleta');
-            return;
-        }
-
-        // Agregar bicicletas como input hidden
-        const inputBicis = document.createElement('input');
-        inputBicis.type = 'hidden';
-        inputBicis.name = 'bicicletas';
-        inputBicis.value = JSON.stringify(listaBicis.map(b => b.id_bicicleta));
-        formPedido.appendChild(inputBicis);
-    });
+        numChasisInput.value = '';
+        numChasisInput.focus();
+    }
 
     // Funciones para mostrar modales
     function mostrarInfoModal(mensaje) {
