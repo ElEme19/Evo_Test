@@ -364,7 +364,8 @@ document.addEventListener('DOMContentLoaded', () => {
             currentBici = {
                 num_chasis: biciData.num_chasis,
                 modelo: modelo,
-                color: color
+                color: color,
+                voltaje: voltaje
             };
 
             // Mostrar modal de confirmación
