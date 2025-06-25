@@ -184,7 +184,7 @@
         </div>
         <h5 class="mb-3">Información</h5>
         <p class="text-muted mb-4" id="infoModalBody">Mensaje de información</p>
-        <button type="button" class="btn btn-sm btn-primary px-4" data-bs-dismiss="modal">
+        <button type="button" class="btn btn-sm btn-outline-primary px-4" data-bs-dismiss="modal">
           Aceptar
         </button>
       </div>
