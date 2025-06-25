@@ -4,44 +4,7 @@
 <div class="container px-2 px-md-3 py-3">
     <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-9 col-xl-8">
-                <style>
-                    .modal-content {
-                        border-radius: 0.8rem;
-                        overflow: hidden;
-                    }
-                    
-                    .modal-header {
-                        border-bottom: none;
-                        padding: 1.25rem 1.5rem;
-                    }
-                    
-                    .modal-icon {
-                        width: 32px;
-                        height: 32px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                    }
-                    
-                    .modal-body {
-                        padding: 1.5rem;
-                        font-size: 1.05rem;
-                    }
-                    
-                    .modal-footer {
-                        border-top: none;
-                        padding: 1rem 1.5rem;
-                    }
-                    
-                    .btn-rounded {
-                        border-radius: 50px;
-                        padding: 0.5rem 1.25rem;
-                    }
-                    
-                    .modal-title {
-                        font-weight: 600;
-                    }
-                </style>
+                
             <!-- Encabezado -->
             <header class="text-center mb-4">
                 <h1 class="h5 fw-bold text-dark">
@@ -145,89 +108,77 @@
     </div>
 </div>
 
-<!-- Modal Confirmación -->
-<!-- Modal de Confirmación -->
-<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-light">
-                <div class="modal-icon bg-success text-white rounded-circle me-3">
-                    <i class="fas fa-question"></i>
+        <!-- Modal de Confirmación -->
+        <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0">
+            <div class="modal-body p-4 text-center">
+                <div class="mb-3">
+                <i class="fas fa-question-circle text-muted fs-1"></i>
                 </div>
-                <h5 class="modal-title text-dark" id="confirmModalLabel">Confirmar acción</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body py-4" id="confirmModalBody">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-info-circle text-primary me-3 fs-4"></i>
-                    <p class="mb-0">¿Desea agregar esta bicicleta al pedido?</p>
+                <h5 class="mb-3">Confirmar acción</h5>
+                <p class="text-muted mb-4">¿Desea agregar esta bicicleta al pedido?</p>
+                <div class="d-flex justify-content-center gap-3">
+                <button type="button" class="btn btn-sm btn-outline-secondary px-4" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-sm btn-success px-4" id="confirmAddBtn">
+                    Agregar
+                </button>
                 </div>
             </div>
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-2"></i>Cancelar
-                </button>
-                <button type="button" class="btn btn-success rounded-pill px-4" id="confirmAddBtn">
-                    <i class="fas fa-check me-2"></i>Confirmar
-                </button>
             </div>
         </div>
-    </div>
-</div>
+        </div>
 
-<!-- Modal de Información -->
-<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-primary text-white">
-                <div class="modal-icon bg-white text-primary rounded-circle me-3">
-                    <i class="fas fa-info-circle"></i>
+        <!-- Modal de Información -->
+        <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0">
+            <div class="modal-body p-4 text-center">
+                <div class="mb-3">
+                <i class="fas fa-info-circle text-primary fs-1"></i>
                 </div>
-                <h5 class="modal-title" id="infoModalLabel">Información</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body py-4" id="infoModalBody">
-                <div class="d-flex align-items-start">
-                    <i class="fas fa-info-circle text-primary mt-1 me-3 fs-4"></i>
-                    <p class="mb-0">Mensaje de información</p>
-                </div>
-            </div>
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-primary rounded-pill px-4" data-bs-dismiss="modal">
-                    <i class="fas fa-thumbs-up me-2"></i>Entendido
+                <h5 class="mb-3">Información</h5>
+                <p class="text-muted mb-4" id="infoModalBody">Mensaje de información</p>
+                <button type="button" class="btn btn-sm btn-primary px-4" data-bs-dismiss="modal">
+                Aceptar
                 </button>
             </div>
+            </div>
         </div>
-    </div>
-</div>
+        </div>
 
-<!-- Modal de Error -->
-<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-danger text-white">
-                <div class="modal-icon bg-white text-danger rounded-circle me-3">
-                    <i class="fas fa-exclamation-triangle"></i>
+        <!-- Modal de Error -->
+        <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0">
+            <div class="modal-body p-4 text-center">
+                <div class="mb-3">
+                <i class="fas fa-exclamation-circle text-danger fs-1"></i>
                 </div>
-                <h5 class="modal-title" id="errorModalLabel">Error</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body py-4" id="errorModalBody">
-                <div class="d-flex align-items-start">
-                    <i class="fas fa-exclamation-circle text-danger mt-1 me-3 fs-4"></i>
-                    <p class="mb-0">Mensaje de error</p>
-                </div>
-            </div>
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-danger rounded-pill px-4" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-2"></i>Cerrar
+                <h5 class="mb-3">Error</h5>
+                <p class="text-muted mb-4" id="errorModalBody">Mensaje de error</p>
+                <button type="button" class="btn btn-sm btn-outline-danger px-4" data-bs-dismiss="modal">
+                Cerrar
                 </button>
             </div>
+            </div>
         </div>
-    </div>
-</div>
+        </div>
 
-
+        <style>
+        .modal-content {
+            border-radius: 8px;
+        }
+        .modal-body {
+            padding: 2rem;
+        }
+        .btn {
+            border-radius: 4px;
+            min-width: 80px;
+        }
+        </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
