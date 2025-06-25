@@ -201,152 +201,75 @@ document.addEventListener('DOMContentLoaded', () => {
     let listaBicis = [];
     let currentBici = null;
 
-    // Event Listeners
+    // Habilitar campo de búsqueda cuando se selecciona sucursal
     sucursalSelect.addEventListener('change', () => {
+        numChasisInput.disabled = !sucursalSelect.value;
         if (sucursalSelect.value) {
-            numChasisInput.disabled = false;
             numChasisInput.focus();
         } else {
-            numChasisInput.disabled = true;
             numChasisInput.value = '';
-            listaBicis = [];
-            renderizarTabla();
-            btnFinalizar.disabled = true;
         }
     });
 
+    // Manejar entrada de búsqueda
     numChasisInput.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            await procesarBusqueda();
+            await buscarBicicleta();
         }
     });
 
-    numChasisInput.addEventListener('input', async () => {
-        const valor = numChasisInput.value.trim().toUpperCase();
-        if (valor.length === 4 || valor.length === 17) {
-            await procesarBusqueda();
-        }
-    });
-
+    // Confirmar agregar bicicleta
     confirmAddBtn.addEventListener('click', () => {
         if (currentBici) {
-            agregarBicicleta(currentBici);
+            // Verificar duplicados antes de agregar
+            const existe = listaBicis.some(b => b.num_chasis === currentBici.num_chasis);
+            if (!existe) {
+                listaBicis.push(currentBici);
+                renderizarTabla();
+                numChasisInput.value = '';
+                numChasisInput.focus();
+            } else {
+                mostrarErrorModal('Esta bicicleta ya fue agregada');
+            }
             confirmModal.hide();
             currentBici = null;
         }
     });
 
-    // Funciones principales
-    async function procesarBusqueda() {
-        const valor = numChasisInput.value.trim().toUpperCase();
-        if (!valor) return;
+    // Función para buscar bicicleta
+    async function buscarBicicleta() {
+        const numSerie = numChasisInput.value.trim();
+        if (!numSerie) return;
 
-        if (listaBicis.some(b => b.num_chasis.toUpperCase() === valor)) {
-            mostrarInfoModal('Esta bicicleta ya fue agregada al pedido.');
-            numChasisInput.value = '';
-            return;
-        }
-
-        await buscarBicicleta(valor);
-    }
-
-    function renderizarTabla() {
-        tabla.innerHTML = '';
-        const repeticiones = {};
-
-        // Contar repeticiones
-        listaBicis.forEach(b => {
-            const key = b.num_chasis.toUpperCase();
-            repeticiones[key] = (repeticiones[key] || 0) + 1;
-        });
-
-        listaBicis.forEach((bici, i) => {
-            const key = bici.num_chasis.toUpperCase();
-            const claseRoja = repeticiones[key] > 1 ? 'table-danger' : '';
-
-            const tr = document.createElement('tr');
-            tr.className = claseRoja;
-            tr.innerHTML = `
-                <td class="text-center">${i + 1}</td>
-                <td class="fw-semibold text-center">${bici.num_chasis}</td>
-                <td class="text-center">${bici.modelo}</td>
-                <td class="text-center">
-                    <span class="badge bg-light text-dark border">${bici.color}</span>
-                </td>
-                <td class="text-end text-center">
-                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" 
-                            onclick="quitarBici('${bici.num_chasis}')">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            `;
-            tabla.appendChild(tr);
-        });
-        
-        btnFinalizar.disabled = listaBicis.length === 0;
-        contadorBicis.textContent = listaBicis.length;
-    }
-
-    window.quitarBici = function(num_chasis) {
-        listaBicis = listaBicis.filter(b => b.num_chasis !== num_chasis);
-        renderizarTabla();
-    };
-
-    async function buscarBicicleta(numSerie) {
         try {
-            const url = numSerie.length === 4 
-                ? `/Bicicleta/buscar-por-ultimos4?ult4=${encodeURIComponent(numSerie)}`
-                : `/Bicicleta/buscarC?num_chasis=${encodeURIComponent(numSerie)}`;
+            const response = await fetch(`/api/bicicletas/buscar?serie=${encodeURIComponent(numSerie)}`);
+            const data = await response.json();
 
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('Error en la respuesta del servidor');
-
-            const data = await res.json();
-            const biciData = data.bicicleta || data.bici;
-
-            if (!biciData || !biciData.num_chasis) {
-                mostrarErrorModal('No se encontró ninguna bicicleta con ese número');
-                return;
+            if (!response.ok) {
+                throw new Error(data.message || 'Error al buscar la bicicleta');
             }
 
-            // Verificar si ya tiene pedido asociado
-            if (biciData.pedido_asociado) {
-                mostrarErrorModal('Esta bicicleta ya tiene un pedido registrado y no puede agregarse.');
-                numChasisInput.value = '';
-                return;
+            // Verificar si la bicicleta ya está en un pedido
+            if (data.pedido_id) {
+                throw new Error('Esta bicicleta ya está asignada a un pedido');
             }
-
-            // Verificar duplicados
-            const yaExiste = listaBicis.some(b => b.num_chasis.toUpperCase() === biciData.num_chasis.toUpperCase());
-            if (yaExiste) {
-                mostrarInfoModal('Esta bicicleta ya fue agregada al pedido.');
-                numChasisInput.value = '';
-                return;
-            }
-
-            const modelo = biciData.modelo?.nombre_modelo || biciData.modelo || 'N/D';
-            const color = biciData.color?.nombre_color || biciData.color || 'N/D';
-
-            currentBici = {
-                num_chasis: biciData.num_chasis,
-                modelo: modelo,
-                color: color
-            };
 
             // Mostrar modal de confirmación
+            currentBici = {
+                num_chasis: data.num_chasis,
+                modelo: data.modelo.nombre_modelo || 'N/D',
+                color: data.color.nombre_color || 'N/D',
+                id_bicicleta: data.id_bicicleta
+            };
+
             document.getElementById('confirmModalBody').innerHTML = `
-                <div class="mb-3">
-                    <p>¿Agregar esta bicicleta al pedido?</p>
-                    <div class="card border-0 bg-light">
-                        <div class="card-body">
-                            <h6 class="card-title">Detalles de la bicicleta</h6>
-                            <ul class="list-unstyled small">
-                                <li><strong>N° Serie:</strong> ${biciData.num_chasis}</li>
-                                <li><strong>Modelo:</strong> ${modelo}</li>
-                                <li><strong>Color:</strong> ${color}</li>
-                            </ul>
-                        </div>
+                <p>¿Agregar esta bicicleta al pedido?</p>
+                <div class="card bg-light mt-2">
+                    <div class="card-body p-2">
+                        <p class="mb-1"><strong>Serie:</strong> ${data.num_chasis}</p>
+                        <p class="mb-1"><strong>Modelo:</strong> ${currentBici.modelo}</p>
+                        <p class="mb-0"><strong>Color:</strong> ${currentBici.color}</p>
                     </div>
                 </div>
             `;
@@ -354,16 +277,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('Error:', error);
-            mostrarErrorModal('Error al buscar la bicicleta: ' + error.message);
+            mostrarErrorModal(error.message);
+            numChasisInput.value = '';
+            numChasisInput.focus();
         }
     }
 
-    function agregarBicicleta(bici) {
-        listaBicis.push(bici);
-        renderizarTabla();
-        numChasisInput.value = '';
-        numChasisInput.focus();
+    // Renderizar tabla de bicicletas
+    function renderizarTabla() {
+        tabla.innerHTML = '';
+        
+        listaBicis.forEach((bici, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="text-center">${index + 1}</td>
+                <td class="text-center">${bici.num_chasis}</td>
+                <td class="text-center">${bici.modelo}</td>
+                <td class="text-center">${bici.color}</td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-outline-danger" onclick="quitarBici(${index})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+            tabla.appendChild(tr);
+        });
+
+        // Actualizar contador y estado del botón
+        contadorBicis.textContent = listaBicis.length;
+        btnFinalizar.disabled = listaBicis.length === 0;
     }
+
+    // Función para quitar bicicleta
+    window.quitarBici = function(index) {
+        listaBicis.splice(index, 1);
+        renderizarTabla();
+    };
+
+    // Manejar envío del formulario
+    formPedido.addEventListener('submit', (e) => {
+        if (listaBicis.length === 0) {
+            e.preventDefault();
+            mostrarErrorModal('Debes agregar al menos una bicicleta');
+            return;
+        }
+
+        // Agregar bicicletas como input hidden
+        const inputBicis = document.createElement('input');
+        inputBicis.type = 'hidden';
+        inputBicis.name = 'bicicletas';
+        inputBicis.value = JSON.stringify(listaBicis.map(b => b.id_bicicleta));
+        formPedido.appendChild(inputBicis);
+    });
 
     // Funciones para mostrar modales
     function mostrarInfoModal(mensaje) {
