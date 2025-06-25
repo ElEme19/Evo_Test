@@ -1,9 +1,9 @@
 @extends('layout.app')
 
 @section('conten')
-<div class="container px-2 px-md-3 py-3">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-10 col-lg-9 col-xl-8">
+<div class="container-fluid px-2 px-md-3 py-3">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-9 col-xl-8">
                 <style>
                     .modal-content {
                         border-radius: 0.8rem;
