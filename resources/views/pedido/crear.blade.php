@@ -163,10 +163,10 @@
                 </div>
             </div>
             <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-dismiss="modal">
                     <i class="fas fa-times me-2"></i>Cancelar
                 </button>
-                <button type="button" class="btn btn-success rounded-pill px-4" id="confirmAddBtn">
+                <button type="button" class="btn btn-outline-success rounded-pill px-4" id="confirmAddBtn">
                     <i class="fas fa-check me-2"></i>Confirmar
                 </button>
             </div>
