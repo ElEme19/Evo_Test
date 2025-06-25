@@ -78,7 +78,7 @@
             </div>
 
 
-<div class="col-12">  
+ 
             <!-- Formulario -->
             <form method="POST" action="{{ route('pedido.store') }}" id="formPedido" class="bg-white p-3 rounded-3 border">
                 @csrf
