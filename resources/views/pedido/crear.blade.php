@@ -303,9 +303,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="text-center">${i + 1}</td>
                 <td class="fw-semibold text-center">${bici.num_chasis}</td>
                 <td class="text-center">${bici.modelo}</td>
-                <td class="text-center">
-                    <span class="badge bg-light text-dark border">${bici.color}</span>
-                </td>
+                 <td class="text-center">${bici.color}</td>
+                 <td class="text-center">${bici.voltaje}</td>
                 <td class="text-end text-center">
                     <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" 
                             onclick="quitarBici('${bici.num_chasis}')">
@@ -373,9 +372,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>¿Agregar esta bicicleta al pedido?</p>
                     <div class="card border-0 bg-light">
                         <div class="card-body">
-                            <h6 class="card-title">Detalles de la bicicleta</h6>
+                          
                             <ul class="list-unstyled small">
-                                <li><strong>N° Serie:</strong> ${biciData.num_chasis}</li>
+                                <li><strong>No. Serie:</strong> ${biciData.num_chasis}</li>
                                 <li><strong>Modelo:</strong> ${modelo}</li>
                                 <li><strong>Color:</strong> ${color}</li>
                                 <li><strong>Voltaje:</strong> ${voltaje}</li>
@@ -426,6 +425,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         formPedido.submit();
     });
+
+    
 });
 </script>
 @endsection
