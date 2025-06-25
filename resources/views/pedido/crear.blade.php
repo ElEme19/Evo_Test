@@ -145,7 +145,6 @@
     </div>
 </div>
 
-<!-- Modal Confirmación -->
 <!-- Modal de Confirmación -->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -202,29 +201,21 @@
 </div>
 
 <!-- Modal de Error -->
-<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-danger text-white">
-                <div class="modal-icon bg-white text-danger rounded-circle me-3">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <h5 class="modal-title" id="errorModalLabel">Error</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body py-4" id="errorModalBody">
-                <div class="d-flex align-items-start">
-                    <i class="fas fa-exclamation-circle text-danger mt-1 me-3 fs-4"></i>
-                    <p class="mb-0">Mensaje de error</p>
-                </div>
-            </div>
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-danger rounded-pill px-4" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-2"></i>Cerrar
-                </button>
-            </div>
+<div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0">
+      <div class="modal-body p-4 text-center">
+        <div class="mb-3">
+          <i class="fas fa-exclamation-circle text-danger fs-1"></i>
         </div>
+        <h5 class="mb-3">Error</h5>
+        <p class="text-muted mb-4" id="errorModalBody">Mensaje de error</p>
+        <button type="button" class="btn btn-sm btn-outline-danger px-4" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
     </div>
+  </div>
 </div>
 
 
