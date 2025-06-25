@@ -77,6 +77,8 @@
                 @endif
             </div>
 
+
+            <div class="col-12 col-md-10 col-lg-9 col-xl-8">
             <!-- Formulario -->
             <form method="POST" action="{{ route('pedido.store') }}" id="formPedido" class="bg-white p-3 rounded-3 border">
                 @csrf
@@ -210,7 +212,7 @@
     </div>
   </div>
 </div>
-
+</div>
 
 
 <script>
