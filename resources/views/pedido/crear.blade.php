@@ -175,29 +175,21 @@
 </div>
 
 <!-- Modal de Información -->
-<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-primary text-white">
-                <div class="modal-icon bg-white text-primary rounded-circle me-3">
-                    <i class="fas fa-info-circle"></i>
-                </div>
-                <h5 class="modal-title" id="infoModalLabel">Información</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body py-4" id="infoModalBody">
-                <div class="d-flex align-items-start">
-                    <i class="fas fa-info-circle text-primary mt-1 me-3 fs-4"></i>
-                    <p class="mb-0">Mensaje de información</p>
-                </div>
-            </div>
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-primary rounded-pill px-4" data-bs-dismiss="modal">
-                    <i class="fas fa-thumbs-up me-2"></i>Entendido
-                </button>
-            </div>
+<div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0">
+      <div class="modal-body p-4 text-center">
+        <div class="mb-3">
+          <i class="fas fa-info-circle text-primary fs-1"></i>
         </div>
+        <h5 class="mb-3">Información</h5>
+        <p class="text-muted mb-4" id="infoModalBody">Mensaje de información</p>
+        <button type="button" class="btn btn-sm btn-primary px-4" data-bs-dismiss="modal">
+          Aceptar
+        </button>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Modal de Error -->
