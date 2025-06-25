@@ -359,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const modelo = biciData.modelo?.nombre_modelo || biciData.modelo || 'N/D';
             const color = biciData.color?.nombre_color || biciData.color || 'N/D';
+            const voltaje = biciData.voltaje || biciData.voltaje || 'Sin Voltaje';
 
             currentBici = {
                 num_chasis: biciData.num_chasis,
@@ -377,6 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <li><strong>N° Serie:</strong> ${biciData.num_chasis}</li>
                                 <li><strong>Modelo:</strong> ${modelo}</li>
                                 <li><strong>Color:</strong> ${color}</li>
+                                <li><strong>Voltaje:</strong> ${voltaje}</li>
                             </ul>
                         </div>
                     </div>
