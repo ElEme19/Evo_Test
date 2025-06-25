@@ -1,4 +1,4 @@
-@extends('layout/app2')
+@extends('layout.app2')
 @section ('fondo')
 
 <form method="POST" action="{{route('login')}}" >
