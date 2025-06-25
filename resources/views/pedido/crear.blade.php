@@ -43,13 +43,14 @@
                     }
                 </style>
             <!-- Encabezado -->
-            <header class="text-center mb-4">
-                <h1 class="h5 fw-bold text-dark">
+            <header class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
+                <h1 class="h3 mb-0 text-success fw-bold">
                     <i class="bi bi-truck me-2"></i>Nuevo Pedido
                 </h1>
-                <div class="badge bg-light text-dark fs-6 px-2 py-1 border border-secondary">
+
+                <!-- <div class="badge bg-light text-dark fs-6 px-2 py-1 border border-secondary">
                     <i class="bi bi-info-circle me-1"></i>Escanea las bicicletas
-                </div>
+                </div> -->    
             </header>
 
             <!-- Alertas -->
