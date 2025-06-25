@@ -126,6 +126,7 @@
                                     <th>N° Serie</th>
                                     <th>Modelo</th>
                                     <th>Color</th>
+                                    <th>Voltaje</th>
                                     <th>Acción</th>
                                 </tr>
                             </thead>
