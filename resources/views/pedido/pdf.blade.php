@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    
     <meta charset="UTF-8">
     <title>Formulario de Emisión de Fábrica - {{ $pedido->id_pedido }}</title>
     <style>
@@ -50,7 +51,7 @@
                     <strong>Transporte:</strong><br>Evobike
                 </td>
                 <td style="width:16%; text-align: center;">
-                    <strong>Costo Envío:</strong><br>{{ $pedido->costo_envio ?? '0.00' }}
+                    <strong>Costo Envío:</strong><br>{{ $pedido->costo_envio ?? '0.00 MXN' }}
                 </td>
         </tr>
 
@@ -227,6 +228,40 @@
     </tr>
 </table>
 
+
+<footer style="
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 8px 0;
+    text-align: center;
+    font-size: 10px;
+    color: #555;
+    background-color: #f8f8f8;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+">
+    <!-- Contenedor flexible para texto e icono -->
+    <div style="display: flex; align-items: center; height: 22px; position: relative;">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             width="14" 
+             height="14" 
+             fill="#4a6baf" 
+             viewBox="0 0 16 16"
+             style="vertical-align: middle; margin-right: 5px;">
+            <path d="M8 1a5.53 5.53 0 0 0-3.594 1.343A5.49 5.49 0 0 0 8 0a5.49 5.49 0 0 0 3.594 2.343A5.53 5.53 0 0 0 8 1z"/>
+            <path d="M4.406 3.3C2.664 4.045 1.5 5.897 1.5 8c0 2.485 2.015 4.5 4.5 4.5H11a4.5 4.5 0 0 0 0-9 5.53 5.53 0 0 0-3.594 1.3z"/>
+        </svg>
+        <span style="line-height: 22px;">Powered By: CloudLabs</span>
+        
+        <!-- Imagen con ajuste vertical -->
+        <img src="{{ public_path('images/CloudLabs.png') }}" 
+             style="height: 15px; width: auto; display: block; position: relative; top: 3px; margin-left: 1px;">
+    </div>
+</footer>
 
 
 </body>
