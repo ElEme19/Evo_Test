@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Formulario Pedido {{ $pedido->id_pedido }}</title>
+    <title>Formulario de Emisión de Fábrica - {{ $pedido->id_pedido }}</title>
     <style>
         body { font-family: Arial, sans-serif; font-size: 11px; margin: 0; padding: 0; }
         .table { width: 100%; border-collapse: collapse; }
@@ -19,19 +19,17 @@
         .no-border { border: none !important; }
         .footer-note { font-size: 8px; }
         .footer-red { color: red; font-size: 8px; }
+        .merged-cell { border-top: none !important; }
     </style>
 </head>
 <body>
     <!-- Encabezado -->
     <table class="table header-table">
-        
         <tr>
             <td colspan="6" class="header-logo" style="text-align: center;">
                 <img src="{{ public_path('images/logo.jpg') }}" style="height: 50px;" alt="Logo">
-
             </td>
         </tr>
-
         <tr>
             <td colspan="6" class="title">Formulario de Emisión de Fábrica</td>
         </tr>
@@ -45,48 +43,96 @@
         </tr>
     </table>
 
-    <!-- Detalle de bicis -->
-    <table class="table">
-        <thead>
+   <!-- Detalle de bicis -->
+<table class="table">
+    <thead>
+        <tr>
+            <th class="small center" style="width:5%;">#</th>
+            <th class="small" style="width:23%;">Modelo</th>
+            <th class="small" style="width:21%;">Color</th>
+            <th class="small center" style="width:10%;">Cantidad</th>
+            <th class="small" style="width:25%;">No. Frame</th>
+            <th class="small" style="width:16%;">Observación</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php
+            // Agrupar bicicletas por modelo, color y voltaje
+            $groupedBikes = [];
+            foreach($pedido->bicicletas as $bic) {
+                $key = ($bic->modelo->nombre_modelo ?? 'N/D') . '|' . 
+                       ($bic->color->nombre_color ?? 'N/D') . '|' . 
+                       ($bic->voltaje ?? '');
+                if (!isset($groupedBikes[$key])) {
+                    $groupedBikes[$key] = [
+                        'modelo' => $bic->modelo->nombre_modelo ?? 'N/D',
+                        'color' => $bic->color->nombre_color ?? 'N/D',
+                        'voltaje' => $bic->voltaje ?? '',
+                        'frames' => [],
+                        'count' => 0
+                    ];
+                }
+                $groupedBikes[$key]['frames'][] = $bic->num_chasis;
+                $groupedBikes[$key]['count']++;
+            }
+            
+            $rowNumber = 1;
+        @endphp
+        
+        @foreach($groupedBikes as $key => $group)
+            @php
+                $frames = $group['frames'];
+                $rowspan = count($frames);
+            @endphp
+            
             <tr>
-                <th class="small center" style="width:5%;">#</th>
-                <th class="small" style="width:23%;">Modelo</th>
-                <th class="small" style="width:21%;">Color</th>
-                <th class="small center" style="width:10%;">Cantidad</th>
-                <th class="small" style="width:25%;">No. Frame</th>
-                <th class="small" style="width:16%;">Observación</th>
+                <td class="center">{{ $rowNumber }}</td>
+                <td style="text-align: center;" rowspan="{{ $rowspan }}">
+                    {{ $group['modelo'] }}
+                </td>
+                <td style="text-align: center;" rowspan="{{ $rowspan }}">
+                    {{ $group['color'] }}
+                </td>
+                <td class="center" rowspan="{{ $rowspan }}">
+                    {{ $group['count'] }}
+                </td>
+                <td style="text-align: center;">{{ $frames[0] }}</td>
+                <td style="text-align: center;" rowspan="{{ $rowspan }}">
+                    {{ $group['voltaje'] }}
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach($pedido->bicicletas as $i => $bic)
-            <tr>
-                <td class="center">{{ $i + 1 }}</td>
-                <td style="text-align: center;">{{ $bic->modelo->nombre_modelo ?? 'N/D' }}</td>
-                <td style="text-align: center;">{{ $bic->color->nombre_color ?? 'N/D' }}</td>
-                <td class="center">1</td>
-                <td style="text-align: center;">{{ $bic->num_chasis }}</td>
-                <td style="text-align: center;">{{ $bic->voltaje}}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <!-- Firmas y notas -->
-    <table class="table header-table">
-    <tr>
-    <td style="width: 59%; height: 90px;  font-size: 11px; padding: 4px;  font-style: italic; text-align: center; font-weight: bold;">
-        Este pedido es por duplicado, uno se enviará al destino con la mercancía, otro se guardará en fábrica y el archivo electrónico se enviará al departamento comercial.
-    </td>
-    <td rowspan="2" style="width: 41%; vertical-align: top; font-size: 11px; padding: 4px; font-style: italic; text-align: center; font-weight: bold;">
-        Sello o firma del responsable de fábrica:
-    </td>
-</tr>
-<tr>
-    <td style="padding: 2px; font-size: 10px; height: 20px; line-height: 1;">
-        Firma del inspector de calidad:
-    </td>
-</tr>
+            
+            @for($i = 1; $i < $rowspan; $i++)
+                @php $rowNumber++; @endphp
+                <tr>
+                    <td class="center">{{ $rowNumber }}</td>
+                    <!-- Celdas vacías para modelo, color y cantidad (ya están combinadas) -->
+                    <td style="text-align: center;">{{ $frames[$i] }}</td>
+                    <!-- Celda vacía para observación (ya está combinada) -->
+                </tr>
+            @endfor
+            
+            @php $rowNumber++; @endphp
+        @endforeach
+    </tbody>
 </table>
+
+    <!-- Resto del documento (firmas y notas) -->
+    <table class="table header-table">
+        <tr>
+            <td style="width: 59%; height: 90px; font-size: 11px; padding: 4px; font-style: italic; text-align: center; font-weight: bold;">
+                Este pedido es por duplicado, uno se enviará al destino con la mercancía, otro se guardará en fábrica y el archivo electrónico se enviará al departamento comercial.
+            </td>
+            <td rowspan="2" style="width: 41%; vertical-align: top; font-size: 11px; padding: 4px; font-style: italic; text-align: center; font-weight: bold;">
+                Sello o firma del responsable de fábrica:
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 2px; font-size: 10px; height: 20px; line-height: 1;">
+                Firma del inspector de calidad:
+            </td>
+        </tr>
+    </table>
 
 
 <table class="table header-table">
