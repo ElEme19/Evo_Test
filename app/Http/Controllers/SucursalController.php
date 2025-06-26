@@ -64,6 +64,9 @@ public function crear()
     return view('Sucursal.vista', compact('sucursales'));
 }
 
+
+
+
    public function update(Request $request, $id_sucursal)
 {
     $request->validate([
