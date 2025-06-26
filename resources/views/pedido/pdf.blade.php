@@ -14,7 +14,7 @@
         .emision { font-weight: bold; font-style: italic; text-align: center; }
         .efirma { font-style: italic; text-align: center; height: 60px; vertical-align: top; }
         .notas, table.notas td { border: none !important; }
-        .small { font-size: 9px; }
+        .small { font-size: 11px; }
         .center { text-align: center; }
         .no-border { border: none !important; }
         .footer-note { font-size: 8px; }
@@ -33,22 +33,35 @@
         <tr>
             <td colspan="6" class="title">Formulario de Emisión de Fábrica</td>
         </tr>
-        <tr>
-            <td style="text-align: center;"><strong>Fecha:</strong><br>{{ now()->format('d/m/Y') }}</td>
-            <td style="text-align: center;"><strong>Código:</strong><br>{{ $pedido->id_pedido }}</td>
-            <td style="text-align: center;"><strong>Cliente:</strong><br>{{ $pedido->sucursal->nombre_sucursal }}</td>
-            <td style="text-align: center;"><strong>Distancia:</strong><br>{{ $pedido->sucursal->distancia_km ?? 'N/D' }} KM</td>
-            <td style="text-align: center;"><strong>Transporte:</strong><br>Evobike</td>
-            <td style="text-align: center;"><strong>Costo Envío:</strong><br>{{ $pedido->costo_envio ?? '0.00' }}</td>
+         <tr>
+                <td style="width:10%; text-align: center;">
+                    <strong>Fecha:</strong><br>{{ now()->format('d/m/Y') }}
+                </td>
+                <td style="width:18%; text-align: center;">
+                    <strong>Código:</strong><br>{{ $pedido->id_pedido }}
+                </td>
+                <td style="width:21%; text-align: center;">
+                    <strong>Cliente:</strong><br>{{ $pedido->sucursal->nombre_sucursal }}
+                </td>
+                <td style="width:10%; text-align: center;">
+                    <strong>Distancia:</strong><br>{{ $pedido->sucursal->distancia_km ?? 'N/D' }} KM
+                </td>
+                <td style="width:25%; text-align: center;">
+                    <strong>Transporte:</strong><br>Evobike
+                </td>
+                <td style="width:16%; text-align: center;">
+                    <strong>Costo Envío:</strong><br>{{ $pedido->costo_envio ?? '0.00' }}
+                </td>
         </tr>
+
     </table>
 
    <!-- Detalle de bicis -->
-<table class="table">
+<table class="table header-table">
     <thead>
         <tr>
-            <th class="small center" style="width:5%;">#</th>
-            <th class="small" style="width:23%;">Modelo</th>
+            <th class="small center" style="width:10%;">Numero</th>
+            <th class="small" style="width:18%;">Modelo</th>
             <th class="small" style="width:21%;">Color</th>
             <th class="small center" style="width:10%;">Cantidad</th>
             <th class="small" style="width:25%;">No. Frame</th>
