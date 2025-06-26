@@ -57,65 +57,91 @@
     </thead>
     <tbody>
         @php
-            // Agrupar bicicletas por modelo, color y voltaje
-            $groupedBikes = [];
+            // 1) Armo la estructura modelo → voltaje → color → [bicis]
+            $modelGroups = [];
             foreach($pedido->bicicletas as $bic) {
-                $key = ($bic->modelo->nombre_modelo ?? 'N/D') . '|' . 
-                       ($bic->color->nombre_color ?? 'N/D') . '|' . 
-                       ($bic->voltaje ?? '');
-                if (!isset($groupedBikes[$key])) {
-                    $groupedBikes[$key] = [
-                        'modelo' => $bic->modelo->nombre_modelo ?? 'N/D',
-                        'color' => $bic->color->nombre_color ?? 'N/D',
-                        'voltaje' => $bic->voltaje ?? '',
-                        'frames' => [],
-                        'count' => 0
-                    ];
-                }
-                $groupedBikes[$key]['frames'][] = $bic->num_chasis;
-                $groupedBikes[$key]['count']++;
+                $m = $bic->modelo->nombre_modelo ?? 'N/D';
+                $v = $bic->voltaje               ?? '';
+                $c = $bic->color->nombre_color   ?? 'N/D';
+                $modelGroups[$m]['voltajes'][$v]['colores'][$c][] = $bic;
             }
-            
             $rowNumber = 1;
         @endphp
-        
-        @foreach($groupedBikes as $key => $group)
+
+        @foreach($modelGroups as $modelName => $modelGroup)
             @php
-                $frames = $group['frames'];
-                $rowspan = count($frames);
+                // Calcular cuántas filas ocupa todo el modelo
+                $modelRowspan = 0;
+                foreach($modelGroup['voltajes'] as $vg) {
+                    foreach($vg['colores'] as $bicis) {
+                        $modelRowspan += count($bicis);
+                    }
+                }
+                $printedModel = false;
             @endphp
-            
-            <tr>
-                <td class="center">{{ $rowNumber }}</td>
-                <td style="text-align: center;" rowspan="{{ $rowspan }}">
-                    {{ $group['modelo'] }}
-                </td>
-                <td style="text-align: center;" rowspan="{{ $rowspan }}">
-                    {{ $group['color'] }}
-                </td>
-                <td class="center" rowspan="{{ $rowspan }}">
-                    {{ $group['count'] }}
-                </td>
-                <td style="text-align: center;">{{ $frames[0] }}</td>
-                <td style="text-align: center;" rowspan="{{ $rowspan }}">
-                    {{ $group['voltaje'] }}
-                </td>
-            </tr>
-            
-            @for($i = 1; $i < $rowspan; $i++)
-                @php $rowNumber++; @endphp
-                <tr>
-                    <td class="center">{{ $rowNumber }}</td>
-                    <!-- Celdas vacías para modelo, color y cantidad (ya están combinadas) -->
-                    <td style="text-align: center;">{{ $frames[$i] }}</td>
-                    <!-- Celda vacía para observación (ya está combinada) -->
-                </tr>
-            @endfor
-            
-            @php $rowNumber++; @endphp
+
+            @foreach($modelGroup['voltajes'] as $voltajeName => $voltGroup)
+                @php
+                    // Filas que ocupa este voltaje
+                    $voltajeRowspan = 0;
+                    foreach($voltGroup['colores'] as $bicis) {
+                        $voltajeRowspan += count($bicis);
+                    }
+                    $printedVoltaje = false;
+                @endphp
+
+                @foreach($voltGroup['colores'] as $colorName => $bicis)
+                    @php
+                        $colorRowspan = count($bicis);
+                        $printedColor  = false;
+                    @endphp
+
+                    @foreach($bicis as $bic)
+                        <tr>
+                            <td class="center">{{ $rowNumber }}</td>
+
+                            {{-- Modelo (sólo la primera vez para este modelo) --}}
+                            @if(! $printedModel)
+                                <td style="text-align: center;" rowspan="{{ $modelRowspan }}">
+                                    {{ $modelName }}
+                                </td>
+                                @php $printedModel = true; @endphp
+                            @endif
+
+                            {{-- Color y Cantidad (primera vez en este color) --}}
+                            @if(! $printedColor)
+                                <td style="text-align: center;" rowspan="{{ $colorRowspan }}">
+                                    {{ $colorName }}
+                                </td>
+                                <td class="center" rowspan="{{ $colorRowspan }}">
+                                    {{ $colorRowspan }}
+                                </td>
+                                @php $printedColor = true; @endphp
+                            @endif
+
+                            {{-- No. Frame (cada fila) --}}
+                            <td style="text-align: center;">
+                                {{ $bic->num_chasis }}
+                            </td>
+
+                            {{-- Observación / Voltaje (primera vez en este voltaje) --}}
+                            @if(! $printedVoltaje)
+                                <td style="text-align: center;" rowspan="{{ $voltajeRowspan }}">
+                                    {{ $voltajeName }}
+                                </td>
+                                @php $printedVoltaje = true; @endphp
+                            @endif
+                        </tr>
+                        @php $rowNumber++; @endphp
+                    @endforeach
+
+                @endforeach
+            @endforeach
+
         @endforeach
     </tbody>
 </table>
+
 
     <!-- Resto del documento (firmas y notas) -->
     <table class="table header-table">
