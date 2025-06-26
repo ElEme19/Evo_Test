@@ -8,6 +8,7 @@ use App\Models\Sucursal;
 use App\Models\Bicicleta;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PedidosController extends Controller
 {
@@ -38,49 +39,48 @@ class PedidosController extends Controller
         return view('pedido.crear', compact('sucursales'));
     }
 
-    // Guardar pedido con bicicletas (recibido en JSON)
-    public function store(Request $request)
-    {
-        $request->validate([
-            'id_sucursal' => 'required|exists:sucursales,id_sucursal',
-            'bicis_json' => 'required|json',
+  
+public function store(Request $request)
+{
+    $request->validate([
+        'id_sucursal' => 'required|exists:sucursales,id_sucursal',
+        'bicis_json'  => 'required|json',
+    ]);
+
+    $bicis = json_decode($request->bicis_json, true);
+    if (empty($bicis)) {
+        return back()->with('error', 'No se han agregado bicicletas al pedido.');
+    }
+
+    DB::transaction(function () use ($bicis, $request, &$nuevoId) {
+        // Generar un ID aleatorio único de 8 caracteres
+        do {
+            $nuevoId = Str::upper(Str::random(8));  // p.ej. "A1B2C3D4"
+        } while (Pedidos::where('id_pedido', $nuevoId)->exists());
+
+        // Crear nuevo pedido
+        $pedido = Pedidos::create([
+            'id_pedido'   => $nuevoId,
+            'id_sucursal' => $request->id_sucursal,
+            'num_chasis'  => null,
+            'fecha_envio' => now(),
         ]);
 
-        $bicis = json_decode($request->bicis_json, true);
-
-        if (empty($bicis)) {
-            return back()->with('error', 'No se han agregado bicicletas al pedido.');
+        // Asociar cada bicicleta al nuevo pedido
+        foreach ($bicis as $bici) {
+            Bicicleta::where('num_chasis', $bici['num_chasis'])
+                     ->update(['id_pedido' => $nuevoId]);
         }
+    });
 
-        DB::transaction(function () use ($bicis, $request, &$nuevoId) {
-            // Obtener último pedido para generar ID incremental
-            $ultimo = Pedidos::orderBy('id_pedido', 'desc')->first();
-            $nuevoId = 'PED001';
+    return redirect()
+        ->route('pedido.ver')
+        ->with([
+            'success' => "Pedido {$nuevoId} creado correctamente.",
+            'pdf_url' => route('pedido.pdf', $nuevoId),
+        ]);
+}
 
-            if ($ultimo && preg_match('/^PED(\d+)$/', $ultimo->id_pedido, $match)) {
-                $numero = (int)$match[1] + 1;
-                $nuevoId = 'PED' . str_pad($numero, 3, '0', STR_PAD_LEFT);
-            }
-
-            // Crear nuevo pedido
-            $pedido = Pedidos::create([
-                'id_pedido' => $nuevoId,
-                'id_sucursal' => $request->id_sucursal,
-                'num_chasis' => null,
-                'fecha_envio' => now(),
-            ]);
-
-            // Asociar cada bicicleta al nuevo pedido
-            foreach ($bicis as $bici) {
-                Bicicleta::where('num_chasis', $bici['num_chasis'])->update([
-                    'id_pedido' => $nuevoId,
-                ]);
-            }
-        });
-
-        // Redireccionar para descargar PDF
-        return redirect()->route('pedido.pdf', $nuevoId);
-    }
 
     // Generar PDF del pedido con sucursal, bicicletas, modelos y colores cargados
     public function generarPDF($id_pedido)
@@ -92,7 +92,9 @@ class PedidosController extends Controller
         ])->where('id_pedido', $id_pedido)->firstOrFail();
 
         $pdf = Pdf::loadView('pedido.pdf', compact('pedido'));
-        return $pdf->download("Pedido_{$id_pedido}.pdf");
+       return $pdf
+        ->stream("Pedido_{$id_pedido}.pdf")
+        ;
     }
 
     public function buscar(Request $request)

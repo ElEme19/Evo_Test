@@ -101,7 +101,7 @@
     </div>
 
     <div class="info-grid">
-        <div class="info-item"><strong>Fecha:</strong> {{ now()->format('d/m/Y H:i') }}</div>
+        <div class="info-item"><strong>Fecha:</strong> {{ now()->format('d/m/Y') }}</div>
         <div class="info-item"><strong>Pedido #:</strong> {{ $pedido->id_pedido ?? 'N/A' }}</div>
         <div class="info-item"><strong>Sucursal:</strong> {{ $pedido->sucursal->nombre_sucursal ?? 'N/D' }}</div>
         <div class="info-item"><strong>Transporte:</strong> {{ $pedido->transporte ?? 'Evobike' }}</div>
@@ -147,7 +147,7 @@
     </div>
 
     <div class="footer">
-        <p>Documento generado automáticamente el {{ now()->format('d/m/Y H:i') }}</p>
+        <p>Documento generado automáticamente el {{ now()->format('d/m/Y ') }}</p>
         <p>Contacto: {{ $pedido->sucursal->telefono ?? '56 4899 6759' }}</p>
     </div>
 

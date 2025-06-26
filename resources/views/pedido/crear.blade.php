@@ -48,9 +48,9 @@
                     <i class="bi bi-truck me-2"></i>Nuevo Pedido
                 </h1>
     
-                <div class="badge bg-light text-dark fs-6 px-2 py-1 border border-secondary">
+                <!-- <div class="badge bg-light text-dark fs-6 px-2 py-1 border border-secondary">
                     <i class="bi bi-info-circle me-1"></i>Escanea las bicicletas
-                </div>
+                </div> -->
             </header>
 
             <!-- Alertas -->
@@ -86,7 +86,7 @@
 
                 <!-- Sucursal -->
                 <div class="mb-3">
-                    <label for="id_sucursal" class="form-label fw-semibold small">
+                    <label for="id_sucursal" class="form-label fw-semibold fs-5">
                         <i class="bi bi-shop me-1"></i>Sucursal Destino
                     </label>
                     <select name="id_sucursal" id="id_sucursal" class="form-select form-select-sm" required>
@@ -99,17 +99,15 @@
 
                 <!-- Escáner Bicicleta -->
                 <div class="mb-3 p-2 bg-light rounded border">
-                    <label for="num_chasis" class="form-label small">
+                    <label for="num_chasis" class="form-label fw-semibold fs-6">
                         <i class="bi bi-upc-scan me-1"></i>Escanea Bicicleta
                     </label>
                     <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-light">
-                            <i class="bi bi-upc-scan"></i>
-                        </span>
+                       
                         <input type="text" id="num_chasis" class="form-control" 
                                autocomplete="off" placeholder="Serie completa o últimos 4" disabled>
                     </div>
-                    <small class="text-muted"><i class="bi bi-keyboard"></i> Presiona Enter</small>
+                    
                 </div>
 
                 <!-- Tabla Bicicletas -->
@@ -130,6 +128,7 @@
                                     <th>Modelo</th>
                                     <th>Color</th>
                                     <th>Voltaje</th>
+                                    <th>Stock</th>
                                     <th>Acción</th>
                                 </tr>
                             </thead>
@@ -307,8 +306,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="text-center">${i + 1}</td>
                 <td class="fw-semibold text-center">${bici.num_chasis}</td>
                 <td class="text-center">${bici.modelo}</td>
-                 <td class="text-center">${bici.color}</td>
-                 <td class="text-center">${bici.voltaje}</td>
+                <td class="text-center">${bici.color}</td>
+                <td class="text-center">${bici.voltaje}</td>
+                <td class="text-center">${bici.stock}</td>
                 <td class="text-end text-center">
                     <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" 
                             onclick="quitarBici('${bici.num_chasis}')">
@@ -363,12 +363,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const modelo = biciData.modelo?.nombre_modelo || biciData.modelo || 'N/D';
             const color = biciData.color?.nombre_color || biciData.color || 'N/D';
             const voltaje = biciData.voltaje || biciData.voltaje || 'Sin Voltaje';
+            const stock = biciData.tipoStock?.nombre_stock|| biciData.tipo_stock?.nombre_stock|| 'Sin Stock';
+
 
             currentBici = {
                 num_chasis: biciData.num_chasis,
                 modelo: modelo,
                 color: color,
-                voltaje: voltaje
+                voltaje: voltaje,
+                stock: stock
             };
 
             // Mostrar modal de confirmación
@@ -383,6 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <li><strong>Modelo:</strong> ${modelo}</li>
                                 <li><strong>Color:</strong> ${color}</li>
                                 <li><strong>Voltaje:</strong> ${voltaje}</li>
+                                <li><strong>Stock:</strong> ${stock}</li>
                             </ul>
                         </div>
                     </div>

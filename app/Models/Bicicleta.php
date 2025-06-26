@@ -24,6 +24,8 @@ class Bicicleta extends Model
         'descripcion_general',
     ];
 
+    protected $with = ['modelo', 'color', 'tipoStock'];
+
     // Relaciones
 
     public function modelo()

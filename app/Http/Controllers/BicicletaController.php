@@ -322,7 +322,7 @@ public function buscarPorStock(Request $request)
      */
     public function ver()
     {
-        $bicicletas = Bicicleta::with(['modelo','color','lote','tipoStock','voltaje'])
+        $bicicletas = Bicicleta::with(['modelo','color','lote','tipoStock'])
                         ->orderBy('updated_at','desc')->take(8)->get();
         $modelos  = $bicicletas->pluck('modelo')->filter()->unique('id')->values();
         $colores  = $bicicletas->pluck('color')->filter()->unique('id')->values();

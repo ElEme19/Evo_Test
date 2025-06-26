@@ -129,7 +129,7 @@ Route::post('/area', [AreaController::class, 'store'])->name('area.store');     
 Route::put('/area/{id}', [AreaController::class, 'update'])->name('area.editar');  // Actualizar área
 Route::delete('/area/{id}', [AreaController::class, 'eliminar'])->name('area.eliminar'); // Eliminar área
 
-
+//Lector Excel para contenedores
 Route::get('/Mexico/import',  [ProsesadorController::class, 'formulario'])->name('procesador.import');
 Route::post('/Mexico/procesar', [ProsesadorController::class, 'procesarExcel'])->name('procesador.procesar');
 
