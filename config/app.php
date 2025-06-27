@@ -82,7 +82,7 @@ return [
     |
     */
 
-    'locale' => 'es',
+    'locale' => 'zh',
     'fallback_locale' => 'es',
 
 
