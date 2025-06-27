@@ -34,7 +34,7 @@
                                 <i class="fas fa-sun fa-2x text-warning me-2"></i>
                                 <div>
                                     <div class="fw-bold">28°C</div>
-                                    <small class="text-muted">Madrid</small>
+                                    <small class="text-muted">Aqui Mero</small>
                                 </div>
                             </div>
                         </div>
@@ -463,93 +463,62 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Gráfico de Rendimiento
-    const performanceChart = new ApexCharts(document.querySelector("#performance-chart"), {
-        chart: {
-            type: 'line',
-            height: '100%',
-            toolbar: { show: false },
-            zoom: { enabled: false }
-        },
-        series: [{
-            name: 'Bicis Alquiladas',
-            data: [120, 190, 170, 220, 250, 280, 310, 290, 330, 380, 400, 420]
-        }, {
-            name: 'Ingresos (€)',
-            data: [12500, 18200, 15800, 19500, 22500, 24500, 26800, 25200, 28500, 31200, 33500, 35800]
-        }],
-        xaxis: {
-            categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
-        },
-        colors: ['#0d6efd', '#198754'],
-        stroke: {
-            width: [3, 3],
-            curve: 'smooth'
-        },
-        markers: {
-            size: 5,
-            hover: {
-                size: 7
-            }
-        },
-        yaxis: [{
-            title: {
-                text: 'Bicis Alquiladas',
+    // Verifica que los elementos existan
+    if(document.querySelector("#performance-chart")) {
+        const performanceChart = new ApexCharts(document.querySelector("#performance-chart"), {
+            chart: {
+                type: 'line',
+                height: '100%',
+                toolbar: { show: false },
+                zoom: { enabled: false }
             },
-        }, {
-            opposite: true,
-            title: {
-                text: 'Ingresos (€)'
+            series: [{
+                name: 'Bicis Alquiladas',
+                data: [120, 190, 170, 220, 250, 280, 310, 290, 330, 380, 400, 420]
+            }],
+            xaxis: {
+                categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+            },
+            colors: ['#0d6efd'],
+            stroke: {
+                width: 3,
+                curve: 'smooth'
             }
-        }],
-        tooltip: {
-            shared: true,
-            intersect: false,
-            y: {
-                formatter: function (y) {
-                    if (typeof y !== "undefined") {
-                        return y.toFixed(0) + (y > 1000 ? "" : " bicis");
-                    }
-                    return y;
-                }
-            }
-        }
-    });
-    performanceChart.render();
-    
-    // Gráfico de Distribución
-    const distributionChart = new ApexCharts(document.querySelector("#distribution-chart"), {
-        chart: {
-            type: 'donut',
-            height: '100%'
-        },
-        series: [42, 28, 30],
-        labels: ['Centro', 'Norte', 'Sur'],
-        colors: ['#0d6efd', '#198754', '#ffc107'],
-        plotOptions: {
-            pie: {
-                donut: {
-                    labels: {
-                        show: true,
-                        total: {
+        });
+        performanceChart.render();
+    }
+
+    if(document.querySelector("#distribution-chart")) { // Corregido el typo en el ID
+        const distributionChart = new ApexCharts(document.querySelector("#distribution-chart"), {
+            chart: {
+                type: 'donut',
+                height: '100%'
+            },
+            series: [42, 28, 30],
+            labels: ['Centro', 'Norte', 'Sur'],
+            colors: ['#0d6efd', '#198754', '#ffc107'],
+            plotOptions: {
+                pie: {
+                    donut: {
+                        labels: {
                             show: true,
-                            label: 'Total',
-                            formatter: function (w) {
-                                return '100%'
+                            total: {
+                                show: true,
+                                label: 'Total',
+                                formatter: function (w) {
+                                    return '100%'
+                                }
                             }
                         }
                     }
                 }
+            },
+            dataLabels: {
+                enabled: false
             }
-        },
-        dataLabels: {
-            enabled: false
-        },
-        legend: {
-            show: false
-        }
-    });
-    distributionChart.render();
+        });
+        distributionChart.render();
+    }
 });
 </script>
 @endpush
