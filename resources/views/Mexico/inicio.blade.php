@@ -7,100 +7,114 @@
 
 <div class="container-xxl py-5">
     @if($user)
-        <!-- Hero Section -->
-        <div class="text-center mb-5">
-            
-            <h1 class="display-5 fw-bold text-dark mb-3">Bienvenido a  <img src="{{ asset('images/logo_ev01.webp') }}" alt="CloudLabs Logo" style="height: 40px;" class="mb-1">v.2</h1>
-            <p class="lead text-secondary">Sistema integral para administración de movilidad sustentable</p>
-            
-            <div class="user-badge bg-light p-3 rounded-pill shadow-sm d-inline-flex align-items-center mt-3">
-                <div class="avatar bg-primary bg-opacity-10 text-primary rounded-circle me-2" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div>
-                    <span class="fw-medium text-dark">{{ $user->nombre_user }}</span>
-                    <span class="badge bg-primary bg-opacity-10 text-primary ms-2">{{ $user->tipo_dia }}</span>
-                </div>
+        <!-- NUEVA SECCIÓN: Estadísticas -->
+<div class="row mb-5">
+    <div class="col-lg-7">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info bg-opacity-10 border-0">
+                <h5 class="mb-0 text-dark fw-semibold"><i class="fas fa-chart-bar me-2 text-info"></i>Estadísticas Generales</h5>
             </div>
+            <div class="card-body">
+                <div id="revenue-chart" style="height: 300px;"></div>
+            </div>
+<<<<<<< HEAD
         </div>{{ $user->locate }}
+=======
+        </div>
+    </div>
+>>>>>>> 1300b06e2931d5d282c71a97f18cb64fc47f047e
 
-        <!-- System Status -->
-        <div class="row justify-content-center mb-5">
-            <div class="col-lg-10">
-                <div class="card shadow-sm border-0 overflow-hidden">
-                    <div class="card-header bg-warning bg-opacity-10 border-0">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0 text-dark fw-semibold"><i class="fas fa-info-circle text-warning me-2"></i>Estado del Sistema</h5>
-                            <span class="badge bg-warning bg-opacity-20 text-dark">Versión Beta</span>
-                        </div>
+    <div class="col-lg-5">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="info-box text-bg-primary shadow-sm">
+                    <span class="info-box-icon"><i class="bi bi-truck"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Pedidos activos</span>
+                        <span class="info-box-number">128</span>
+                        <div class="progress"><div class="progress-bar" style="width: 80%"></div></div>
+                        <span class="progress-description"> 80% entregados este mes </span>
                     </div>
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <h4 class="fw-bold mb-3">Estamos mejorando tu experiencia</h4>
-                                <p class="text-muted mb-4">La plataforma se encuentra en fase de desarrollo activo. Agradecemos tu paciencia mientras implementamos nuevas funcionalidades.</p>
-                                
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 me-3">
-                                        <div class="progress" style="height: 12px;">
-                                            <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: 48%"></div>
-                                        </div>
-                                    </div>
-                                    <span class="fw-bold text-dark">48%</span>
-                                </div>
-                            </div>
-                            <div class="col-md-4 text-center d-none d-md-block">
-                                <img src="{{ asset('images/cloudL.png') }}" alt="CloudLabs Logo" style="height: 150px;" class="mb-3">
-                            </div>
-                        </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-box text-bg-success shadow-sm">
+                    <span class="info-box-icon"><i class="bi bi-bicycle"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Bicis Activas</span>
+                        <span class="info-box-number">634</span>
+                        <div class="progress"><div class="progress-bar" style="width: 65%"></div></div>
+                        <span class="progress-description"> En circulación actualmente </span>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
-        <!-- Features Grid -->
-        <div class="row g-4 mb-5">
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card card h-100 border-0 shadow-sm hover-lift">
-                    <div class="card-body p-4 text-center">
-                        <div class="icon-wrapper bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-4" style="width: 60px; height: 60px;">
-                            <i class="fas fa-bicycle fa-2x"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Gestión de Flota</h4>
-                        <p class="text-muted mb-4">Administra tu inventario de bicicletas con herramientas avanzadas de seguimiento y mantenimiento.</p>
-                        <a href="#" class="btn btn-sm btn-outline-primary">Explorar <i class="fas fa-arrow-right ms-2"></i></a>
-                    </div>
+<!-- GESTIÓN DE FLOTA: Timeline + Card Expandible -->
+<div class="row g-4 mb-5">
+    <!-- CARD original de Flota -->
+    <div class="col-md-6 col-lg-4">
+        <div class="feature-card card h-100 border-0 shadow-sm hover-lift">
+            <div class="card-body p-4 text-center">
+                <div class="icon-wrapper bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-4" style="width: 60px; height: 60px;">
+                    <i class="fas fa-bicycle fa-2x"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Gestión de Flota</h4>
+                <p class="text-muted mb-4">Administra tu inventario de bicicletas con herramientas avanzadas de seguimiento y mantenimiento.</p>
+                <a href="#" class="btn btn-sm btn-outline-primary">Explorar <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD Expandible -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-primary collapsed-card shadow-sm">
+            <div class="card-header bg-light">
+                <h3 class="card-title">Estado de Pedidos</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                    </button>
                 </div>
             </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card card h-100 border-0 shadow-sm hover-lift">
-                    <div class="card-body p-4 text-center">
-                        <div class="icon-wrapper bg-success bg-opacity-10 text-success rounded-circle mx-auto mb-4" style="width: 60px; height: 60px;">
-                            <i class="fas fa-chart-line fa-2x"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Analíticas Avanzadas</h4>
-                        <p class="text-muted mb-4">Visualiza métricas clave y toma decisiones basadas en datos en tiempo real.</p>
-                        <a href="#" class="btn btn-sm btn-outline-success">Ver reportes <i class="fas fa-arrow-right ms-2"></i></a>
+            <div class="card-body">
+                <div class="timeline-item">
+                    <span class="time"><i class="bi bi-clock-fill"></i> 09:35</span>
+                    <h3 class="timeline-header"><a href="#">Sucursal Centro</a> realizó un pedido</h3>
+                    <div class="timeline-body">
+                        32 bicicletas solicitadas. Se encuentra en revisión por almacén.
                     </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card card h-100 border-0 shadow-sm hover-lift">
-                    <div class="card-body p-4 text-center">
-                        <div class="icon-wrapper bg-info bg-opacity-10 text-info rounded-circle mx-auto mb-4" style="width: 60px; height: 60px;">
-                            <i class="fas fa-cogs fa-2x"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Configuración</h4>
-                        <p class="text-muted mb-4">Personaliza la plataforma según las necesidades específicas de tu operación.</p>
-                        <a href="#" class="btn btn-sm btn-outline-info">Configurar <i class="fas fa-arrow-right ms-2"></i></a>
+                    <div class="timeline-footer">
+                        <a class="btn btn-primary btn-sm">Ver detalles</a>
+                        <a class="btn btn-danger btn-sm">Cancelar</a>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-       
+    <!-- Configuración: CARD Expandible -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-info collapsed-card shadow-sm">
+            <div class="card-header bg-light">
+                <h3 class="card-title">Preferencias de Usuario</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                Puedes personalizar opciones como idioma, notificaciones, y tema visual del sistema.
+            </div>
+        </div>
+    </div>
+</div>
+
 
     @else
         <!-- Guest View -->
@@ -198,5 +212,39 @@
         box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
     }
 </style>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const chart = new ApexCharts(document.querySelector("#revenue-chart"), {
+        chart: {
+            type: 'area',
+            height: 300,
+            toolbar: { show: false }
+        },
+        series: [{
+            name: 'Ventas',
+            data: [10, 41, 35, 51, 49, 62, 69]
+        }],
+        xaxis: {
+            categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul']
+        },
+        colors: ['#0dcaf0'],
+        fill: {
+            type: "gradient",
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.7,
+                opacityTo: 0.2,
+                stops: [0, 90, 100]
+            }
+        }
+    });
+    chart.render();
+});
+</script>
+@endpush
+
 
 @endsection
