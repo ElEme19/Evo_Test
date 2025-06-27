@@ -262,15 +262,15 @@
                 <div class="list-group-item border-0 py-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="mb-1 fw-bold">#ORD-{{ str_pad($pedido->id, 5, '0', STR_PAD_LEFT) }}</h6>
-                            <small class="text-muted d-block">
-                                <i class="fas fa-store me-1"></i>
-                                {{ $pedido->sucursal->nombre ?? 'Sin sucursal' }}
-                            </small>
-                            <small class="text-muted">
-                                <i class="fas fa-bicycle me-1"></i>
-                                {{ $pedido->bicicletas_count }} bicis
-                            </small>
+                            <h6 class="mb-1 fw-bold">#ORD-{{ str_pad($pedido->id_pedido, 5, '0', STR_PAD_LEFT) }}</h6>
+<small class="text-muted d-block">
+    <i class="fas fa-store me-1"></i>
+    {{ $pedido->sucursal->nombre ?? 'Sin sucursal' }}
+</small>
+<small class="text-muted">
+    <i class="fas fa-bicycle me-1"></i>
+    {{ $pedido->bicicletas_count }} bicis
+</small>
                         </div>
                         <div class="text-end">
                             <span class="badge 
@@ -315,30 +315,38 @@
                 <div class="list-group-item border-0 py-3">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <h6 class="mb-1 fw-bold">Bici #{{ str_pad($bicicleta->id, 5, '0', STR_PAD_LEFT) }}</h6>
+                            <h6 class="mb-1 fw-bold">Bici #{{ $bicicleta->num_chasis }}</h6>
+
                             <small class="text-muted d-block">
                                 <i class="fas fa-tag me-1"></i>
-                                {{ $bicicleta->modelo->nombre ?? 'Modelo no especificado' }}
+                                {{ $bicicleta->modelo->nombre_modelo ?? 'Modelo no especificado' }}
                             </small>
-                            <small class="text-muted">
+
+                            <small class="text-muted d-block">
                                 <i class="fas fa-palette me-1"></i>
-                                {{ $bicicleta->color ?? 'Sin color' }}
+                                {{ $bicicleta->color->nombre_color ?? 'Sin color' }}
+                            </small>
+
+                            <small class="text-muted d-block">
+                                <i class="fas fa-box-open me-1"></i>
+                                {{ $bicicleta->tipoStock->nombre_stock ?? 'Sin tipo de stock' }}
                             </small>
                         </div>
                         <div class="text-end">
                             <span class="badge 
-                                @if($bicicleta->estado == 'disponible') bg-success bg-opacity-10 text-success
-                                @elseif($bicicleta->estado == 'alquilada') bg-primary bg-opacity-10 text-primary
-                                @elseif($bicicleta->estado == 'mantenimiento') bg-warning bg-opacity-10 text-warning
-                                @elseif($bicicleta->estado == 'averiada') bg-danger bg-opacity-10 text-danger
+                                @if($bicicleta->tipoStock && strtolower($bicicleta->tipoStock->nombre_stock) === 'disponible') bg-success bg-opacity-10 text-success
+                                @elseif($bicicleta->tipoStock && strtolower($bicicleta->tipoStock->nombre_stock) === 'alquilada') bg-primary bg-opacity-10 text-primary
+                                @elseif($bicicleta->tipoStock && strtolower($bicicleta->tipoStock->nombre_stock) === 'mantenimiento') bg-warning bg-opacity-10 text-warning
+                                @elseif($bicicleta->tipoStock && strtolower($bicicleta->tipoStock->nombre_stock) === 'averiada') bg-danger bg-opacity-10 text-danger
                                 @else bg-secondary bg-opacity-10 text-secondary @endif">
-                                {{ ucfirst($bicicleta->estado) }}
+                                {{ ucfirst($bicicleta->tipoStock->nombre_stock ?? 'Sin estado') }}
                             </span>
+
                             <div class="text-muted small mt-1">
-                                @if($bicicleta->ultimoPedido)
-                                Pedido #{{ $bicicleta->ultimoPedido->id }}
+                                @if($bicicleta->pedido)
+                                    Pedido #{{ $bicicleta->pedido->id_pedido }}
                                 @else
-                                Sin pedidos
+                                    Sin pedido
                                 @endif
                             </div>
                         </div>
@@ -358,6 +366,7 @@
         </div>
     </div>
 </div>
+
         </div>
 
     @else
