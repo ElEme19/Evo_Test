@@ -281,7 +281,7 @@
                                 {{ ucfirst(str_replace('_', ' ', $pedido->estado)) }}
                             </span>
                             <div class="text-muted small mt-1">
-                                {{ $pedido->fecha->format('d/m/Y') }}
+                                {{ $pedido->created_at->format('d/m/Y') }}
                             </div>
                         </div>
                     </div>

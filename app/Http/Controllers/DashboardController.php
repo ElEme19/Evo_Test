@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pedidos; // Cambiado a singular
+use App\Models\Pedidos; // Asegúrate que el modelo se llame Pedido (singular)
 use App\Models\Bicicleta;
 use Illuminate\Http\Request;
 
@@ -11,21 +11,18 @@ class DashboardController extends Controller
     public function index()
     {
         try {
-            // Obtener pedidos recientes con manejo de errores
+            // Obtener últimos 3 pedidos con sus relaciones
             $pedidosRecientes = Pedidos::with(['sucursal', 'bicicletas'])
                 ->withCount('bicicletas')
                 ->orderBy('created_at', 'desc')
                 ->take(3)
                 ->get();
 
-            // Obtener bicicletas recientes con manejo de errores
-            $bicicletas = Bicicleta::with(['modelo'])
+            // Obtener últimas 3 bicicletas con sus relaciones
+            $bicicletas = Bicicleta::with(['modelo', 'ultimoPedido'])
                 ->orderBy('created_at', 'desc')
                 ->take(3)
                 ->get();
-
-            // Debug: Verificar datos
-            // dd($pedidosRecientes, $bicicletas);
 
             return view('Mexico.inicio', [
                 'pedidosRecientes' => $pedidosRecientes,
@@ -33,10 +30,8 @@ class DashboardController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            // Log del error
-            \Log::error('Error en DashboardController: ' . $e->getMessage());
+            Log::error('Error en DashboardController: ' . $e->getMessage());
             
-            // Retornar vista con colecciones vacías
             return view('Mexico.inicio', [
                 'pedidosRecientes' => collect(),
                 'bicicletas' => collect()
