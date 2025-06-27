@@ -22,7 +22,7 @@
                     <span class="badge bg-primary bg-opacity-10 text-primary ms-2">{{ $user->tipo_dia }}</span>
                 </div>
             </div>
-        </div>
+        </div>{{ $user->locate }}
 
         <!-- System Status -->
         <div class="row justify-content-center mb-5">
