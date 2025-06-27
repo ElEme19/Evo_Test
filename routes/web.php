@@ -144,7 +144,7 @@ Route::get('/pedido/buscar', [PedidosController::class, 'buscar'])->name('pedido
 
 
 //Debatible
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/Mexico/inicio', [DashboardController::class, 'index'])->name('inicio');
 
 });
 
