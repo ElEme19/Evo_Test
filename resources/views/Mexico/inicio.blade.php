@@ -17,12 +17,9 @@
             <div class="card-body">
                 <div id="revenue-chart" style="height: 300px;"></div>
             </div>
-<<<<<<< HEAD
-        </div>{{ $user->locate }}
-=======
+        </div>
         </div>
     </div>
->>>>>>> 1300b06e2931d5d282c71a97f18cb64fc47f047e
 
     <div class="col-lg-5">
         <div class="row g-3">
