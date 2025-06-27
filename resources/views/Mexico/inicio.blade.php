@@ -18,7 +18,7 @@
                             </div>
                         </div>
                         <div class="flex-grow-1">
-                            <h2 class="fw-bold mb-1">Bienvenido, {{ $user->name }}</h2>
+                            <h2 class="fw-bold mb-1">Bienvenido, {{ $user->nombre_user }}</h2>
                             <p class="text-muted mb-2">Último acceso: {{ now()->format('d/m/Y H:i') }}</p>
                             <div class="d-flex flex-wrap gap-2">
                                 <span class="badge bg-success bg-opacity-10 text-success">
