@@ -137,18 +137,26 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-lg-5">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <div class="info-box text-bg-primary shadow-sm">
-                    <span class="info-box-icon"><i class="bi bi-truck"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">Pedidos activos</span>
-                        <span class="info-box-number">128</span>
-                        <div class="progress"><div class="progress-bar" style="width: 80%"></div></div>
-                        <span class="progress-description"> 80% entregados este mes </span>
+        <!-- Gráficos y Estadísticas -->
+        <div class="row mb-5 g-4">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-chart-line text-primary me-2"></i> Rendimiento Mensual</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                                Este año
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Este mes</a></li>
+                                <li><a class="dropdown-item" href="#">Este trimestre</a></li>
+                                <li><a class="dropdown-item" href="#">Este año</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="performance-chart" style="height: 300px;"></div>
                     </div>
                 </div>
             </div>
