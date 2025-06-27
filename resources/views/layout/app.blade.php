@@ -207,6 +207,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+<<<<<<< HEAD
 
         <!-- Scripts base -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
@@ -219,3 +220,7 @@
 
 </body>
 </html>
+=======
+</body>
+</html>
+>>>>>>> 5bb6e52558b9cd603ee89836d0922eb0542c061e
