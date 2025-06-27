@@ -23,6 +23,6 @@ class DashboardController extends Controller
         ->take(3)
         ->get();
 
-    return view('inicio', compact('pedidosRecientes', 'bicicletas'));
+    return view('Mexico.inicio', compact('pedidosRecientes', 'bicicletas'));
 }
 }
