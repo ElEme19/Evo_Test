@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Evobike ~ CloudLabs @yield('title')</title>
+    <title>@lang('Evobike ~ CloudLabs') @yield('title')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/favico.ico') }}">
@@ -73,7 +73,7 @@
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNav" aria-controls="navbarNav"
-                    aria-expanded="false" aria-label="Toggle navigation">
+                    aria-expanded="false" aria-label="@lang('Toggle navigation')">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
@@ -85,7 +85,7 @@
                     
                     <li class="nav-item">
                         <a class="nav-link" href="/Mexico/inicio">
-                            <i class="bi bi-house-door me-1"></i>Inicio
+                            <i class="bi bi-house-door me-1"></i>@lang('Inicio')
                         </a>
                     </li>
                     
@@ -93,14 +93,14 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="bicicletaDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-bicycle me-1"></i>Bicicleta
+                            <i class="bi bi-bicycle me-1"></i>@lang('Bicicleta')
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="bicicletaDropdown">
-                            <li><a class="dropdown-item" href="/Bicicleta/vista"><i class="bi bi-plus-circle me-2"></i>Nuevo</a></li>
-                            <li><a class="dropdown-item" href="/Modelo/ver"><i class="bi bi-bicycle me-2"></i>Modelos</a></li>
-                            <li><a class="dropdown-item" href="/ColorModelo/vista"><i class="bi bi-palette me-2"></i>Colores</a></li>
-                            <li><a class="dropdown-item" href="/Lote/vista"><i class="bi bi-box-seam me-2"></i>Lote</a></li>
-                            <li><a class="dropdown-item" href="/Stock/vista"><i class="bi bi-boxes me-2"></i>Stock</a></li>
+                            <li><a class="dropdown-item" href="/Bicicleta/vista"><i class="bi bi-plus-circle me-2"></i>@lang('Nuevo')</a></li>
+                            <li><a class="dropdown-item" href="/Modelo/ver"><i class="bi bi-bicycle me-2"></i>@lang('Modelos')</a></li>
+                            <li><a class="dropdown-item" href="/ColorModelo/vista"><i class="bi bi-palette me-2"></i>@lang('Colores')</a></li>
+                            <li><a class="dropdown-item" href="/Lote/vista"><i class="bi bi-box-seam me-2"></i>@lang('Lote')</a></li>
+                            <li><a class="dropdown-item" href="/Stock/vista"><i class="bi bi-boxes me-2"></i>@lang('Stock')</a></li>
                         </ul>
                     </li>
                     @endif
@@ -108,20 +108,20 @@
                     @if (in_array($tipo, ['0', '2','3', '4']))
                     <li class="nav-item">
                         <a class="nav-link" href="/pedido/ver">
-                            <i class="bi bi-truck me-1"></i>Pedidos
+                            <i class="bi bi-truck me-1"></i>@lang('Pedidos')
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/Sucursal/vista">
-                            <i class="bi bi-shop me-1"></i>Sucursales
+                            <i class="bi bi-shop me-1"></i>@lang('Sucursales')
                         </a>
                     </li>
                     @endif
-                    
+
 @if (in_array($tipo, ['0', '2', '3', '4']))
     <li class="nav-item">
         <a class="nav-link" href="/area/ver">
-            <i class="bi bi-diagram-3 me-1"></i>Áreas
+            <i class="bi bi-diagram-3 me-1"></i>@lang('Áreas')
         </a>
     </li>
 @endif
@@ -129,7 +129,7 @@
                     @if (in_array($tipo, ['0', '2']))
                     <li class="nav-item">
                         <a class="nav-link" href="/Mexico/import">
-                            <i class="bi bi-upload me-1"></i>Importar
+                            <i class="bi bi-upload me-1"></i>@lang('Importar')
                         </a>
                     </li>
                     @endif
@@ -138,12 +138,12 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-gear me-1"></i>Administración
+                            <i class="bi bi-gear me-1"></i>@lang('Administración')
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                            <li><a class="dropdown-item" href="/Precio/index"><i class="bi bi-tag me-2"></i>Precios</a></li>
-                            <li><a class="dropdown-item" href="/Clientes/index"><i class="bi bi-people me-2"></i>Clientes</a></li>
-                            <li><a class="dropdown-item" href="/Membresia/index"><i class="bi bi-card-checklist me-2"></i>Membresías</a></li>
+                            <li><a class="dropdown-item" href="/Precio/index"><i class="bi bi-tag me-2"></i>@lang('Precios')</a></li>
+                            <li><a class="dropdown-item" href="/Clientes/index"><i class="bi bi-people me-2"></i>@lang('Clientes')</a></li>
+                            <li><a class="dropdown-item" href="/Membresia/index"><i class="bi bi-card-checklist me-2"></i>@lang('Membresías')</a></li>
                         </ul>
                     </li>
                     @endif
@@ -153,7 +153,7 @@
                     <li class="nav-item">
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
-                            <button class="btn btn-link nav-link" type="submit" title="Cerrar sesión">
+                            <button class="btn btn-link nav-link" type="submit" title="@lang('Cerrar sesión')">
                                 <i class="bi bi-power" style="font-size: 1.25rem;"></i>
                             </button>
                         </form>
@@ -194,7 +194,7 @@
             <div class="row">
                 <div class="col-md-6 text-center text-md-start">
                     <img src="{{ asset('images/logos.png') }}" alt="Evobike" height="30">
-                    <p class="mt-2 mb-0">© {{ date('Y') }} Evobike. Todos los derechos reservados.</p>
+                    <p class="mt-2 mb-0">© {{ date('Y') }} CloudLabs. @lang('Todos los derechos reservados.')</p>
                 </div>
                 <div class="col-md-6 text-center text-md-end">
                     <p class="mb-0">
