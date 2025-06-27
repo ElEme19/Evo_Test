@@ -5,6 +5,11 @@
     $user = Auth::guard('usuarios')->user();
 @endphp
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery necesario para ApexCharts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <div class="container-xxl py-5">
     @if($user)
         <!-- Hero Section -->
@@ -143,4 +148,179 @@
         </div>
     @endif
 </div>
+<<<<<<< HEAD
 @endsection
+=======
+
+<style>
+    .welcome-card {
+        background-color: #f8f9fa;
+        border-left: 4px solid #0d6efd;
+    }
+    
+    .avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .icon-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .icon-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .feature-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 12px;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    
+    .stat-card {
+        transition: transform 0.2s ease;
+        border-radius: 10px;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05) !important;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
+    }
+    
+    .progress {
+        border-radius: 100px;
+    }
+    
+    .progress-bar {
+        border-radius: 100px;
+    }
+    
+    .list-group-item {
+        transition: background-color 0.2s ease;
+    }
+    
+    .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .badge {
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+</style>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+// Función para verificar si el elemento existe
+function elementReady(selector) {
+    return new Promise((resolve) => {
+        if (document.querySelector(selector)) {
+            return resolve(document.querySelector(selector));
+        }
+        
+        const observer = new MutationObserver(() => {
+            if (document.querySelector(selector)) {
+                observer.disconnect();
+                resolve(document.querySelector(selector));
+            }
+        });
+        
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+}
+
+// Esperar a que el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', function() {
+    // Gráfico de Rendimiento
+    elementReady("#performance-chart").then((element) => {
+        var options = {
+            series: [{
+                name: 'Bicis Alquiladas',
+                data: [30, 40, 35, 50, 49, 60, 70, 80, 75, 90, 100, 110]
+            }],
+            chart: {
+                type: 'line',
+                height: '100%',
+                toolbar: { show: false }
+            },
+            xaxis: {
+                categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+            },
+            colors: ['#198754'], // Usando tu color primary
+            stroke: {
+                width: 3,
+                curve: 'smooth'
+            }
+        };
+        var chart = new ApexCharts(element, options);
+        chart.render();
+        console.log("Gráfico de rendimiento renderizado");
+    }).catch(() => {
+        console.error("Elemento #performance-chart no encontrado");
+    });
+
+    // Gráfico de Distribución
+    elementReady("#distribution-chart").then((element) => {
+        var options = {
+            series: [42, 28, 30],
+            labels: ['Centro', 'Norte', 'Sur'],
+            chart: {
+                type: 'donut',
+                height: '100%'
+            },
+            colors: ['#198754', '#6c757d', '#ffc107'], // Usando tus colores theme
+            plotOptions: {
+                pie: {
+                    donut: {
+                        labels: {
+                            show: true,
+                            total: {
+                                show: true,
+                                label: 'Total',
+                                formatter: function() {
+                                    return '100%';
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: false
+            }
+        };
+        var chart = new ApexCharts(element, options);
+        chart.render();
+        console.log("Gráfico de distribución renderizado");
+    }).catch(() => {
+        console.error("Elemento #distribution-chart no encontrado");
+    });
+});
+
+
+</script>
+@endpush
+
+@endsection
+>>>>>>> 0492079bbfcfc780269565bf89d2f0e79e7c246d
