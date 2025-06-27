@@ -462,41 +462,64 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Verifica que los elementos existan
-    if(document.querySelector("#performance-chart")) {
-        const performanceChart = new ApexCharts(document.querySelector("#performance-chart"), {
+// Función para verificar si el elemento existe
+function elementReady(selector) {
+    return new Promise((resolve) => {
+        if (document.querySelector(selector)) {
+            return resolve(document.querySelector(selector));
+        }
+        
+        const observer = new MutationObserver(() => {
+            if (document.querySelector(selector)) {
+                observer.disconnect();
+                resolve(document.querySelector(selector));
+            }
+        });
+        
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+}
+
+// Esperar a que el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', function() {
+    // Gráfico de Rendimiento
+    elementReady("#performance-chart").then((element) => {
+        var options = {
+            series: [{
+                name: 'Bicis Alquiladas',
+                data: [30, 40, 35, 50, 49, 60, 70, 80, 75, 90, 100, 110]
+            }],
             chart: {
                 type: 'line',
                 height: '100%',
-                toolbar: { show: false },
-                zoom: { enabled: false }
+                toolbar: { show: false }
             },
-            series: [{
-                name: 'Bicis Alquiladas',
-                data: [120, 190, 170, 220, 250, 280, 310, 290, 330, 380, 400, 420]
-            }],
             xaxis: {
                 categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
             },
-            colors: ['#0d6efd'],
+            colors: ['#198754'], // Usando tu color primary
             stroke: {
                 width: 3,
                 curve: 'smooth'
             }
-        });
-        performanceChart.render();
-    }
+        };
+        var chart = new ApexCharts(element, options);
+        chart.render();
+        console.log("Gráfico de rendimiento renderizado");
+    }).catch(() => {
+        console.error("Elemento #performance-chart no encontrado");
+    });
 
-    if(document.querySelector("#distribution-chart")) { // Corregido el typo en el ID
-        const distributionChart = new ApexCharts(document.querySelector("#distribution-chart"), {
+    // Gráfico de Distribución
+    elementReady("#distribution-chart").then((element) => {
+        var options = {
+            series: [42, 28, 30],
+            labels: ['Centro', 'Norte', 'Sur'],
             chart: {
                 type: 'donut',
                 height: '100%'
             },
-            series: [42, 28, 30],
-            labels: ['Centro', 'Norte', 'Sur'],
-            colors: ['#0d6efd', '#198754', '#ffc107'],
+            colors: ['#198754', '#6c757d', '#ffc107'], // Usando tus colores theme
             plotOptions: {
                 pie: {
                     donut: {
@@ -505,8 +528,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             total: {
                                 show: true,
                                 label: 'Total',
-                                formatter: function (w) {
-                                    return '100%'
+                                formatter: function() {
+                                    return '100%';
                                 }
                             }
                         }
@@ -516,9 +539,13 @@ document.addEventListener('DOMContentLoaded', function () {
             dataLabels: {
                 enabled: false
             }
-        });
-        distributionChart.render();
-    }
+        };
+        var chart = new ApexCharts(element, options);
+        chart.render();
+        console.log("Gráfico de distribución renderizado");
+    }).catch(() => {
+        console.error("Elemento #distribution-chart no encontrado");
+    });
 });
 </script>
 @endpush
