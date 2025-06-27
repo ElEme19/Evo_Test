@@ -216,7 +216,6 @@
     
     <!-- Aquí se insertarán los scripts adicionales -->
     @stack('scripts')
-</body>
-</html>
+
 </body>
 </html>

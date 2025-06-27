@@ -3,6 +3,7 @@
 use App\Http\Controllers\ModelosBController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PiezasController;
 use App\Http\Controllers\ColorModeloController;
 use App\Http\Controllers\RegistroController;
@@ -141,6 +142,9 @@ Route::post('/pedido/store', [PedidosController::class, 'store'])->name('pedido.
 Route::get('/pedido/pdf/{id_pedido}', [PedidosController::class, 'generarPDF'])->name('pedido.pdf');
 Route::get('/pedido/buscar', [PedidosController::class, 'buscar'])->name('pedido.buscar');
 
+
+//Debatible
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 });
 
