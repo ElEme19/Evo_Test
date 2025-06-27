@@ -5,6 +5,11 @@
     $user = Auth::guard('usuarios')->user();
 @endphp
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery necesario para ApexCharts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <div class="container-xxl py-5">
     @if($user)
         <!-- Sección de Bienvenida -->
@@ -547,6 +552,8 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error("Elemento #distribution-chart no encontrado");
     });
 });
+
+
 </script>
 @endpush
 
