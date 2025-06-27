@@ -115,7 +115,7 @@
                                     <th class="fw-semibold">Sucursal</th>
                                     <th class="fw-semibold text-center">Bicicletas</th>
                                     <th class="fw-semibold text-nowrap">Fecha Envío</th>
-                                    <th class="fw-semibold text-end">Acciones</th>
+                                    <th class="fw-semibold text-center">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -140,6 +140,11 @@
                                                     data-bs-toggle="collapse" 
                                                     data-bs-target="#detalle-{{ $index }}">
                                                 <i class="bi bi-eye me-1"></i>Ver
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-primary rounded-pill px-3" 
+                                                    data-bs-toggle="collapse" 
+                                                    data-bs-target="#">
+                                                <i class="bi bi-pencil-square me-1"></i>Modificar
                                             </button>
                                             <a href="{{ route('pedido.pdf', $pedidoGroup->id_pedido) }}" 
                                                class="btn btn-sm btn-outline-danger rounded-pill px-3">

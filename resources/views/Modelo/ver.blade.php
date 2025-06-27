@@ -13,11 +13,27 @@
         </h3>
       </div>
 
+        @if (auth()->user()->rol == 0)
+          <div class="text-center mb-3">
+                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalCrearModelo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle me-1" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                    Crear Nuevo Modelo
+                </button>
+            </div>
+            
+            
+            @include('Modelo.crear')
+        @endif
+
+
       <!-- Alertas -->
       @if (session('success'))
         <div class="text-center mb-3">
-          <div class="alert alert-warning d-inline-flex align-items-center py-1 px-2 rounded-3 shadow-sm">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          <div class="alert alert-success d-inline-flex align-items-center py-1 px-2 rounded-3 shadow-sm">
+            <i class="bi bi-check-circle-fill me-2"></i>
             <small class="fw-semibold">{{ session('success') }}</small>
           </div>
         </div>

@@ -84,8 +84,8 @@ Route::get('/Bicicleta/crear', [BicicletaController::class, 'crear'])->name('Bic
 Route::post('/Bicicleta/store', [BicicletaController::class, 'store'])->name('Bicicleta.store');
 Route::get('/Bicicleta/vista', [BicicletaController::class, 'ver'])->name('Bicicleta.ver');
 /* Route::put('/Bicicleta/{bicicleta}', [BicicletaController::class, 'update'])->name('Bicicleta.update'); */
-Route::get('/colores-por-modelo/{id_modelo}', [BicicletaController::class, 'coloresPorModelo']);
-Route::get('/Bicicleta/buscar-por-ultimos4', [BicicletaController::class, 'buscarPorUltimos4'])->name('Bicicleta.buscarUltimos4');
+Route::get('/colores-por-modelo/{id_modelo}', [BicicletaController::class, 'coloresPorModelo'])->name('Bicicleta.ptoEmilioNoleMuevas');;
+Route::get('/Bicicleta/buscar-por-ultimos4', [BicicletaController::class, 'buscarPorUltimosSx'])->name('Bicicleta.buscarUltimos4');
 
 
 // Busquedas

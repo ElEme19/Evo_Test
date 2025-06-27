@@ -37,7 +37,7 @@ public function ver()
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function crear()
     {
         return view('Modelo.crear');
     }
@@ -63,7 +63,7 @@ public function ver()
         }
         $modelo->save();
 
-        return redirect()->route('Modelo.index')
+        return redirect()->route('Modelo.ver')
                          ->with('success', 'Modelo creado correctamente.');
     }
 

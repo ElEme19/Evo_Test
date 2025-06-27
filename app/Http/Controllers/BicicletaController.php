@@ -60,7 +60,7 @@ class BicicletaController extends Controller
                     'id_lote'                => $validated['id_lote'],
                     'id_tipoStock'           => $validated['id_tipoStock'],
                     'codigo_barras'          => $validated['num_chasis'],
-                    'voltaje'                => $validated['voltaje'] ?? null,
+                    'voltaje'                => $validated['voltaje'] ?? "Sin Vol",
                     'error_iden_produccion'  => $validated['error_iden_produccion'] ?? null,
                     'updated_at'             => now(),
                 ]);
@@ -142,24 +142,24 @@ private function enviarPrintNode(string $codigo): array
 
         $body = (string) $response->getBody();
         $decoded = json_decode($body, true);
-if (!is_array($decoded)) {
-    throw new \Exception('Respuesta inesperada de PrintNode: ' . $body);
-}
+        if (!is_array($decoded)) {
+            throw new \Exception('Respuesta inesperada de PrintNode: ' . $body);
+        }
 
-// Registrar éxito en el log (forma correcta)
-Log::info('Impresión exitosa', ['codigo' => $codigo, 'response' => $decoded]);
+        // Registrar éxito en el log (forma correcta)
+        Log::info('Impresión exitosa', ['codigo' => $codigo, 'response' => $decoded]);
 
-return [
-    'status' => 'success',
-    'message' => '🎉 ¡QR impreso con éxito!',
-    'data' => $decoded,
-    'timestamp' => now()->toDateTimeString()
-];
-} catch (\Exception $e) {
-    Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
-    throw new \Exception('⚠️ Error en impresión: ' . $e->getMessage());
-}
-}
+        return [
+            'status' => 'success',
+            'message' => '🎉 ¡QR impreso con éxito!',
+            'data' => $decoded,
+            'timestamp' => now()->toDateTimeString()
+        ];
+        } catch (\Exception $e) {
+            Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
+            throw new \Exception('⚠️ Error en impresión: ' . $e->getMessage());
+        }
+        }
 
 
 
@@ -329,5 +329,49 @@ public function buscarPorStock(Request $request)
         $lotes    = $bicicletas->pluck('lote')->filter()->unique('id')->values();
         return view('Bicicleta.vista', compact('bicicletas','modelos','colores','lotes'));
     }
+
+
+
+     public function buscarPorUltimosSX(Request $request)
+{
+    $ult4 = $request->query('ult4');
+
+    if (! $ult4 || strlen($ult4) !== 4) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Debe ingresar los últimos 4 caracteres del número de chasis',
+            'bici'    => null
+        ]);
+    }
+
+    try {
+        // Solo traemos lo esencial: num_chasis completo, id_modelo, id_color, id_tipoStock, id_lote
+        $bici = Bicicleta::where(DB::raw('RIGHT(num_chasis, 4)'), $ult4)
+                   ->select('num_chasis', 'id_modelo', 'id_color', 'id_tipoStock', 'id_lote')
+                   ->first();
+
+        if (! $bici) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bicicleta no encontrada',
+                'bici'    => null
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'bici'    => $bici
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error en el servidor: ' . $e->getMessage(),
+            'bici'    => null
+        ], 500);
+    }
+}
+
+
 
 }
