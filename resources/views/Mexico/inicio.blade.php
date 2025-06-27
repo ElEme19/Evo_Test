@@ -247,126 +247,91 @@
                 </div>
             </div>
 
-           <!-- Pedidos Recientes -->
-<div class="col-md-6 col-lg-4">
-    <div class="card card-primary shadow-sm h-100">
-        <div class="card-header bg-light border-0">
-            <h3 class="card-title mb-0">
-                <i class="fas fa-clipboard-list me-2"></i>Pedidos Recientes
-                <span class="badge bg-primary bg-opacity-20 float-end">{{ $pedidosRecientes->count() }}</span>
-            </h3>
-        </div>
-        <div class="card-body p-0">
-            <div class="list-group list-group-flush">
-                @forelse($pedidosRecientes as $pedido)
-                <div class="list-group-item border-0 py-3">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h6 class="mb-1 fw-bold">#ORD-{{ str_pad($pedido->id_pedido, 5, '0', STR_PAD_LEFT) }}</h6>
-<small class="text-muted d-block">
-    <i class="fas fa-store me-1"></i>
-    {{ $pedido->sucursal->nombre ?? 'Sin sucursal' }}
-</small>
-<small class="text-muted">
-    <i class="fas fa-bicycle me-1"></i>
-    {{ $pedido->bicicletas_count }} bicis
-</small>
-                        </div>
-                        <div class="text-end">
-                            <span class="badge 
-                                @if($pedido->estado == 'completado') bg-success bg-opacity-10 text-success
-                                @elseif($pedido->estado == 'en_proceso') bg-warning bg-opacity-10 text-warning
-                                @elseif($pedido->estado == 'cancelado') bg-danger bg-opacity-10 text-danger
-                                @else bg-info bg-opacity-10 text-info @endif">
-                                {{ ucfirst(str_replace('_', ' ', $pedido->estado)) }}
-                            </span>
-                            <div class="text-muted small mt-1">
-                                {{ $pedido->created_at->format('d/m/Y') }}
+            <!-- Pedidos Recientes -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-primary shadow-sm h-100">
+                    <div class="card-header bg-light border-0">
+                        <h3 class="card-title mb-0"><i class="fas fa-clipboard-list me-2"></i>Pedidos Recientes</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item border-0 py-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">#ORD-2023-156</h6>
+                                        <small class="text-muted">Sucursal Centro - 15 bicis</small>
+                                    </div>
+                                    <span class="badge bg-success bg-opacity-10 text-success">Completado</span>
+                                </div>
+                            </div>
+                            <div class="list-group-item border-0 py-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">#ORD-2023-157</h6>
+                                        <small class="text-muted">Sucursal Norte - 8 bicis</small>
+                                    </div>
+                                    <span class="badge bg-warning bg-opacity-10 text-warning">En proceso</span>
+                                </div>
+                            </div>
+                            <div class="list-group-item border-0 py-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">#ORD-2023-158</h6>
+                                        <small class="text-muted">Sucursal Sur - 12 bicis</small>
+                                    </div>
+                                    <span class="badge bg-info bg-opacity-10 text-info">Enviado</span>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="card-footer bg-light border-0">
+                        <a href="#" class="btn btn-sm btn-outline-primary w-100">Ver todos los pedidos</a>
+                    </div>
                 </div>
-                @empty
-                <div class="list-group-item border-0 py-3 text-center text-muted">
-                    No hay pedidos recientes
-                </div>
-                @endforelse
             </div>
-        </div>
-        <div class="card-footer bg-light border-0">
-            <a href="{{ route('pedido.ver') }}" class="btn btn-sm btn-outline-primary w-100">
-                Ver todos los pedidos <i class="fas fa-arrow-right ms-1"></i>
-            </a>
-        </div>
-    </div>
-</div>
-<!-- Bicicletas -->
-<div class="col-md-6 col-lg-4">
-    <div class="card card-info shadow-sm h-100">
-        <div class="card-header bg-light border-0">
-            <h3 class="card-title mb-0">
-                <i class="fas fa-bicycle me-2"></i>Últimas Bicicletas
-                <span class="badge bg-info bg-opacity-20 float-end">{{ $bicicletas->count() }}</span>
-            </h3>
-        </div>
-        <div class="card-body p-0">
-            <div class="list-group list-group-flush">
-                @forelse($bicicletas as $bicicleta)
-                <div class="list-group-item border-0 py-3">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h6 class="mb-1 fw-bold">Bici #{{ $bicicleta->num_chasis }}</h6>
 
-                            <small class="text-muted d-block">
-                                <i class="fas fa-tag me-1"></i>
-                                {{ $bicicleta->modelo->nombre_modelo ?? 'Modelo no especificado' }}
-                            </small>
-
-                            <small class="text-muted d-block">
-                                <i class="fas fa-palette me-1"></i>
-                                {{ $bicicleta->color->nombre_color ?? 'Sin color' }}
-                            </small>
-
-                            <small class="text-muted d-block">
-                                <i class="fas fa-box-open me-1"></i>
-                                {{ $bicicleta->tipoStock->nombre_stock ?? 'Sin tipo de stock' }}
-                            </small>
-                        </div>
-                        <div class="text-end">
-                            <span class="badge 
-                                @if($bicicleta->tipoStock && strtolower($bicicleta->tipoStock->nombre_stock) === 'disponible') bg-success bg-opacity-10 text-success
-                                @elseif($bicicleta->tipoStock && strtolower($bicicleta->tipoStock->nombre_stock) === 'alquilada') bg-primary bg-opacity-10 text-primary
-                                @elseif($bicicleta->tipoStock && strtolower($bicicleta->tipoStock->nombre_stock) === 'mantenimiento') bg-warning bg-opacity-10 text-warning
-                                @elseif($bicicleta->tipoStock && strtolower($bicicleta->tipoStock->nombre_stock) === 'averiada') bg-danger bg-opacity-10 text-danger
-                                @else bg-secondary bg-opacity-10 text-secondary @endif">
-                                {{ ucfirst($bicicleta->tipoStock->nombre_stock ?? 'Sin estado') }}
-                            </span>
-
-                            <div class="text-muted small mt-1">
-                                @if($bicicleta->pedido)
-                                    Pedido #{{ $bicicleta->pedido->id_pedido }}
-                                @else
-                                    Sin pedido
-                                @endif
+            <!-- Mantenimientos Pendientes -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-danger shadow-sm h-100">
+                    <div class="card-header bg-light border-0">
+                        <h3 class="card-title mb-0"><i class="fas fa-tools me-2"></i>Mantenimientos</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item border-0 py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">Bici #B2023-045</h6>
+                                        <small class="text-muted">Frenos desgastados</small>
+                                    </div>
+                                    <span class="badge bg-danger bg-opacity-10 text-danger">Urgente</span>
+                                </div>
+                            </div>
+                            <div class="list-group-item border-0 py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">Bici #B2023-128</h6>
+                                        <small class="text-muted">Cambio de rueda trasera</small>
+                                    </div>
+                                    <span class="badge bg-warning bg-opacity-10 text-warning">Prioritario</span>
+                                </div>
+                            </div>
+                            <div class="list-group-item border-0 py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">Bici #B2023-312</h6>
+                                        <small class="text-muted">Revisión general</small>
+                                    </div>
+                                    <span class="badge bg-info bg-opacity-10 text-info">Programado</span>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="card-footer bg-light border-0">
+                        <a href="#" class="btn btn-sm btn-outline-danger w-100">Gestionar mantenimientos</a>
+                    </div>
                 </div>
-                @empty
-                <div class="list-group-item border-0 py-3 text-center text-muted">
-                    No hay bicicletas registradas
-                </div>
-                @endforelse
             </div>
-        </div>
-        <div class="card-footer bg-light border-0">
-            <a href="{{ route('Bicicleta.vista') }}" class="btn btn-sm btn-outline-primary w-100">
-                Ver todas las bicicletas <i class="fas fa-arrow-right ms-1"></i>
-            </a>
-        </div>
-    </div>
-</div>
-
         </div>
 
     @else
