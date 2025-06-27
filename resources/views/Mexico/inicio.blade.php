@@ -1,6 +1,6 @@
 @extends('layout.app')
 
-@section('content')
+@section('conten')
 @php
     $user = Auth::guard('usuarios')->user();
 @endphp
