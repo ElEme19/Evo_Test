@@ -7,13 +7,13 @@
 
 <div class="container">
     @if($user)
-        <h1 class="mt-5 text-center">{{ $user->tipo_dia }}!, {{ $user->nombre_user }}  </h1>
+        <h1 class="mt-5 text-center">{{ $user->tipo_dia }}! {{ $user->nombre_user }}  </h1>
         
 
         <div class="row justify-content-center mt-5">
             <div class="col-mb-8">
                 <div class="alert alert-info text-center">
-                    ¡Bienvenide a Evobike!
+                    ¡Brain live-chat!!!!!!
                 </div>
             </div>
         </div>
