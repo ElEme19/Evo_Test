@@ -40,83 +40,103 @@ class BicicletaController extends Controller
      * Guarda la bicicleta y dispara la impresión vía PrintNode.
      */
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'num_chasis'            => 'required|string|exists:bicicleta,num_chasis',
-            'id_color'              => 'required|string|exists:color_modelo,id_colorM',
-            'id_lote'               => 'required|string|exists:lote,id_lote',
-            'id_tipoStock'          => 'required|string|exists:tipo_stock,id_tipoStock',
-            'voltaje'               => 'nullable|string|max:10',
-            'error_iden_produccion' => 'nullable|string|max:255',
-        ]);
+{
+    $validated = $request->validate([
+        'num_chasis'            => 'required|string|exists:bicicleta,num_chasis',
+        'id_color'              => 'required|string|exists:color_modelo,id_colorM',
+        'id_lote'               => 'required|string|exists:lote,id_lote',
+        'id_tipoStock'          => 'required|string|exists:tipo_stock,id_tipoStock',
+        'voltaje'               => 'nullable|string|max:10',
+        'error_iden_produccion' => 'nullable|string|max:255',
+    ]);
 
-        DB::beginTransaction();
+    DB::beginTransaction();
 
-        try {
-            // Actualizar registro
-            Bicicleta::where('num_chasis', $validated['num_chasis'])
-                ->update([
-                    'id_color'               => $validated['id_color'],
-                    'id_lote'                => $validated['id_lote'],
-                    'id_tipoStock'           => $validated['id_tipoStock'],
-                    'codigo_barras'          => $validated['num_chasis'],
-                    'voltaje'                => $validated['voltaje'] ?? "Sin Vol",
-                    'error_iden_produccion'  => $validated['error_iden_produccion'] ?? null,
-                    'updated_at'             => now(),
-                ]);
-
-            // Enviar impresión
-            $printResult = $this->enviarPrintNode($validated['num_chasis']);
-
-            DB::commit();
-
-            return redirect()->route('Bicicleta.crear')
-                ->with('success', '¡Bicicleta guardada e impresa correctamente!')
-                ->with('print_response', $printResult);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error en store BicicletaController:', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+    try {
+        // Actualizar registro (guardar)
+        Bicicleta::where('num_chasis', $validated['num_chasis'])
+            ->update([
+                'id_color'               => $validated['id_color'],
+                'id_lote'                => $validated['id_lote'],
+                'id_tipoStock'           => $validated['id_tipoStock'],
+                'codigo_barras'          => $validated['num_chasis'],
+                'voltaje'                => $validated['voltaje'] ?? "Sin Vol",
+                'error_iden_produccion'  => $validated['error_iden_produccion'] ?? null,
+                'updated_at'             => now(),
             ]);
-            return back()
-                ->with('error', 'Error: ' . $e->getMessage())
-                ->withInput();
+
+        // Confirmamos guardado para que no se haga rollback aunque falle impresión
+        DB::commit();
+
+        // Intentamos imprimir, pero fuera de la transacción (no afecta guardado)
+        try {
+            $printResult = $this->enviarPrintNode($validated['num_chasis']);
+        } catch (\Exception $e) {
+            Log::error('Error en impresión, pero bici guardada:', ['error' => $e->getMessage()]);
+            // Si quieres, mostrar mensaje de fallo de impresión en la sesión:
+            return redirect()->route('Bicicleta.crear')
+                ->with('success', '¡Bicicleta guardada correctamente,')
+                ->with('print_error', $e->getMessage());
         }
+
+        // Si impresión ok
+        return redirect()->route('Bicicleta.crear')
+            ->with('success', '¡Bicicleta guardada e impresa correctamente!')
+            ->with('print_response', $printResult);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Error en store BicicletaController:', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+        return back()
+            ->with('error', 'Error: ' . $e->getMessage())
+            ->withInput();
     }
+}
+
+
 
     /**
      * Envía impresión a PrintNode API
      */
 private function enviarPrintNode(string $codigo): array
 {
-    // Crear conector de impresión
-    $connector = new DummyPrintConnector();
-    $printer = new Printer($connector);
-
     try {
-        // 1. Construcción del contenido ESC/POS
-        $printer->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->selectPrintMode(Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_DOUBLE_WIDTH);
-        $printer->text("Etiqueta QR\n");
-        $printer->selectPrintMode(); // Modo normal
-        $printer->feed(1);
+        // Crear contenido ESC/POS con código QR mejorado
+        $connector = new DummyPrintConnector();
+        $printer = new Printer($connector);
 
-        // QR y texto
-        $printer->qrCode($codigo, Printer::QR_ECLEVEL_H, 8, Printer::QR_MODEL_2);
+        // Configuración inicial
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        
+        // Logo o encabezado (opcional - necesitarías tenerlo en formato ESC/POS)
+        // $printer->graphics(...);
+        
+        // Título
+        $printer->selectPrintMode(Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_DOUBLE_WIDTH);
+        
+        $printer->selectPrintMode(); // Volver al modo normal
+        
+        // Línea decorativa
+       
+        // Espacio antes del QR
         $printer->feed(1);
+        
+        // Generar QR con mejor tamaño y corrección de errores
+        $printer->qrCode($codigo, Printer::QR_ECLEVEL_H, 8, Printer::QR_MODEL_2);
+         $printer->feed(1);
+        
+        // Mostrar el código de texto también
         $printer->text("Código: " . $codigo . "\n");
+        
+        // Espacio final y corte
         $printer->feed(3);
         $printer->cut();
 
-        // 2. Cierre obligatorio del conector
-        $printer->close(); // ✅ ¡IMPORTANTE!
+        $raw = $connector->getData();   // ====>  Revisar esta linea
 
-        // 3. Obtener los datos en crudo
-        $raw = $connector->getData();
-
-        // 4. Enviar a PrintNode
         $client = new Client([
             'base_uri' => 'https://api.printnode.com/',
             'auth'     => [config('printnode.api_key'), ''],
@@ -132,43 +152,28 @@ private function enviarPrintNode(string $codigo): array
             ],
         ]);
 
-        // 5. Procesar respuesta
         $body = (string) $response->getBody();
-
-        // Log para depuración (opcional, útil en desarrollo)
-        Log::debug('Respuesta cruda de PrintNode:', ['body' => $body]);
-
         $decoded = json_decode($body, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception('JSON inválido: ' . json_last_error_msg() . ' | Cuerpo: ' . $body);
-        }
-
         if (!is_array($decoded)) {
             throw new \Exception('Respuesta inesperada de PrintNode: ' . $body);
         }
 
-        // 6. Log y retorno final
+        // Registrar éxito en el log (forma correcta)
         Log::info('Impresión exitosa', ['codigo' => $codigo, 'response' => $decoded]);
 
         return [
-            'status'    => 'success',
-            'message'   => '🎉 ¡QR impreso con éxito!',
-            'data'      => $decoded,
-            'timestamp' => now()->toDateTimeString(),
+            'status' => 'success',
+            'message' => '🎉 ¡QR impreso con éxito!',
+            'data' => $decoded,
+            'timestamp' => now()->toDateTimeString()
         ];
-    } catch (\Exception $e) {
-        try {
-            // Asegura el cierre si algo falló antes
-            $printer->close();
-        } catch (\Exception $inner) {
-            // Silenciar cierre fallido
+        } catch (\Exception $e) {
+            Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
+            throw new \Exception('⚠️ Error en impresión: ' . $e->getMessage());
+        }
         }
 
-        Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
-        throw new \Exception('⚠️ Error en impresión: ' . $e->getMessage());
-    }
-}
+
 
 
      public function coloresPorModelo($id_modelo)

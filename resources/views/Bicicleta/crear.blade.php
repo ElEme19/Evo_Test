@@ -52,6 +52,11 @@
     </div>
 
     <div class="col-md-6">
+        <label for="num_chasis_mostrar" class="form-label">@lang('Número de Chasis completo')</label>
+        <input type="text" id="num_chasis_mostrar" class="form-control" readonly placeholder="@lang('Será llenado automáticamente')">
+    </div>
+
+    <div class="col-md-6">
         <label for="id_modelo" class="form-label">@lang('Seleccione un modelo')</label>
         <select name="id_modelo" id="id_modelo" class="form-select" required disabled>
             <option value="">@lang('Seleccione un modelo')</option>
@@ -111,8 +116,6 @@
     </div>
 </div>
 
-
-
 {{-- Agrega jQuery y Bootstrap Bundle si no los tienes --}}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -124,12 +127,11 @@ $(document).ready(function () {
 
     // Función para mostrar alerta en modal
     function mostrarAlertaModal(tipo, mensaje) {
-        const color    = tipo === 'success' ? 'success' : 'warning';
+        const color    = tipo === 'success' ? 'success' : 'danger';
         const iconPath = tipo === 'success'
-            ? 'M16 8A8 8 0 1 1 0 8a8...'    // path SVG de check
-            : 'M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2'    // path SVG de error
+            ? 'M16 8A8 8 0 1 1 0 8a8...'    // path SVG de check (puedes mantener el original)
+            : 'M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2';
 
-  
         const html = `
         <div class="text-center">
             <div class="alert alert-${color} d-inline-flex align-items-center py-1 px-2 rounded-3 shadow-sm" role="alert">
@@ -147,9 +149,10 @@ $(document).ready(function () {
         modalResultadoBusqueda.show();
     }
 
-    // Resetea modelo y botón
+    // Resetea modelo, botones y chasis
     function resetModeloYBoton() {
         $('#num_chasis_full').val('');
+        $('#num_chasis_mostrar').val('');
         $('#btnGuardar').prop('disabled', true);
         $('#id_modelo')
             .html('<option value="">@lang("Seleccione un modelo")</option>')
@@ -168,26 +171,27 @@ $(document).ready(function () {
                 data: { ult4: ult4 },
                 success: function (response) {
                     if (response.success) {
-                        let bici         = response.bici;
-                        let modeloId     = bici.id_modelo;
-                        let modeloNombre = bici.modelo.nombre_modelo;
+                        let bici     = response.bici;
+                        let modeloId = bici.id_modelo;
+                        let modeloNombre = bici.modelo ? bici.modelo.nombre_modelo : 'Modelo desconocido';
 
                         $('#id_modelo')
-                            .html(`<option value="${modeloId}" selected>${modeloNombre}</option>`)  
+                            .html(`<option value="${modeloId}" selected>${modeloNombre}</option>`)
                             .prop('disabled', true);
 
                         $('#id_modelo').trigger('change');
                         $('#num_chasis_full').val(bici.num_chasis);
+                        $('#num_chasis_mostrar').val(bici.num_chasis); // MOSTRAR AL USUARIO
                         $('#btnGuardar').prop('disabled', false);
 
-                        mostrarAlertaModal('darnger', 'Bicicleta encontrada y modelo preseleccionado.');
+                        mostrarAlertaModal('success', '@lang("Bicicleta encontrada y modelo preseleccionado.")');
                     } else {
                         mostrarAlertaModal('danger', response.message);
                         resetModeloYBoton();
                     }
                 },
                 error: function () {
-                    mostrarAlertaModal('danger', 'Error al buscar la bicicleta, intentá de nuevo.');
+                    mostrarAlertaModal('danger', '@lang("Error al buscar la bicicleta, intentá de nuevo.")');
                     resetModeloYBoton();
                 }
             });
