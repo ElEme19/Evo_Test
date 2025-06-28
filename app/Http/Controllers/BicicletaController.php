@@ -91,46 +91,37 @@ class BicicletaController extends Controller
      */
 private function enviarPrintNode(string $codigo): array
 {
+    // Crear conector de impresión
+    $connector = new DummyPrintConnector();
+    $printer = new Printer($connector);
+
     try {
-        // Crear contenido ESC/POS con código QR
-        $connector = new DummyPrintConnector();
-        $printer = new Printer($connector);
-
-        // Alineación al centro
+        // 1. Construcción del contenido ESC/POS
         $printer->setJustification(Printer::JUSTIFY_CENTER);
-
-        // Texto principal grande
         $printer->selectPrintMode(Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_DOUBLE_WIDTH);
         $printer->text("Etiqueta QR\n");
-        $printer->selectPrintMode(); // Volver al modo normal
-
-        // Espacio
+        $printer->selectPrintMode(); // Modo normal
         $printer->feed(1);
 
-        // Código QR
+        // QR y texto
         $printer->qrCode($codigo, Printer::QR_ECLEVEL_H, 8, Printer::QR_MODEL_2);
         $printer->feed(1);
-
-        // Texto con el código visible
         $printer->text("Código: " . $codigo . "\n");
-
-        // Más espacio y corte
         $printer->feed(3);
         $printer->cut();
 
-        // ✅ Cerrar correctamente el printer para finalizar el conector
-        $printer->close();
+        // 2. Cierre obligatorio del conector
+        $printer->close(); // ✅ ¡IMPORTANTE!
 
-        // Obtener datos ESC/POS generados
+        // 3. Obtener los datos en crudo
         $raw = $connector->getData();
 
-        // Cliente HTTP para PrintNode
+        // 4. Enviar a PrintNode
         $client = new Client([
             'base_uri' => 'https://api.printnode.com/',
             'auth'     => [config('printnode.api_key'), ''],
         ]);
 
-        // Enviar el trabajo de impresión
         $response = $client->post('printjobs', [
             'json' => [
                 'printerId'   => config('printnode.printer_id'),
@@ -141,28 +132,43 @@ private function enviarPrintNode(string $codigo): array
             ],
         ]);
 
+        // 5. Procesar respuesta
         $body = (string) $response->getBody();
+
+        // Log para depuración (opcional, útil en desarrollo)
+        Log::debug('Respuesta cruda de PrintNode:', ['body' => $body]);
+
         $decoded = json_decode($body, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception('JSON inválido: ' . json_last_error_msg() . ' | Cuerpo: ' . $body);
+        }
+
         if (!is_array($decoded)) {
             throw new \Exception('Respuesta inesperada de PrintNode: ' . $body);
         }
 
-        // Log exitoso
+        // 6. Log y retorno final
         Log::info('Impresión exitosa', ['codigo' => $codigo, 'response' => $decoded]);
 
         return [
             'status'    => 'success',
             'message'   => '🎉 ¡QR impreso con éxito!',
             'data'      => $decoded,
-            'timestamp' => now()->toDateTimeString()
+            'timestamp' => now()->toDateTimeString(),
         ];
     } catch (\Exception $e) {
+        try {
+            // Asegura el cierre si algo falló antes
+            $printer->close();
+        } catch (\Exception $inner) {
+            // Silenciar cierre fallido
+        }
+
         Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
         throw new \Exception('⚠️ Error en impresión: ' . $e->getMessage());
     }
 }
-
-
 
 
      public function coloresPorModelo($id_modelo)
