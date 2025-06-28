@@ -51,9 +51,7 @@ class BicicletaController extends Controller
     ]);
 
     DB::beginTransaction();
-
     try {
-        // Actualizar registro (guardar)
         Bicicleta::where('num_chasis', $validated['num_chasis'])
             ->update([
                 'id_color'               => $validated['id_color'],
@@ -65,37 +63,28 @@ class BicicletaController extends Controller
                 'updated_at'             => now(),
             ]);
 
-        // Confirmamos guardado para que no se haga rollback aunque falle impresión
         DB::commit();
 
-        // Intentamos imprimir, pero fuera de la transacción (no afecta guardado)
-        try {
-            $printResult = $this->enviarPrintNode($validated['num_chasis']);
-        } catch (\Exception $e) {
-            Log::error('Error en impresión, pero bici guardada:', ['error' => $e->getMessage()]);
-            // Si quieres, mostrar mensaje de fallo de impresión en la sesión:
-            return redirect()->route('Bicicleta.crear')
-                ->with('success', '¡Bicicleta guardada correctamente,')
-                ->with('print_error', $e->getMessage());
-        }
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Error guardando bicicleta:', ['error' => $e->getMessage()]);
+        return back()->with('error', 'Error guardando bicicleta: ' . $e->getMessage())->withInput();
+    }
 
-        // Si impresión ok
+    // Aquí ya guardamos la bici, intentamos imprimir pero sin afectar el guardado
+    try {
+        $printResult = $this->enviarPrintNode($validated['num_chasis']);
         return redirect()->route('Bicicleta.crear')
             ->with('success', '¡Bicicleta guardada e impresa correctamente!')
             ->with('print_response', $printResult);
 
     } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Error en store BicicletaController:', [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-        ]);
-        return back()
-            ->with('error', 'Error: ' . $e->getMessage())
-            ->withInput();
+        Log::error('Error en impresión, bici guardada igual:', ['error' => $e->getMessage()]);
+        return redirect()->route('Bicicleta.crear')
+            ->with('success', '¡Bicicleta guardada correctamente, pero la impresión falló!')
+            ->with('print_error', $e->getMessage());
     }
 }
-
 
 
     /**
