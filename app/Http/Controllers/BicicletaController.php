@@ -39,52 +39,53 @@ class BicicletaController extends Controller
     /**
      * Guarda la bicicleta y dispara la impresión vía PrintNode.
      */
-    public function store(Request $request)
-{
-    $validated = $request->validate([
-        'num_chasis'            => 'required|string|exists:bicicleta,num_chasis',
-        'id_color'              => 'required|string|exists:color_modelo,id_colorM',
-        'id_lote'               => 'required|string|exists:lote,id_lote',
-        'id_tipoStock'          => 'required|string|exists:tipo_stock,id_tipoStock',
-        'voltaje'               => 'nullable|string|max:10',
-        'error_iden_produccion' => 'nullable|string|max:255',
-    ]);
+     public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'num_chasis'            => 'required|string|exists:bicicleta,num_chasis',
+            'id_color'              => 'required|string|exists:color_modelo,id_colorM',
+            'id_lote'               => 'required|string|exists:lote,id_lote',
+            'id_tipoStock'          => 'required|string|exists:tipo_stock,id_tipoStock',
+            'voltaje'               => 'nullable|string|max:10',
+            'error_iden_produccion' => 'nullable|string|max:255',
+        ]);
 
-    DB::beginTransaction();
-    try {
-        Bicicleta::where('num_chasis', $validated['num_chasis'])
-            ->update([
-                'id_color'               => $validated['id_color'],
-                'id_lote'                => $validated['id_lote'],
-                'id_tipoStock'           => $validated['id_tipoStock'],
-                'codigo_barras'          => $validated['num_chasis'],
-                'voltaje'                => $validated['voltaje'] ?? "Sin Vol",
-                'error_iden_produccion'  => $validated['error_iden_produccion'] ?? null,
-                'updated_at'             => now(),
+        DB::beginTransaction();
+
+        try {
+            // Actualizar registro
+            Bicicleta::where('num_chasis', $validated['num_chasis'])
+                ->update([
+                    'id_color'               => $validated['id_color'],
+                    'id_lote'                => $validated['id_lote'],
+                    'id_tipoStock'           => $validated['id_tipoStock'],
+                    'codigo_barras'          => $validated['num_chasis'],
+                    'voltaje'                => $validated['voltaje'] ?? null,
+                    'error_iden_produccion'  => $validated['error_iden_produccion'] ?? null,
+                    'updated_at'             => now(),
+                ]);
+
+            // Enviar impresión
+            $printResult = $this->enviarPrintNode($validated['num_chasis']);
+
+            DB::commit();
+
+            return redirect()->route('Bicicleta.crear')
+                ->with('success', '¡Bicicleta guardada e impresa correctamente!')
+                ->with('print_response', $printResult);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error en store BicicletaController:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
-
-        DB::commit();
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Error guardando bicicleta:', ['error' => $e->getMessage()]);
-        return back()->with('error', 'Error guardando bicicleta: ' . $e->getMessage())->withInput();
+            return back()
+                ->with('error', 'Error: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
-    // Aquí ya guardamos la bici, intentamos imprimir pero sin afectar el guardado
-    try {
-        $printResult = $this->enviarPrintNode($validated['num_chasis']);
-        return redirect()->route('Bicicleta.crear')
-            ->with('success', '¡Bicicleta guardada e impresa correctamente!')
-            ->with('print_response', $printResult);
-
-    } catch (\Exception $e) {
-        Log::error('Error en impresión, bici guardada igual:', ['error' => $e->getMessage()]);
-        return redirect()->route('Bicicleta.crear')
-            ->with('success', '¡Bicicleta guardada correctamente, pero la impresión falló!')
-            ->with('print_error', $e->getMessage());
-    }
-}
 
 
     /**
