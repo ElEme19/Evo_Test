@@ -137,7 +137,7 @@ private function enviarPrintNode(string $codigo): array
         Log::debug('Raw ESC/POS generado:', ['raw_length' => strlen($raw), 'raw_sample' => substr($raw, 0, 100)]);
 
         $client = new Client([
-            'base_uri' => 'https://api.printnode.com/',
+            'base_uri' => 'https://api.printnode.com/accounts',
             'auth'     => [config('printnode.api_key'), ''],
             'timeout'  => 10,  // timeout para la petición
         ]);
