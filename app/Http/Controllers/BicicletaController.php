@@ -114,35 +114,39 @@ private function enviarPrintNode(string $codigo): array
         // Configuración inicial
         $printer->setJustification(Printer::JUSTIFY_CENTER);
         
-        // Logo o encabezado (opcional - necesitarías tenerlo en formato ESC/POS)
-        // $printer->graphics(...);
-        
-        // Título
+        // Texto grande para título (ejemplo)
         $printer->selectPrintMode(Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_DOUBLE_WIDTH);
+        $printer->text("QR Bicicleta\n");
+        $printer->selectPrintMode(); // volver a modo normal
         
-        $printer->selectPrintMode(); // Volver al modo normal
-        
-        // Línea decorativa
-       
-        // Espacio antes del QR
         $printer->feed(1);
         
-        // Generar QR con mejor tamaño y corrección de errores
+        // QR con alta corrección y tamaño
         $printer->qrCode($codigo, Printer::QR_ECLEVEL_H, 8, Printer::QR_MODEL_2);
-         $printer->feed(1);
+        $printer->feed(1);
         
-        // Mostrar el código de texto también
+        // Texto normal con el código
         $printer->text("Código: " . $codigo . "\n");
         
-        // Espacio final y corte
+        // Espacio y corte
         $printer->feed(3);
         $printer->cut();
 
-        $raw = $connector->getData();   // ====>  Revisar esta linea
+        // Obtener datos raw ESC/POS
+        $raw = $connector->getData();
+        Log::debug('Raw ESC/POS generado:', ['raw_length' => strlen($raw), 'raw_sample' => substr($raw, 0, 100)]);
 
         $client = new Client([
             'base_uri' => 'https://api.printnode.com/',
             'auth'     => [config('printnode.api_key'), ''],
+            'timeout'  => 10,  // timeout para la petición
+        ]);
+
+        Log::debug('Enviando petición a PrintNode', [
+            'printerId' => config('printnode.printer_id'),
+            'title'     => 'QR ' . $codigo,
+            'contentType' => 'raw_base64',
+            'content_length' => strlen(base64_encode($raw)),
         ]);
 
         $response = $client->post('printjobs', [
@@ -156,12 +160,13 @@ private function enviarPrintNode(string $codigo): array
         ]);
 
         $body = (string) $response->getBody();
+        Log::debug('Respuesta PrintNode', ['status' => $response->getStatusCode(), 'body' => $body]);
+
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
             throw new \Exception('Respuesta inesperada de PrintNode: ' . $body);
         }
 
-        // Registrar éxito en el log (forma correcta)
         Log::info('Impresión exitosa', ['codigo' => $codigo, 'response' => $decoded]);
 
         return [
@@ -170,11 +175,11 @@ private function enviarPrintNode(string $codigo): array
             'data' => $decoded,
             'timestamp' => now()->toDateTimeString()
         ];
-        } catch (\Exception $e) {
-            Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage()]);
-            throw new \Exception('⚠️ Error en impresión: ' . $e->getMessage());
-        }
-        }
+    } catch (\Exception $e) {
+        Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+        throw new \Exception('⚠️ Error en impresión: ' . $e->getMessage());
+    }
+}
 
 
 
