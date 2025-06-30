@@ -277,20 +277,21 @@ private function enviarPrintNode(string $codigo, $color): array
 {
     $numChasis = $request->query('num_chasis');
 
-    if (! $numChasis) {
+    if (!$numChasis) {
         return response()->json([
             'success' => false,
-            'message' => 'Debe ingresar un número de chasis',
+            'message' => 'Debe ingresar el número completo de chasis',
             'bici'    => null
         ]);
     }
 
     try {
-        $bici = Bicicleta::where('num_chasis', $numChasis)
-                    ->with(['modelo', 'color', 'tipoStock', 'pedido']) // incluimos relación
+        // Cargar bici con sus relaciones
+        $bici = Bicicleta::with(['modelo', 'color', 'tipoStock', 'pedido', 'voltaje'])
+                    ->where('num_chasis', $numChasis)
                     ->first();
 
-        if (! $bici) {
+        if (!$bici) {
             return response()->json([
                 'success' => false,
                 'message' => 'Bicicleta no encontrada',
@@ -298,9 +299,9 @@ private function enviarPrintNode(string $codigo, $color): array
             ]);
         }
 
-        // Agregamos el campo extra a la respuesta
+        // Convertir a array y añadir campo adicional
         $biciData = $bici->toArray();
-        $biciData['pedido_asociado'] = $bici->pedido ? true : false;
+        $biciData['pedido_asociado'] = !empty($bici->pedido);
 
         return response()->json([
             'success' => true,
@@ -315,6 +316,7 @@ private function enviarPrintNode(string $codigo, $color): array
         ], 500);
     }
 }
+
 
 
 

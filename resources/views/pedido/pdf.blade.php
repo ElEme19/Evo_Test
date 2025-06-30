@@ -75,7 +75,7 @@
             $modelGroups = [];
             foreach($pedido->bicicletas as $bic) {
                 $m = $bic->modelo->nombre_modelo ?? 'N/D';
-                $v = $bic->voltaje               ?? '';
+                $v = $bic->voltaje->tipo_voltaje ?? 'Sin Pilas';
                 $c = $bic->color->nombre_color   ?? 'N/D';
                 $modelGroups[$m]['voltajes'][$v]['colores'][$c][] = $bic;
             }

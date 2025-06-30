@@ -178,7 +178,7 @@
                                                                 <td>{{ $bici->num_chasis }}</td>
                                                                 <td>{{ $bici->modelo->nombre_modelo ?? 'N/D' }}</td>
                                                                 <td>{{ $bici->color->nombre_color ?? 'N/D' }}</td>
-                                                                <td>{{ $bici->voltaje ?? '-' }}</td>
+                                                                <td>{{ $bici->voltaje->tipo_voltaje ?? 'Sin Voltaje' }}</td>
                                                                 <td>{{ $bici->observaciones ?? '-' }}</td>
                                                             </tr>
                                                         @endforeach
