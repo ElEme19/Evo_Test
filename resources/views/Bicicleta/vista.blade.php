@@ -15,7 +15,7 @@
 
             <!-- Modales de búsqueda -->
             @include('Busquedas.busChasis')
-            @include('Busquedas.busMotor')
+           
             @include('Busquedas.busModelo')
             @include('Busquedas.busStock')
 
@@ -38,7 +38,7 @@
                         <table class="table table-hover mb-0" id="tablaBicicletas">
                             <thead class="table-light">
                                 <tr>
-                                    @foreach (['Num. Serie', 'Motor', 'Modelo', 'Color', 'Voltaje', 'Stock'] as $col)
+                                    @foreach (['Num. Serie', 'Modelo', 'Color', 'Voltaje', 'Stock'] as $col)
                                         <th scope="col" class="text-center">
                                             <div class="d-flex align-items-center justify-content-center">
                                                 <span>@lang($col)</span>
@@ -59,12 +59,12 @@
                                 @forelse($bicicletas as $bici)
                                 <tr>
                                     <td class="text-center fw-semibold">{{ $bici->num_chasis }}</td>
-                                    <td class="text-center">{{ $bici->num_motor ?? 'N/A' }}</td>
+                                   
                                     <td class="text-center">{{ $bici->modelo->nombre_modelo ?? 'N/A' }}</td>
                                     <td class="text-center">
                                         {{ $bici->color->nombre_color ?? 'N/A' }}
                                     </td>
-                                    <td class="text-center">{{ $bici->voltaje ?? 'N/A' }}</td>
+                                   <td  class="text-center">{{ $bici->voltaje->tipo_voltaje ?? 'N/A' }}</td>
                                     <td class="text-center">
                                         <span class="badge 
                                             @if(optional($bici->tipoStock)->nombre_stock == 'Fabrica') bg-success

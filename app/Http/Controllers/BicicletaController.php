@@ -11,6 +11,7 @@ use App\Models\modelos_bici;
 use App\Models\ColorModelo;
 use App\Models\Lote;
 use App\Models\TipoStock;
+use App\Models\VoltajeModelo;   
 use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
 use Mike42\Escpos\Printer;
 
@@ -46,7 +47,7 @@ public function store(Request $request)
         'id_color'              => 'required|string|exists:color_modelo,id_colorM',
         'id_lote'               => 'required|string|exists:lote,id_lote',
         'id_tipoStock'          => 'required|string|exists:tipo_stock,id_tipoStock',
-        'voltaje'               => 'nullable|string|max:10',
+        'id_voltaje'               => 'nullable|string|max:10',
         'error_iden_produccion' => 'nullable|string|max:255',
     ]);
 
@@ -60,7 +61,7 @@ public function store(Request $request)
                 'id_lote'               => $validated['id_lote'],
                 'id_tipoStock'          => $validated['id_tipoStock'],
                 'codigo_barras'         => $validated['num_chasis'],
-                'voltaje'               => $validated['voltaje'] ?? null,
+                'id_voltaje'               => $validated['id_voltaje'] ?? 'VOLT000',
                 'error_iden_produccion' => $validated['error_iden_produccion'] ?? null,
                 'updated_at'            => now(),
             ]);
@@ -80,10 +81,12 @@ public function store(Request $request)
 
     // ⚠️ Intentamos imprimir *fuera* del try de la base
     try {
-        $printResult = $this->enviarPrintNode($validated['num_chasis']);
+        $colorNombre = ColorModelo::where('id_colorM', $validated['id_color'])->value('nombre_color') ?? 'Error';
+
+        $printResult = $this->enviarPrintNode($validated['num_chasis'], $colorNombre);
 
         return redirect()->route('Bicicleta.crear')
-            ->with('success', '✅ Bicicleta guardada e impresa correctamente.')
+            ->with('success', 'Bicicleta guardada e impresa correctamente.')
             ->with('print_response', $printResult);
 
     } catch (\Exception $e) {
@@ -104,7 +107,7 @@ public function store(Request $request)
     /**
      * Envía impresión a PrintNode API
      */
-private function enviarPrintNode(string $codigo): array
+private function enviarPrintNode(string $codigo, $color): array
 {
     try {
         // Crear contenido ESC/POS con código QR mejorado
@@ -116,7 +119,7 @@ private function enviarPrintNode(string $codigo): array
         
         // Texto grande para título (ejemplo)
         $printer->selectPrintMode(Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_DOUBLE_WIDTH);
-        $printer->text("QR Bicicleta\n");
+        $printer->text("Evobike\n");
         $printer->selectPrintMode(); // volver a modo normal
         
         $printer->feed(1);
@@ -126,7 +129,7 @@ private function enviarPrintNode(string $codigo): array
         $printer->feed(1);
         
         // Texto normal con el código
-        $printer->text("Código: " . $codigo . "\n");
+        $printer->text("No. Serie: " . $codigo . "\n Color: " .$color);
         
         // Espacio y corte
         $printer->feed(3);
@@ -137,7 +140,7 @@ private function enviarPrintNode(string $codigo): array
         Log::debug('Raw ESC/POS generado:', ['raw_length' => strlen($raw), 'raw_sample' => substr($raw, 0, 100)]);
 
         $client = new Client([
-            'base_uri' => 'https://api.printnode.com/accounts',
+            'base_uri' => 'https://api.printnode.com/account',
             'auth'     => [config('printnode.api_key'), ''],
             'timeout'  => 10,  // timeout para la petición
         ]);
@@ -196,6 +199,28 @@ private function enviarPrintNode(string $codigo): array
         return response()->json([], 500);
     }
 }
+
+
+
+
+   public function voltajePorModelo($id_modelo)
+{
+    try {
+        $voltajes = VoltajeModelo::where('id_modelo', $id_modelo)
+            ->join('voltaje', 'voltaje_modelo.id_voltaje', '=', 'voltaje.id_voltaje')
+            ->get([
+                'voltaje_modelo.id_mVoltaje',
+                'voltaje_modelo.id_voltaje',
+                'voltaje.tipo_voltaje' // si tenés esta columna
+            ]);
+
+        return response()->json($voltajes);
+    } catch (\Exception $e) {
+        Log::error('Error al cargar Voltajes:', ['error' => $e->getMessage()]);
+        return response()->json([], 500);
+    }
+}
+
 
 
     /**
@@ -341,15 +366,17 @@ public function buscarPorStock(Request $request)
      * Muestra la vista con las últimas bicicletas
      */
     public function ver()
-    {
-        $bicicletas = Bicicleta::with(['modelo','color','lote','tipoStock'])
-                        ->orderBy('updated_at','desc')->take(8)->get();
-        $modelos  = $bicicletas->pluck('modelo')->filter()->unique('id')->values();
-        $colores  = $bicicletas->pluck('color')->filter()->unique('id')->values();
-        $lotes    = $bicicletas->pluck('lote')->filter()->unique('id')->values();
-        return view('Bicicleta.vista', compact('bicicletas','modelos','colores','lotes'));
-    }
+{
+    $bicicletas = Bicicleta::with(['modelo','color','lote','tipoStock', 'voltaje'])
+                    ->orderBy('updated_at','desc')->take(8)->get();
 
+    $modelos  = $bicicletas->pluck('modelo')->filter()->unique('id')->values();
+    $colores  = $bicicletas->pluck('color')->filter()->unique('id')->values();
+    $lotes    = $bicicletas->pluck('lote')->filter()->unique('id')->values();
+    $voltajes = $bicicletas->pluck('voltaje')->filter()->unique('id_voltaje')->values();
+
+    return view('Bicicleta.vista', compact('bicicletas','modelos','colores','lotes','voltajes'));
+}
 
 
      public function buscarPorUltimosSX(Request $request)

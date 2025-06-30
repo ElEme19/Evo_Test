@@ -49,8 +49,15 @@ class Bicicleta extends Model
     }
 
     public function pedido()
-{
-    return $this->belongsTo(Pedidos::class, 'id_pedido', 'id_pedido');
-}
+    {
+        return $this->belongsTo(Pedidos::class, 'id_pedido', 'id_pedido');
+    }
+
+  
+    public function Voltaje()
+    {
+        return $this->belongsTo(VoltajeModeloD::class, 'id_voltaje', 'id_voltaje');
+    }
+
 
 }
