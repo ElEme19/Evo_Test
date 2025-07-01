@@ -221,7 +221,7 @@ $(document).ready(function () {
 
     // Función para cargar voltajes
     function cargarVoltajes(idModelo) {
-        let urlVoltajes = '{{ route("Bicicleta.voltajeXmodelo", ["id_modelo" => ":id"]) }}'.replace(':id', idModelo);
+        let urlVoltajes = '{{ route("voltaje.porModelo", ["id_modelo" => ":id"]) }}'.replace(':id', idModelo);
 
         $.get(urlVoltajes, function(voltajes) {
             let opciones = '<option value="">@lang("Seleccione un voltaje")</option>';

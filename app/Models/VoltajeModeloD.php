@@ -17,4 +17,11 @@ class VoltajeModeloD extends Model
         'id_voltaje',
         'tipo_voltaje',
     ];
+
+
+
+     public function precios()
+    {
+        return $this->hasMany(Precio::class, 'id_voltaje', 'id_voltaje');
+    }
 }

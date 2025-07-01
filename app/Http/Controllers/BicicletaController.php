@@ -14,7 +14,7 @@ use App\Models\TipoStock;
 use App\Models\VoltajeModelo;   
 use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
 use Mike42\Escpos\Printer;
-use Mike42\Escpos\EscposImage;
+
 
 
 

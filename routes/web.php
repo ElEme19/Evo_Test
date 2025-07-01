@@ -16,6 +16,7 @@ use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\MembresiaController;
 use App\Http\Controllers\PrecioController;
 use App\Http\Controllers\ProsesadorController;
+use App\Http\Controllers\VoltajeController;
 use App\Models\modelos_bici;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\PedidosController;
@@ -96,6 +97,9 @@ Route::get('/Busquedas/busMotor', [BicicletaController::class, 'buscarMotor'])->
 Route::get('/Busquedas/busModelo', [BicicletaController::class, 'buscarModelo'])->name('Busquedas.busModelo');
 Route::get('/Busquedas/busStock', [BicicletaController::class, 'buscarPorStock']) ->name('Busquedas.busStock');
 
+// Voltaje
+Route::get('/voltaje-por-modelo/{id_modelo}', [VoltajeController::class, 'porModelo'])->name('voltaje.porModelo');
+
 // Envios
 
 Route::get('/Envio/crear', [EnvioController::class, 'crear'])->name('Envio.crear');
@@ -125,6 +129,7 @@ Route::get('/Precio/index', [PrecioController::class, 'index'])->name('Precio.in
 Route::get('/Precio', [PrecioController::class, 'create'])->name('Precio.create');
 Route::put('/Precio/{id}', [PrecioController::class, 'update'])->name('Precio.update');
 Route::post('/Precio', [PrecioController::class, 'store'])->name('Precio.store');
+
 
 //Area
 Route::get('/area/ver', [AreaController::class, 'ver'])->name('area.ver');         // Ver listado

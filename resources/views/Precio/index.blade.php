@@ -73,6 +73,7 @@
                                 <tr>
                                     <th class="text-center">ID Precio</th>
                                     <th class="text-center">Nombre Modelo</th>
+                                    <th class="text-center">Voltaje</th>
                                     <th class="text-center">Tipo Membresía</th>
                                     <th class="text-center">Precio</th>
                                     <th class="text-center">Opciones</th>
@@ -82,7 +83,8 @@
                                 @forelse ($precios as $p)
                                     <tr>
                                         <td class="text-center fw-semibold">{{ $p->id_precio }}</td>
-                                        <td class="text-center fw-semibold">{{ $p->modelo->nombre_modelo ?? 'Sin modelo' }}</td>
+                                        <td class="text-center fw-semibold">{{ $p->modelo->nombre_modelo ?? '#ERROR' }}</td>
+                                         <td class="text-center fw-semibold">{{ $p->voltaje->tipo_voltaje?? '#ERROR' }}</td>
                                         <td class="text-center fw-semibold">{{ $p->membresia->descripcion_general ?? 'Sin tipo' }}</td>
                                         <td class="text-center text-success fw-bold">${{ number_format($p->precio, 2) }}</td>
                                         <td class="text-center">

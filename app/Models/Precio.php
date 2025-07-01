@@ -14,8 +14,10 @@ class Precio extends Model
     public $timestamps = false; // Asumimos que no tiene created_at ni updated_at
 
     protected $fillable = [
+        'id_precio',
         'id_membresia',
         'id_modelo',
+        'id_voltaje',
         'precio',
     ];
 
@@ -23,6 +25,11 @@ class Precio extends Model
     public function membresia()
     {
         return $this->belongsTo(Membresia::class, 'id_membresia', 'id_membresia');
+    }
+
+    public function voltaje()
+    {
+        return $this->belongsTo(VoltajeModeloD::class, 'id_voltaje', 'id_voltaje');
     }
 
     // Relación con Modelo
