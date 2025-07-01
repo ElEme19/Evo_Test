@@ -15,7 +15,7 @@
 
           <div class="mb-3">
             <label>ID Cliente:</label>
-            <p>{{ $c->id_cliente }}</p>
+            <p class="fw-bold mb-0">{{ $c->id_cliente }}</p>
           </div>
 
          <div class="mb-3">
@@ -40,11 +40,6 @@
           <div class="mb-3">
             <label for="apellido{{ $c->id_cliente }}">Apellido:</label>
             <input type="text" id="apellido{{ $c->id_cliente }}" name="apellido" value="{{ $c->apellido }}" class="form-control" required>
-          </div>
-
-          <div class="mb-3">
-            <label for="correo{{ $c->id_cliente }}">Correo Electrónico:</label>
-            <input type="email" id="correo{{ $c->id_cliente }}" name="correo" value="{{ $c->correo }}" class="form-control" required>
           </div>
 
           <div class="mb-3">

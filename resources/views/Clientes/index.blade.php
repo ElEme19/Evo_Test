@@ -1,214 +1,213 @@
 @extends('layout.app')
 
 @section('conten-wrapper')
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-12">
-            
-            <!-- Título mejorado -->
-            <div class="text-center my-4">
-                <h3 class="d-flex align-items-center justify-content-center">
-                    <span class="me-2">Clientes</span>
-                    <span class="badge rounded-pill text-bg-success">Ver</span>
-                </h3>
-            </div>
+<style>
+  /* Estilos consistentes con la vista de precios */
+  .table td, .table th {
+    padding: .3rem .5rem !important;
+  }
+  
+  .card-header, .card-footer {
+    padding: .75rem 1rem !important;
+  }
+  
+  .table-hover tbody tr {
+    line-height: 1.2 !important;
+  }
+  
+  .input-group-text,
+  .btn-success {
+    transition: all .2s ease;
+  }
+  
+  .form-control:focus + .input-group-text {
+    border-color: #198754;
+    color: #198754;
+  }
+  
+  .btn-success:hover {
+    background-color: #157347;
+    transform: translateY(-2px);
+  }
+  
+  /* Estilos específicos para imágenes de perfil */
+  .profile-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+  }
+</style>
 
-            <!-- Alertas de sesión -->
-            @if (session('success'))
-                <div class="text-center">
-                    <div class="alert alert-success d-inline-flex align-items-center py-1 px-2 rounded-3 shadow-sm" role="alert">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2" viewBox="0 0 16 16">
-                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                        </svg>
-                        <small class="fw-semibold">{{ session('success') }}</small>
-                    </div>
-                </div>
-            @endif
+<div class="container mt-4 px-2 px-md-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
 
-            @if (session('error'))
-                <div class="text-center">
-                    <div class="alert alert-danger d-inline-flex align-items-center py-1 px-2 rounded-3 shadow-sm" role="alert">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2" viewBox="0 0 16 16">
-                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-                        </svg>
-                        <small class="fw-semibold">{{ session('error') }}</small>
-                    </div>
-                </div>
-            @endif
-
-            <!-- Barra de búsqueda mejorada -->
-            <div class="d-flex justify-content-center my-3">
-                <form class="row g-3 justify-content-center w-100">
-                    <div class="col-md-8 position-relative">
-                        <input type="text" id="inputBuscar" class="form-control ps-5" placeholder="Buscar cliente...">
-                        <span class="position-absolute start-0 top-50 translate-middle-y ps-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                            </svg>
-                        </span>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Botón de creación -->
-            @if (auth()->user()->rol == 0)
-                <div class="text-center mb-3">
-                    <a href="{{ route('Clientes.create') }}" class="btn btn-outline-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle me-1" viewBox="0 0 16 16">
-                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                        </svg>
-                        Crear Nuevo Cliente
-                    </a>
-                </div>
-            @endif
-
-            <!-- Tarjeta contenedora de la tabla -->
-            <div class="card shadow-sm rounded-3 border-0 overflow-hidden">
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0" id="tablaClientes">
-                            <thead class="table-light">
-                                <tr class="text-center">
-                                    <th class="text-center">Foto</th>
-                                    <th class="text-center">Nombre</th>
-                                    <th class="text-center">Apellido</th>
-                                    <th class="text-center">Teléfono</th>
-                                    <th class="text-center">Membresía</th>
-                                    <th class="text-center">Opciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($clientes as $c)
-                                    <tr class="text-center">
-                                        <td class="align-middle">
-                                            @if($c->foto_persona)
-                                                <img src="{{ asset('img/clientes/' . $c->foto_persona) }}" alt="Foto" width="40" height="40" class="rounded-circle object-fit-cover">
-                                            @else
-                                                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person text-muted" viewBox="0 0 16 16">
-                                                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
-                                                    </svg>
-                                                </div>
-                                            @endif
-                                        </td>
-                                        <td class="align-middle fw-semibold">{{ $c->nombre }}</td>
-                                        <td class="align-middle fw-semibold">{{ $c->apellido }}</td>
-                                        <td class="align-middle fw-semibold">{{ $c->telefono }}</td>
-                                        <td class="align-middle fw-semibold">{{ $c->membresia->descripcion_general ?? 'Sin membresía' }}</td>
-                                        <td class="align-middle">
-                                            <button type="button" class="btn btn-outline-primary btn-sm" 
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modalActualizar{{ $c->id_cliente }}">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                                                </svg>
-                                                <span class="d-none d-md-inline">Editar</span>
-                                            </button>
-                                            @include('Clientes.update', ['cliente' => $c])
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center py-4 text-muted">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-circle mb-2" viewBox="0 0 16 16">
-                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                                <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-                                            </svg>
-                                            <p class="mb-0">No hay clientes registrados</p>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Paginación -->
-            @if($clientes->hasPages())
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <div class="text-muted small">
-                    Mostrando {{ $clientes->firstItem() }} a {{ $clientes->lastItem() }} de {{ $clientes->total() }} registros
-                </div>
-                <nav aria-label="Page navigation">
-                    <ul class="pagination pagination-sm justify-content-center">
-                        {{-- Previous Page Link --}}
-                        @if($clientes->onFirstPage())
-                            <li class="page-item disabled">
-                                <span class="page-link">&laquo;</span>
-                            </li>
-                        @else
-                            <li class="page-item">
-                                <a class="page-link" href="{{ $clientes->previousPageUrl() }}" rel="prev">&laquo;</a>
-                            </li>
-                        @endif
-
-                        {{-- Pagination Elements --}}
-                        @foreach($clientes->getUrlRange(1, $clientes->lastPage()) as $page => $url)
-                            @if($page == $clientes->currentPage())
-                                <li class="page-item active" aria-current="page">
-                                    <span class="page-link">{{ $page }}</span>
-                                </li>
-                            @else
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ $url }}">{{ $page }}</a>
-                                </li>
-                            @endif
-                        @endforeach
-
-                        {{-- Next Page Link --}}
-                        @if($clientes->hasMorePages())
-                            <li class="page-item">
-                                <a class="page-link" href="{{ $clientes->nextPageUrl() }}" rel="next">&raquo;</a>
-                            </li>
-                        @else
-                            <li class="page-item disabled">
-                                <span class="page-link">&raquo;</span>
-                            </li>
-                        @endif
-                    </ul>
-                </nav>
-            </div>
-            @endif
+      <!-- HEADER PRINCIPAL -->
+      <header class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 p-3 bg-white rounded shadow-sm">
+        
+        <!-- TÍTULO E ICONO -->
+        <div class="d-flex align-items-center mb-3 mb-md-0 me-md-4">
+          <div class="me-3 p-2 rounded-circle bg-success bg-opacity-10">
+            <i class="bi bi-people-fill text-success fs-3"></i>
+          </div>
+          <div>
+            <h1 class="h4 fw-bold mb-0">Clientes</h1>
+            <p class="text-muted small mb-0">Gestión de clientes registrados</p>
+          </div>
         </div>
+
+        <!-- BÚSQUEDA + ACCIÓN -->
+        <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-3 w-100 w-md-auto" style="max-width: 380px;"> 
+          
+          <!-- Formulario de búsqueda compacto -->
+          <form action="{{ route('Clientes.buscar') }}" method="GET" class="flex-grow-1 position-relative">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white border-end-0 rounded-start">
+                <i class="bi bi-search text-muted"></i>
+              </span>
+              <input type="text" name="q" value="{{ request('q') }}" class="form-control border-start-0 rounded-end" placeholder="Buscar cliente..." style="min-width: 180px;">
+              <button type="submit" class="btn btn-sm position-absolute end-0 top-0 h-100 rounded-end px-3 d-none d-sm-block" style="background-color: transparent; color: #6c757d;">
+                <i class="bi bi-arrow-right"></i>
+              </button>
+            </div>
+          </form>
+
+          <!-- Botón NUEVO CLIENTE -->
+          @if(auth()->user()->rol == 0)
+            <a href="{{ route('Clientes.create') }}"
+               class="btn btn-success btn-sm d-flex align-items-center justify-content-center shadow-sm py-2 px-3 rounded">
+              <i class="bi bi-plus-circle-fill me-2"></i>
+              <span>Nuevo cliente</span>
+            </a>
+          @endif
+        </div>
+      </header>
+
+      @if(isset($busqueda) && $busqueda)
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+          <i class="bi bi-search me-2"></i>Mostrando resultados para: <strong>{{ $busqueda }}</strong>
+          <a href="{{ route('Clientes.index') }}" class="btn btn-sm btn-link">Limpiar</a>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+      @endif
+
+      <!-- Alertas de sesión -->
+      @if (session('success'))
+        <div class="text-center">
+          <div class="alert alert-success d-inline-flex align-items-center py-1 px-2 rounded-3 shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <small class="fw-semibold">{{ session('success') }}</small>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        </div>
+      @endif
+
+      @if (session('error'))
+        <div class="text-center">
+          <div class="alert alert-danger d-inline-flex align-items-center py-1 px-2 rounded-3 shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <small class="fw-semibold">{{ session('error') }}</small>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        </div>
+      @endif
+
+      <!-- Tarjeta contenedora de la tabla -->
+      <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h2 class="h6 mb-0 text-secondary">
+            <i class="bi bi-list-check me-2"></i>Clientes Registrados
+          </h2>
+        </div>
+
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="tablaClientes">
+              <thead class="bg-light">
+                <tr>
+                  <th class="fw-semibold text-center">Foto</th>
+                  <th class="fw-semibold text-center">Nombre</th>
+                  <th class="fw-semibold text-center">Apellido</th>
+                  <th class="fw-semibold text-center">Teléfono</th>
+                  <th class="fw-semibold text-center">Membresía</th>
+                  <th class="fw-semibold text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @forelse ($clientes as $c)
+                  <tr>
+                    <td class="text-center">
+                      @if($c->foto_persona)
+                        <img src="{{ asset('img/clientes/' . $c->foto_persona) }}" alt="Foto" class="profile-img rounded-circle">
+                      @else
+                        <div class="profile-img rounded-circle bg-light d-flex align-items-center justify-content-center">
+                          <i class="bi bi-person text-muted"></i>
+                        </div>
+                      @endif
+                    </td>
+                    <td class="text-center fw-semibold">{{ $c->nombre }}</td>
+                    <td class="text-center fw-semibold">{{ $c->apellido }}</td>
+                    <td class="text-center fw-semibold">{{ $c->telefono }}</td>
+                    <td class="text-center fw-semibold">{{ $c->membresia->descripcion_general ?? 'Sin membresía' }}</td>
+                    <td class="text-center">
+                      <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" 
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalActualizar{{ $c->id_cliente }}">
+                        <i class="bi bi-pencil-square me-1"></i>Editar
+                      </button>
+                      @include('Clientes.update', ['cliente' => $c])
+                    </td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="6" class="text-center py-5">
+                      <div class="d-flex flex-column align-items-center text-muted">
+                        <i class="bi bi-people display-5 mb-3"></i>
+                        <span>No hay clientes registrados</span>
+                        @if (auth()->user()->rol == 0)
+                          <a href="{{ route('Clientes.create') }}" class="btn btn-link mt-2">
+                            Registrar primer cliente
+                          </a>
+                        @endif
+                      </div>
+                    </td>
+                  </tr>
+                @endforelse
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        @if($clientes->hasPages())
+          <div class="card-footer bg-white py-3">
+            <div class="d-flex justify-content-center">
+              {{ $clientes->links('pagination::bootstrap-4') }}
+            </div>
+          </div>
+        @endif
+      </div>
     </div>
+  </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const input = document.getElementById('inputBuscar');
-        const tabla = document.getElementById('tablaClientes').getElementsByTagName('tbody')[0];
+  document.addEventListener('DOMContentLoaded', () => {
+    // Función para normalizar texto (búsqueda sin acentos y case insensitive)
+    const normalizarTexto = (texto) => {
+      return texto
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    };
 
-        const normalizarTexto = (texto) => {
-            return texto
-                .toLowerCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .replace(/\s+/g, " ")
-                .trim();
-        };
-
-        input.addEventListener('input', () => {
-            const filtro = normalizarTexto(input.value);
-            const filas = tabla.querySelectorAll('tr');
-
-            filas.forEach(fila => {
-                const celdas = fila.querySelectorAll('td');
-                let coincide = false;
-
-                celdas.forEach(celda => {
-                    const textoCelda = normalizarTexto(celda.textContent);
-                    if (textoCelda.includes(filtro)) {
-                        coincide = true;
-                    }
-                });
-
-                fila.style.display = coincide ? '' : 'none';
-            });
-        });
-    });
+    // Si hay parámetro de búsqueda en la URL, lo colocamos en el input
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryParam = urlParams.get('q');
+    if(queryParam) {
+      document.querySelector('input[name="q"]').value = queryParam;
+    }
+  });
 </script>
-
 @endsection

@@ -115,6 +115,20 @@ class PrecioController extends Controller
     }
 
 
+public function buscar(Request $request)
+{
+    $busqueda = $request->input('q');
+    $membresias = Membresia::all(); // Asegúrate de importar el modelo Membresia
+    
+    $precios = Precio::with(['modelo', 'voltaje', 'membresia'])
+        ->whereHas('modelo', function($query) use ($busqueda) {
+            $query->where('nombre_modelo', 'like', "%$busqueda%");
+        })
+        ->orWhere('id_precio', 'like', "%$busqueda%")
+        ->orWhere('precio', 'like', "%$busqueda%")
+        ->paginate(10);
 
+    return view('Precio.index', compact('precios', 'busqueda', 'membresias'));
+}
 
 }

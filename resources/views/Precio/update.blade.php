@@ -18,10 +18,10 @@
           </div>
             
           <div class="mb-3">
-            <label class="form-label">Modelo de Bicicleta</label>
-            <p class="fw-bold mb-0">{{ $modelos->firstWhere('id_modelo', $precio->id_modelo)->nombre_modelo ?? 'Modelo no encontrado' }}</p>
-            <input type="hidden" name="id_modelo" value="{{ $precio->id_modelo }}">
-        </div>
+    <label class="form-label">Modelo de Bicicleta</label>
+    <p class="fw-bold mb-0">{{ $precio->modelo->nombre_modelo ?? 'Modelo no encontrado' }}</p>
+    <input type="hidden" name="id_modelo" value="{{ $precio->id_modelo }}">
+</div>
 
 
           <div class="mb-3">

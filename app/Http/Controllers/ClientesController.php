@@ -107,15 +107,30 @@ public function index()
 
         $cliente->save();
 
-        return redirect()->route('Clientes.index')->with('success', '¡Cliente actualizado correctamente!');
+        return redirect()->route('Clientes.index' )->with('success', '¡Cliente actualizado correctamente!');
     }
 
-    // Eliminar cliente
-    public function destroy($id)
+   public function buscar(Request $request)
     {
-        $cliente = Cliente::findOrFail($id);
-        $cliente->delete();
+        $busqueda = $request->input('q');
+        $membresias = Membresia::all(); // Para usar en selects de formularios
 
-        return redirect()->route('Clientes.index')->with('success', '¡Cliente eliminado correctamente!');
-    }
+        $clientes = Cliente::with(['membresia'])
+            ->where(function($query) use ($busqueda) {
+                $query->where('id_cliente', 'like', "%$busqueda%")
+                      ->orWhere('nombre', 'like', "%$busqueda%")
+                      ->orWhere('apellido', 'like', "%$busqueda%")
+                      ->orWhere('telefono', 'like', "%$busqueda%")
+                      ->orWhereHas('membresia', function($q) use ($busqueda) {
+                          $q->where('descripcion_general', 'like', "%$busqueda%");
+                      });
+            })
+            ->orderBy('nombre', 'asc')
+            ->paginate(20);
+
+        return view('Clientes.index', ['clientes' => $clientes,'busqueda' => $busqueda,'membresias' => $membresias]);
+
+
+
+}
 }

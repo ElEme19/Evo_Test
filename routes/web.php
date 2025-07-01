@@ -123,12 +123,14 @@ Route::get('/Clientes/index', [ClientesController::class, 'index'])->name('Clien
 Route::get('/Clientes', [ClientesController::class, 'create'])->name('Clientes.create');
 Route::put('/Clientes/{id}', [ClientesController::class, 'update'])->name('Clientes.update');
 Route::post('/Clientes', [ClientesController::class, 'store'])->name('Clientes.store');
+Route::get('/clientes/buscar', [ClientesController::class, 'buscar'])->name('Clientes.buscar');
 
 //Precios
 Route::get('/Precio/index', [PrecioController::class, 'index'])->name('Precio.index');
 Route::get('/Precio', [PrecioController::class, 'create'])->name('Precio.create');
 Route::put('/Precio/{id}', [PrecioController::class, 'update'])->name('Precio.update');
 Route::post('/Precio', [PrecioController::class, 'store'])->name('Precio.store');
+Route::get('/precios/buscar', [PrecioController::class, 'buscar'])->name('Precio.buscar');
 
 
 //Area
