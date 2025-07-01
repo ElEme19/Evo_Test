@@ -14,6 +14,7 @@ use App\Models\TipoStock;
 use App\Models\VoltajeModelo;   
 use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
 use Mike42\Escpos\Printer;
+use Mike42\Escpos\EscposImage;
 
 
 
@@ -96,7 +97,7 @@ public function store(Request $request)
         ]);
 
         return redirect()->route('Bicicleta.crear')
-            ->with('success', '✅ Bicicleta guardada correctamente.')
+            ->with('success', ' Bicicleta guardada correctamente.')
             ->with('warning', '⚠️ Error al imprimir: ' . $e->getMessage());
     }
 }
@@ -110,46 +111,32 @@ public function store(Request $request)
 private function enviarPrintNode(string $codigo, $color): array
 {
     try {
-        // Crear contenido ESC/POS con código QR mejorado
         $connector = new DummyPrintConnector();
         $printer = new Printer($connector);
 
-        // Configuración inicial
+        // NO usar initialize(), para evitar resetear la cola
         $printer->setJustification(Printer::JUSTIFY_CENTER);
-        
-        // Texto grande para título (ejemplo)
-        $printer->selectPrintMode(Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_DOUBLE_WIDTH);
-        $printer->text("Evobike\n");
-        $printer->selectPrintMode(); // volver a modo normal
-        
+        $printer->setLineSpacing(30); // valor pequeño pero no cero, para evitar problemas
+
+       
+        // QR con corrección alta y tamaño moderado
+        $printer->qrCode($codigo, Printer::QR_ECLEVEL_H, 7, Printer::QR_MODEL_2);
+
         $printer->feed(1);
-        
-        // QR con alta corrección y tamaño
-        $printer->qrCode($codigo, Printer::QR_ECLEVEL_H, 8, Printer::QR_MODEL_2);
-        $printer->feed(1);
-        
-        // Texto normal con el código
-        $printer->text("No. Serie: " . $codigo . "\n Color: " .$color);
-        
-        // Espacio y corte
-        $printer->feed(3);
+
+        $printer->text("No. Serie: $codigo\nColor: $color\n");
+
+        $printer->feed(2); // algo de espacio para corte
+
         $printer->cut();
 
-        // Obtener datos raw ESC/POS
         $raw = $connector->getData();
-        Log::debug('Raw ESC/POS generado:', ['raw_length' => strlen($raw), 'raw_sample' => substr($raw, 0, 100)]);
 
+        // Enviar a PrintNode
         $client = new Client([
             'base_uri' => 'https://api.printnode.com/account',
             'auth'     => [config('printnode.api_key'), ''],
-            'timeout'  => 10,  // timeout para la petición
-        ]);
-
-        Log::debug('Enviando petición a PrintNode', [
-            'printerId' => config('printnode.printer_id'),
-            'title'     => 'QR ' . $codigo,
-            'contentType' => 'raw_base64',
-            'content_length' => strlen(base64_encode($raw)),
+            'timeout'  => 10,
         ]);
 
         $response = $client->post('printjobs', [
@@ -163,14 +150,10 @@ private function enviarPrintNode(string $codigo, $color): array
         ]);
 
         $body = (string) $response->getBody();
-        Log::debug('Respuesta PrintNode', ['status' => $response->getStatusCode(), 'body' => $body]);
-
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
             throw new \Exception('Respuesta inesperada de PrintNode: ' . $body);
         }
-
-        Log::info('Impresión exitosa', ['codigo' => $codigo, 'response' => $decoded]);
 
         return [
             'status' => 'success',
@@ -179,10 +162,14 @@ private function enviarPrintNode(string $codigo, $color): array
             'timestamp' => now()->toDateTimeString()
         ];
     } catch (\Exception $e) {
-        Log::error('Error al imprimir con PrintNode:', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+        Log::error('Error al imprimir con PrintNode:', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
         throw new \Exception('⚠️ Error en impresión: ' . $e->getMessage());
     }
 }
+
 
 
 
