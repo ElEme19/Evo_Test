@@ -62,7 +62,6 @@ public function store(Request $request)
                 'id_tipoStock'          => $validated['id_tipoStock'],
                 'codigo_barras'         => $validated['num_chasis'],
                 'id_voltaje'               => $validated['id_voltaje'] ?? 'VOLT000',
-                'error_iden_produccion' => $validated['error_iden_produccion'] ?? null,
                 'updated_at'            => now(),
             ]);
 
