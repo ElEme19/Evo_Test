@@ -123,12 +123,22 @@ public function buscar(Request $request)
     $membresias = Membresia::all(); // Asegúrate de importar el modelo Membresia
     
     $precios = Precio::with(['modelo', 'voltaje', 'membresia'])
-        ->whereHas('modelo', function($query) use ($busqueda) {
-            $query->where('nombre_modelo', 'like', "%$busqueda%");
+    ->where(function($query) use ($busqueda) {
+        $query->whereHas('modelo', function($q) use ($busqueda) {
+            $q->where('nombre_modelo', 'like', "%$busqueda%");
         })
         ->orWhere('id_precio', 'like', "%$busqueda%")
         ->orWhere('precio', 'like', "%$busqueda%")
-        ->paginate(10);
+        ->orWhereHas('membresia', function($q) use ($busqueda) {
+            $q->where('descripcion_general', 'like', "%$busqueda%");
+        });
+    })
+    ->join('modelos', 'precio.id_modelo', '=', 'modelos.id_modelo')
+    ->orderBy('modelos.nombre_modelo', 'asc')
+    ->select('precio.*')  // para evitar conflictos con columnas duplicadas
+    ->paginate(10);
+
+
 
     return view('Precio.index', compact('precios', 'busqueda', 'membresias'));
 }
