@@ -21,6 +21,15 @@
         .footer-note { font-size: 8px; }
         .footer-red { color: red; font-size: 8px; }
         .merged-cell { border-top: none !important; }
+        .footer {
+            margin-top: 25px;
+            padding-top: 12px;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            border-top: 1px solid #e8e8e8;
+            font-size: 8.5pt;
+            color: #777;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -229,23 +238,7 @@
 </table>
 
 
-<footer style="
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    padding: 8px 0;
-    text-align: center;
-    font-size: 10px;
-    color: #555;
-    background-color: #f8f8f8;
-    border-top: 1px solid #e0e0e0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-">
-    <!-- Contenedor flexible para texto e icono -->
-    <div style="display: flex; align-items: center; height: 22px; position: relative;">
+<div  class="footer" style="display: flex; align-items: center; height: 22px; position: relative;">
         <svg xmlns="http://www.w3.org/2000/svg" 
              width="14" 
              height="14" 
@@ -261,7 +254,6 @@
         <img src="{{ public_path('images/CloudLabs.png') }}" 
              style="height: 15px; width: auto; display: block; position: relative; top: 3px; margin-left: 1px;">
     </div>
-</footer>
 
 
 </body>

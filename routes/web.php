@@ -131,6 +131,7 @@ Route::get('/Precio', [PrecioController::class, 'create'])->name('Precio.create'
 Route::put('/Precio/{id}', [PrecioController::class, 'update'])->name('Precio.update');
 Route::post('/Precio', [PrecioController::class, 'store'])->name('Precio.store');
 Route::get('/precios/buscar', [PrecioController::class, 'buscar'])->name('Precio.buscar');
+Route::get('/pdf-precios', [PrecioController::class, 'generarPDF'])->name('Precio.pdf');
 
 
 //Area

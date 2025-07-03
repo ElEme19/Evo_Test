@@ -19,18 +19,20 @@ class PrecioController extends Controller
     }
 
     // Mostrar todos los precios
-    public function index()
+   public function index()
 {
-
-    $precios = Precio::with(['membresia', 'modelo', 'voltaje' ])
-                     ->orderBy('id_precio', 'asc')
-                     ->paginate(15);
-
     $membresias = Membresia::all();
     $modelos    = modelos_bici::all();
-    $voltaje    = VoltajeModeloD::all();
+    $voltajes   = VoltajeModeloD::all();
 
-    return view('Precio.index', compact('precios', 'membresias', 'modelos', 'voltaje'));
+    $precios = Precio::select('precio.*')
+        ->join('modelos', 'precio.id_modelo', '=', 'modelos.id_modelo')
+        ->with(['membresia', 'modelo', 'voltaje'])
+        ->orderBy('modelos.nombre_modelo', 'asc')
+        ->orderBy('precio.id_voltaje') // opcional: para dentro de cada modelo ordenar por voltaje
+        ->paginate(15);
+
+    return view('Precio.index', compact('precios', 'membresias', 'modelos', 'voltajes'));
 }
 
 
@@ -130,5 +132,25 @@ public function buscar(Request $request)
 
     return view('Precio.index', compact('precios', 'busqueda', 'membresias'));
 }
+
+
+
+
+public function generarPDF()
+{
+    $membresias = Membresia::where('id_membresia', 'like', 'MEM%')
+                    ->orderBy('id_membresia')
+                    ->get();
+
+    $voltajes = VoltajeModeloD::orderBy('id_voltaje')->get();
+
+    $modelos = modelos_bici::orderBy('nombre_modelo')->get();
+
+    $precios = Precio::all();
+
+    return \Barryvdh\DomPDF\Facade\Pdf::loadView('Precio.pdf', compact('membresias', 'voltajes', 'modelos', 'precios'))
+        ->stream('lista_precios.pdf');
+}
+
 
 }

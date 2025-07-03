@@ -74,7 +74,7 @@
               <i class="bi bi-plus-circle-fill me-2"></i>
               <span>Nuevo precio</span>
             </a>
-           <a href="#"
+           <a href="{{ route('Precio.pdf') }}"
               class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center shadow-sm py-2 px-3 rounded">
               <i class="bi bi-file-earmark-pdf me-2"></i>
               <span>Generar PDF</span>
@@ -144,7 +144,26 @@
                                         
                                         <td class="text-center fw-semibold">{{ $p->modelo->nombre_modelo ?? '#ERROR' }}</td>
                                         <td class="text-center fw-semibold">{{ $p->voltaje->tipo_voltaje ?? '#ERROR' }}</td>
-                                        <td class="text-center fw-semibold">{{ $p->membresia->descripcion_general ?? 'Sin tipo' }}</td>
+                                       @php
+                                            $desc = $p->membresia->descripcion_general ?? '#ERROR';
+
+                                          
+                                            $colores = [
+                                                'Precio Publico' => '#228B22', // rosa fuerte
+                                                'Distribuidor'   => '#B22222', // morado
+                                                'Mayorista'      => '#800080', // azul marino
+                                                // si añades más tipos, agrégalos aquí con su hex
+                                            ];
+
+                                        
+                                            $bg = $colores[$desc] ?? '#20c997'; // verde por defecto
+                                        @endphp
+
+                                        <td class="text-center">
+                                            <span class="badge" style='background-color: {{ $bg }}; color: #fff;'>
+                                                {{ $desc }}
+                                            </span>
+                                        </td>
                                         <td class="text-center text-success fw-bold">${{ number_format($p->precio, 2) }}</td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" 

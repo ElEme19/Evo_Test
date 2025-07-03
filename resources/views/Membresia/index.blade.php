@@ -58,7 +58,7 @@
         <!-- TÍTULO E ICONO (Izquierda) -->
         <div class="d-flex align-items-center mb-3 mb-md-0">
             <div class="me-3 p-2bg-success bg-opacity-10" aria-hidden="true">
-            <i class="bibi-credit-card text-success fs-3" role="img" aria-label="Icono de membresías"></i>
+            <i class="bi bi-credit-card text-success fs-3" role="img" aria-label="Icono de membresías"></i>
             </div>
             <div>
             <h1 class="h4 fw-bold mb-0">Membresías</h1>
