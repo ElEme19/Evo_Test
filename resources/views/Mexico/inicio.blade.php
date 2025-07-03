@@ -1,14 +1,10 @@
 @extends('layout.app')
 
-@section('conten')
+@section('conten-wrapper')
 @php
     $user = Auth::guard('usuarios')->user();
 @endphp
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- jQuery necesario para ApexCharts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <div class="container-xxl py-5">
     @if($user)
@@ -39,7 +35,7 @@
                                 <i class="fas fa-sun fa-2x text-warning me-2"></i>
                                 <div>
                                     <div class="fw-bold">28°C</div>
-                                    <small class="text-muted">Aqui Mero</small>
+                                    <small class="text-muted">Establo de México</small>
                                 </div>
                             </div>
                         </div>
@@ -48,149 +44,7 @@
             </div>
         </div>
 
-        <!-- Estadísticas Principales -->
-        <div class="row mb-5 g-4">
-            <div class="col-md-6 col-lg-3">
-                <div class="stat-card bg-white rounded-3 p-4 shadow-sm h-100">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h6 class="text-uppercase text-muted small fw-bold">Bicis Activas</h6>
-                            <h3 class="fw-bold mb-0">634</h3>
-                            <small class="text-success">
-                                <i class="fas fa-arrow-up me-1"></i> 12% este mes
-                            </small>
-                        </div>
-                        <div class="icon-circle bg-primary bg-opacity-10 text-primary">
-                            <i class="fas fa-bicycle"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar bg-primary" style="width: 78%"></div>
-                        </div>
-                        <small class="text-muted">78% en circulación</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="stat-card bg-white rounded-3 p-4 shadow-sm h-100">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h6 class="text-uppercase text-muted small fw-bold">Pedidos</h6>
-                            <h3 class="fw-bold mb-0">128</h3>
-                            <small class="text-danger">
-                                <i class="fas fa-arrow-down me-1"></i> 5% esta semana
-                            </small>
-                        </div>
-                        <div class="icon-circle bg-success bg-opacity-10 text-success">
-                            <i class="fas fa-clipboard-list"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar bg-success" style="width: 65%"></div>
-                        </div>
-                        <small class="text-muted">65% completados</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="stat-card bg-white rounded-3 p-4 shadow-sm h-100">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h6 class="text-uppercase text-muted small fw-bold">Clientes</h6>
-                            <h3 class="fw-bold mb-0">2,543</h3>
-                            <small class="text-success">
-                                <i class="fas fa-arrow-up me-1"></i> 24% este trimestre
-                            </small>
-                        </div>
-                        <div class="icon-circle bg-info bg-opacity-10 text-info">
-                            <i class="fas fa-users"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar bg-info" style="width: 85%"></div>
-                        </div>
-                        <small class="text-muted">85% activos</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="stat-card bg-white rounded-3 p-4 shadow-sm h-100">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h6 class="text-uppercase text-muted small fw-bold">Ingresos</h6>
-                            <h3 class="fw-bold mb-0">€24,850</h3>
-                            <small class="text-success">
-                                <i class="fas fa-arrow-up me-1"></i> 32% este mes
-                            </small>
-                        </div>
-                        <div class="icon-circle bg-warning bg-opacity-10 text-warning">
-                            <i class="fas fa-euro-sign"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar bg-warning" style="width: 92%"></div>
-                        </div>
-                        <small class="text-muted">92% del objetivo</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gráficos y Estadísticas -->
-        <div class="row mb-5 g-4">
-            <div class="col-lg-8">
-                <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-bold"><i class="fas fa-chart-line text-primary me-2"></i> Rendimiento Mensual</h5>
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
-                                Este año
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Este mes</a></li>
-                                <li><a class="dropdown-item" href="#">Este trimestre</a></li>
-                                <li><a class="dropdown-item" href="#">Este año</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div id="performance-chart" style="height: 300px;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header bg-white border-0">
-                        <h5 class="mb-0 fw-bold"><i class="fas fa-map-marked-alt text-success me-2"></i> Distribución por Zonas</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="distribution-chart" style="height: 300px;"></div>
-                        <div class="mt-3">
-                            <div class="d-flex align-items-center mb-2">
-                                <span class="badge bg-primary me-2" style="width: 12px; height: 12px;"></span>
-                                <small class="text-muted">Centro: 42%</small>
-                            </div>
-                            <div class="d-flex align-items-center mb-2">
-                                <span class="badge bg-success me-2" style="width: 12px; height: 12px;"></span>
-                                <small class="text-muted">Norte: 28%</small>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-warning me-2" style="width: 12px; height: 12px;"></span>
-                                <small class="text-muted">Sur: 30%</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
 
         <!-- Estado del Sistema -->
         <div class="row mb-5">
@@ -252,93 +106,7 @@
                 </div>
             </div>
 
-            <!-- Pedidos Recientes -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card card-primary shadow-sm h-100">
-                    <div class="card-header bg-light border-0">
-                        <h3 class="card-title mb-0"><i class="fas fa-clipboard-list me-2"></i>Pedidos Recientes</h3>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
-                            <div class="list-group-item border-0 py-3">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <h6 class="mb-1 fw-bold">#ORD-2023-156</h6>
-                                        <small class="text-muted">Sucursal Centro - 15 bicis</small>
-                                    </div>
-                                    <span class="badge bg-success bg-opacity-10 text-success">Completado</span>
-                                </div>
-                            </div>
-                            <div class="list-group-item border-0 py-3">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <h6 class="mb-1 fw-bold">#ORD-2023-157</h6>
-                                        <small class="text-muted">Sucursal Norte - 8 bicis</small>
-                                    </div>
-                                    <span class="badge bg-warning bg-opacity-10 text-warning">En proceso</span>
-                                </div>
-                            </div>
-                            <div class="list-group-item border-0 py-3">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <h6 class="mb-1 fw-bold">#ORD-2023-158</h6>
-                                        <small class="text-muted">Sucursal Sur - 12 bicis</small>
-                                    </div>
-                                    <span class="badge bg-info bg-opacity-10 text-info">Enviado</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-light border-0">
-                        <a href="#" class="btn btn-sm btn-outline-primary w-100">Ver todos los pedidos</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Mantenimientos Pendientes -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card card-danger shadow-sm h-100">
-                    <div class="card-header bg-light border-0">
-                        <h3 class="card-title mb-0"><i class="fas fa-tools me-2"></i>Mantenimientos</h3>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
-                            <div class="list-group-item border-0 py-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1 fw-bold">Bici #B2023-045</h6>
-                                        <small class="text-muted">Frenos desgastados</small>
-                                    </div>
-                                    <span class="badge bg-danger bg-opacity-10 text-danger">Urgente</span>
-                                </div>
-                            </div>
-                            <div class="list-group-item border-0 py-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1 fw-bold">Bici #B2023-128</h6>
-                                        <small class="text-muted">Cambio de rueda trasera</small>
-                                    </div>
-                                    <span class="badge bg-warning bg-opacity-10 text-warning">Prioritario</span>
-                                </div>
-                            </div>
-                            <div class="list-group-item border-0 py-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1 fw-bold">Bici #B2023-312</h6>
-                                        <small class="text-muted">Revisión general</small>
-                                    </div>
-                                    <span class="badge bg-info bg-opacity-10 text-info">Programado</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-light border-0">
-                        <a href="#" class="btn btn-sm btn-outline-danger w-100">Gestionar mantenimientos</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+          
     @else
         <!-- Vista para Invitados -->
         <div class="auth-wrapper py-5">
