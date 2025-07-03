@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            currentBici = {
+            const nuevaBici = {
                 num_chasis: biciData.num_chasis,
                 modelo: biciData.modelo?.nombre_modelo ?? 'N/D',
                 color: biciData.color?.nombre_color ?? 'N/D',
@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 stock: biciData.tipoStock?.nombre_stock ?? biciData.tipo_stock?.nombre_stock ?? 'Sin Stock'
             };
 
-            mostrarModalConfirmacion(currentBici);
+            agregarBicicleta(nuevaBici);
 
         } catch (error) {
             console.error('Error:', error);
