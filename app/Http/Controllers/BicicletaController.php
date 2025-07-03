@@ -49,7 +49,6 @@ public function store(Request $request)
         'id_lote'               => 'required|string|exists:lote,id_lote',
         'id_tipoStock'          => 'required|string|exists:tipo_stock,id_tipoStock',
         'id_voltaje'               => 'nullable|string|max:10',
-        'error_iden_produccion' => 'nullable|string|max:255',
     ]);
 
     DB::beginTransaction();
