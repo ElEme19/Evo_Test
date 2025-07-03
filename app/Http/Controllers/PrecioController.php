@@ -26,11 +26,14 @@ class PrecioController extends Controller
     $voltajes   = VoltajeModeloD::all();
 
     $precios = Precio::select('precio.*')
-        ->join('modelos', 'precio.id_modelo', '=', 'modelos.id_modelo')
-        ->with(['membresia', 'modelo', 'voltaje'])
-        ->orderBy('modelos.nombre_modelo', 'asc')
-        ->orderBy('precio.id_voltaje') // opcional: para dentro de cada modelo ordenar por voltaje
-        ->paginate(15);
+    ->join('modelos', 'precio.id_modelo', '=', 'modelos.id_modelo')
+    ->join('membresia', 'precio.id_membresia', '=', 'membresia.id_membresia')
+    ->with(['membresia', 'modelo', 'voltaje'])
+    ->orderBy('modelos.nombre_modelo', 'asc')
+    ->orderBy('membresia.descripcion_general', 'asc') // segundo criterio de orden
+    ->orderBy('precio.id_voltaje') // opcional: tercer criterio por voltaje
+    ->paginate(15);
+
 
     return view('Precio.index', compact('precios', 'membresias', 'modelos', 'voltajes'));
 }
@@ -134,8 +137,10 @@ public function buscar(Request $request)
         });
     })
     ->join('modelos', 'precio.id_modelo', '=', 'modelos.id_modelo')
+    ->join('membresia', 'precio.id_membresia', '=', 'membresia.id_membresia')
     ->orderBy('modelos.nombre_modelo', 'asc')
-    ->select('precio.*')  // para evitar conflictos con columnas duplicadas
+    ->orderBy('membresia.descripcion_general', 'asc')
+    ->select('precio.*')
     ->paginate(10);
 
 
