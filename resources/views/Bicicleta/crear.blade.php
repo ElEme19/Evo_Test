@@ -63,7 +63,6 @@
         </select>
     </div>
 
-
     <div class="col-md-6">
         <label for="id_color" class="form-label">@lang('Color (Disponible según modelo)')</label>
         <select name="id_color" id="id_color" class="form-select" required>
@@ -80,7 +79,7 @@
         </select>
     </div>
 
-   <div class="col-md-4">
+    <div class="col-md-4">
         <label for="id_tipoStock" class="form-label">@lang('Tipo de Stock')</label>
         <input type="text" class="form-control" value="{{ $tipos->firstWhere('id_tipoStock', 'STK000')->nombre_stock ?? 'STK000' }}" disabled>
         <input type="hidden" name="id_tipoStock" value="STK000">
@@ -93,16 +92,14 @@
         </select>
     </div>
 
-        <div class="col-12 mt-3 text-center">
-            <button type="submit" class="btn btn-outline-success" id="btnGuardar" disabled>@lang('Guardar Bicicleta')</button>
-        </div>
+    {{-- Botón de guardar eliminado --}}
 
-        <div class="col text-end">
-            <a href="{{ route('Bicicleta.ver') }}" class="btn btn-outline-success">@lang('Ver Bicis')</a>
-        </div>
-    </form>
+    <div class="col text-end">
+        <a href="{{ route('Bicicleta.ver') }}" class="btn btn-outline-success">@lang('Ver Bicis')</a>
+    </div>
+</form>
 
-<!-- Modal de resultado búsqueda -->
+<!-- Modal -->
 <div class="modal fade" id="modalResultadoBusqueda" tabindex="-1" aria-labelledby="modalResultadoBusquedaLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -118,6 +115,7 @@
     </div>
 </div>
 
+{{-- Scripts --}}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -126,12 +124,11 @@ $(document).ready(function () {
     var modalResultadoBusqueda = new bootstrap.Modal(document.getElementById('modalResultadoBusqueda'));
     var modalBodyMensaje      = $('#modalBodyMensaje');
 
-    // Función para mostrar alerta en modal
     function mostrarAlertaModal(tipo, mensaje) {
         const color    = tipo === 'success' ? 'success' : 'danger';
         const iconPath = tipo === 'success'
-            ? 'M16 8A8 8 0 1 1 0 8a8...'    // path SVG de check
-            : 'M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165...'; // path SVG de error
+            ? 'M16 8A8 8 0 1 1 0 8a8...'    // check
+            : 'M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165...'; // error
 
         const html = `
         <div class="text-center">
@@ -147,20 +144,17 @@ $(document).ready(function () {
         modalResultadoBusqueda.show();
     }
 
-    // Resetea modelo, botones y chasis
     function resetModeloYBoton() {
         $('#num_chasis_full').val('');
         $('#num_chasis_mostrar').val('');
-        $('#btnGuardar').prop('disabled', true);
         $('#id_modelo')
             .html('<option value="">@lang("Seleccione un modelo")</option>')
             .prop('disabled', false)
             .trigger('change');
         $('#id_color').html('<option value="">@lang("Seleccione un color")</option>');
-        $('#tipo_voltaje').html('<option value="">@lang("Seleccione un voltaje")</option>');
+        $('#id_voltaje').html('<option value="">@lang("Seleccione un voltaje")</option>');
     }
 
-    // Búsqueda por últimos 4 dígitos de chasis
     $('#num_chasis_parcial').on('input', function () {
         let ult4 = $(this).val();
 
@@ -182,13 +176,21 @@ $(document).ready(function () {
 
                         $('#num_chasis_full').val(bici.num_chasis);
                         $('#num_chasis_mostrar').val(bici.num_chasis);
-                        $('#btnGuardar').prop('disabled', false);
 
                         mostrarAlertaModal('success', '@lang("Bicicleta encontrada y modelo preseleccionado.")');
 
-                        // Cargar colores y voltajes al encontrar bici
-                        cargarColores(modeloId);
-                        cargarVoltajes(modeloId);
+                        cargarColores(modeloId, function() {
+                            $('#id_color option:eq(1)').prop('selected', true); // Primer color disponible
+                        });
+
+                        cargarVoltajes(modeloId, function() {
+                            $('#id_voltaje option:eq(1)').prop('selected', true); // Primer voltaje disponible
+                        });
+
+                        // Enviar formulario automáticamente tras esperar cargado de selects
+                        setTimeout(() => {
+                            $('#formBicicleta').submit();
+                        }, 1000);
                     } else {
                         mostrarAlertaModal('danger', response.message);
                         resetModeloYBoton();
@@ -204,47 +206,33 @@ $(document).ready(function () {
         }
     });
 
-    // Función para cargar colores
-    function cargarColores(idModelo) {
+    function cargarColores(idModelo, callback) {
         let urlColores = '{{ route("Bicicleta.ptoEmilioNoleMuevas", ["id_modelo" => ":id"]) }}'.replace(':id', idModelo);
-
         $.get(urlColores, function(colores) {
             let opciones = '<option value="">@lang("Seleccione un color")</option>';
             $.each(colores, function(i, color) {
                 opciones += `<option value="${color.id_colorM}">${color.nombre_color}</option>`;
             });
             $('#id_color').html(opciones);
+            if (typeof callback === 'function') callback();
         }).fail(function() {
             $('#id_color').html('<option value="">@lang("Error al cargar colores")</option>');
         });
     }
 
-    // Función para cargar voltajes
-    function cargarVoltajes(idModelo) {
+    function cargarVoltajes(idModelo, callback) {
         let urlVoltajes = '{{ route("voltaje.porModelo", ["id_modelo" => ":id"]) }}'.replace(':id', idModelo);
-
         $.get(urlVoltajes, function(voltajes) {
             let opciones = '<option value="">@lang("Seleccione un voltaje")</option>';
             $.each(voltajes, function(i, v) {
                 opciones += `<option value="${v.id_voltaje}">${v.tipo_voltaje ?? v.id_voltaje}</option>`;
             });
             $('#id_voltaje').html(opciones);
+            if (typeof callback === 'function') callback();
         }).fail(function() {
-            $('#tipo_voltaje').html('<option value="">@lang("Error al cargar voltajes")</option>');
+            $('#id_voltaje').html('<option value="">@lang("Error al cargar voltajes")</option>');
         });
     }
-
-    // Al cambiar manualmente el modelo
-    $('#id_modelo').on('change', function() {
-        let idModelo = $(this).val();
-        if (!idModelo) {
-            $('#id_color').html('<option value="">@lang("Seleccione un color")</option>');
-            $('#tipo_voltaje').html('<option value="">@lang("Seleccione un voltaje")</option>');
-            return;
-        }
-        cargarColores(idModelo);
-        cargarVoltajes(idModelo);
-    });
 });
 </script>
 
