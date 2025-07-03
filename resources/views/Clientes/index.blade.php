@@ -47,8 +47,8 @@
         
         <!-- TÍTULO E ICONO -->
         <div class="d-flex align-items-center mb-3 mb-md-0 me-md-4">
-          <div class="me-3 p-2 rounded-circle bg-success bg-opacity-10">
-            <i class="bi bi-people-fill text-success fs-3"></i>
+          <div class="me-3 p-2bg-success bg-opacity-10" aria-hidden="true">
+            <i class="bi bi-people-fill text-success fs-3" role="img" aria-label="Icono de membresías"></i>
           </div>
           <div>
             <h1 class="h4 fw-bold mb-0">Clientes</h1>
@@ -57,7 +57,7 @@
         </div>
 
         <!-- BÚSQUEDA + ACCIÓN -->
-        <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-3 w-100 w-md-auto" style="max-width: 380px;"> 
+        <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-3 w-100 w-md-auto" "> 
           
           <!-- Formulario de búsqueda compacto -->
           <form action="{{ route('Clientes.buscar') }}" method="GET" class="flex-grow-1 position-relative">

@@ -57,13 +57,13 @@ Route::get('/colores/search', [ColorModeloController::class, 'search'])->name('c
 
 
 //Modelos
-  Route::get('/Modelo/ver', [ModelosBController::class, 'ver'])->name('Modelo.ver');
-  Route::get('/Modelo/crear', [ModelosBController::class, 'crear'])->name('Modelo.crear');
-  Route::post('/Modelo/store', [ModelosBController::class, 'store'])->name('Modelo.store');
-  Route::get('/Modelo/editar/{id_modelo}', [ModelosBController::class, 'editar'])->name('Modelo.editar');
-  Route::put('update/{id_modelo}', [ModelosBController::class, 'update'])->name('Modelo.update');
-    //Route::delete('eliminar/{id_modelo}', [ModelosBController::class, 'eliminar'])->name('modelos.eliminar');
-  Route::get('/Modelos/imagen/{path}', [ModelosBController::class, 'mostrarImagen'])->where('path', '.*')->name('Modelo.imagen');
+Route::get('/Modelo/ver', [ModelosBController::class, 'ver'])->name('Modelo.ver');
+Route::get('/Modelo/crear', [ModelosBController::class, 'crear'])->name('Modelo.crear');
+Route::post('/Modelo/store', [ModelosBController::class, 'store'])->name('Modelo.store');
+Route::get('/Modelo/editar/{id_modelo}', [ModelosBController::class, 'editar'])->name('Modelo.editar');
+Route::put('update/{id_modelo}', [ModelosBController::class, 'update'])->name('Modelo.update');
+  //Route::delete('eliminar/{id_modelo}', [ModelosBController::class, 'eliminar'])->name('modelos.eliminar');
+Route::get('/Modelos/imagen/{path}', [ModelosBController::class, 'mostrarImagen'])->where('path', '.*')->name('Modelo.imagen');
 
 // Lote
 Route::get('/Lote/crear', [LoteController::class, 'crear'])->name('Lote.crear');

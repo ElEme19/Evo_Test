@@ -70,9 +70,14 @@
           <!-- Botón NUEVO PRECIO -->
           @if(auth()->user()->rol == 0)
             <a href="{{ route('Precio.create') }}"
-               class="btn btn-success btn-sm d-flex align-items-center justify-content-center shadow-sm py-2 px-3 rounded">
+               class="btn  btn-outline-success btn-sm d-flex align-items-center justify-content-center shadow-sm py-2 px-3 rounded">
               <i class="bi bi-plus-circle-fill me-2"></i>
               <span>Nuevo precio</span>
+            </a>
+           <a href="#"
+              class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center shadow-sm py-2 px-3 rounded">
+              <i class="bi bi-file-earmark-pdf me-2"></i>
+              <span>Generar PDF</span>
             </a>
           @endif
 

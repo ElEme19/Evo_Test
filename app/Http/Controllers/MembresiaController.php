@@ -73,4 +73,11 @@ class MembresiaController extends Controller
 
         return redirect()->route('membresia.index')->with('success', '¡Membresía eliminada correctamente!');
     }
+
+
+
+    
+
+
 }
+
