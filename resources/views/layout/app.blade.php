@@ -159,7 +159,7 @@
                     @if (in_array($tipo, ['0', '2']))
                     <li class="nav-item">
                         <a class="nav-link" href="/Disponibles/listado">
-                            <i class="bi bi-receipt-cutoff me-1"></i>@lang('Listado')
+                            <i class="bi bi-bar-chart me-1"></i>@lang('Listado')
                         </a>
                         
                     </li>
