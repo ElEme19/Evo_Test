@@ -17,7 +17,6 @@ use App\Http\Controllers\MembresiaController;
 use App\Http\Controllers\PrecioController;
 use App\Http\Controllers\ProsesadorController;
 use App\Http\Controllers\VoltajeController;
-use App\Models\modelos_bici;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\CotizacionController;

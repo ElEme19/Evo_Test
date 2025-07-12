@@ -3,7 +3,7 @@
 @section('conten-wrapper')
 <div class="container-fluid px-3 px-md-3 py-3">
   <div class="row justify-content-center">
-     <div class="col-12">
+    <div class="col-12">
       <style>
         .btn-rounded { border-radius: 50px; padding: 0.5rem 1.25rem; }
         .table-fixed { table-layout: fixed; width: 100%; }
@@ -18,28 +18,16 @@
 
       <!-- Alertas -->
       <div class="alert-container mb-4">
-        @if (session('success'))
-          <div class="text-center">
-            <div class="alert alert-success d-inline-flex align-items-center py-1 px-2 rounded-3" role="alert">
-              <i class="bi bi-check-circle me-2"></i>
-              <small class="fw-semibold">{{ session('success') }}</small>
-            </div>
-          </div>
-        @endif
-        @if (session('error'))
-          <div class="text-center">
-            <div class="alert alert-danger d-inline-flex align-items-center py-1 px-2 rounded-3" role="alert">
-              <i class="bi bi-exclamation-triangle me-2"></i>
-              <small class="fw-semibold">{{ session('error') }}</small>
-            </div>
-          </div>
-        @endif
+        {{-- ... tus alertas ... --}}
       </div>
 
       <!-- Formulario Cotización -->
-      <div class="bg-white p-3 rounded-3 border">
+      <form id="formPDF" method="POST" action="{{ route('cotizacion.pdf') }}" target="_blank" class="bg-white p-3 rounded-3 border">
+        @csrf
+
+        <!-- Selección de Membresía/Modelo/Color/Voltaje -->
         <div class="row g-3 mb-3">
-          <div class="col-12 col-md-3">
+          <div class="col-md-3">
             <label for="id_membresia" class="form-label fw-semibold">Membresía</label>
             <select id="id_membresia" class="form-select form-select-sm" required>
               <option value="" disabled selected>Seleccione membresía</option>
@@ -48,7 +36,7 @@
               @endforeach
             </select>
           </div>
-          <div class="col-12 col-md-3">
+          <div class="col-md-3">
             <label for="id_modelo" class="form-label fw-semibold">Modelo</label>
             <select id="id_modelo" class="form-select form-select-sm" required>
               <option value="" disabled selected>Seleccione modelo</option>
@@ -57,53 +45,82 @@
               @endforeach
             </select>
           </div>
-          <div class="col-12 col-md-3">
+          <div class="col-md-3">
             <label for="id_color" class="form-label fw-semibold">Color</label>
             <select id="id_color" class="form-select form-select-sm" required>
               <option value="" disabled selected>Seleccione color</option>
             </select>
           </div>
-          <div class="col-12 col-md-3">
+          <div class="col-md-3">
             <label for="id_voltaje" class="form-label fw-semibold">Voltaje</label>
             <select id="id_voltaje" class="form-select form-select-sm" required>
               <option value="" disabled selected>Seleccione voltaje</option>
             </select>
           </div>
         </div>
+
+        <!-- Datos del Cliente -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-3">
+            <label for="nombre_cliente" class="form-label fw-semibold">Nombre del Cliente</label>
+            <input type="text" name="nombre_cliente" id="nombre_cliente" class="form-control form-control-sm" required>
+          </div>
+          <div class="col-md-3">
+            <label for="telefono" class="form-label fw-semibold">Teléfono</label>
+            <input type="text" name="telefono" id="telefono" class="form-control form-control-sm" required>
+          </div>
+          <div class="col-md-3">
+            <label for="direccion" class="form-label fw-semibold">Dirección</label>
+            <input type="text" name="direccion" id="direccion" class="form-control form-control-sm" required>
+          </div>
+          <div class="col-md-3">
+            <label for="metodo_entrega" class="form-label fw-semibold">Método de Entrega</label>
+            <select name="metodo_entrega" id="metodo_entrega" class="form-select form-select-sm" required>
+              <option value="" disabled selected>Seleccione</option>
+              <option value="Sucursal">Sucursal</option>
+              <option value="Domicilio">Domicilio</option>
+              <option value="Paquetería">Paquetería</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Botón Agregar Línea -->
         <div class="text-end mb-3">
           <button type="button" id="btnAgregarLinea" class="btn btn-outline-success btn-rounded" disabled>
             <i class="bi bi-plus-lg me-1"></i>Agregar Bici
           </button>
         </div>
 
-        <!-- Tabla Cotización -->
-        <div class="table-responsive">
+        <!-- Tabla de Cotización -->
+        <div class="table-responsive mb-3">
           <table class="table table-sm table-fixed align-middle" id="tablaCotizacion">
             <thead class="table-light text-center small">
-                <tr>
-                <th style="width:5%">#</th>
-                <th style="width:18%">Membresía</th>
-                <th style="width:18%">Modelo</th>
-                <th style="width:14%">Color</th>
-                <th style="width:14%">Voltaje</th>
-                <th style="width:14%">Precio Unitario</th>
-                <th style="width:12%">Cantidad</th>  <!-- Nueva columna -->
-                <th style="width:14%">Subtotal</th>
-                <th style="width:5%">Acción</th>
-                </tr>
+              <tr>
+                <th>#</th>
+                <th>Membresía</th>
+                <th>Modelo</th>
+                <th>Color</th>
+                <th>Voltaje</th>
+                <th>Precio Unitario</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+                <th>Acción</th>
+              </tr>
             </thead>
             <tbody></tbody>
             <tfoot></tfoot>
-            </table>
+          </table>
+        </div>
 
-           
-            <form id="formPDF" method="POST" action="{{ route('cotizacion.pdf') }}" target="_blank" class="mt-3">
-                @csrf
-                <input type="hidden" name="membresia" id="pdf_membresia">
-                <input type="hidden" name="lineas" id="pdf_lineas">
-                <button type="submit" class="btn btn-success mt-3" id="btnGenerarPDF" disabled><i class="bi bi-file-earmark-pdf me-1"></i>Generar PDF</button>
-            </form>
+        <!-- Hidden inputs para JS -->
+        <input type="hidden" name="membresia" id="pdf_membresia">
+        <input type="hidden" name="lineas"     id="pdf_lineas">
 
+        <!-- Botón Generar PDF -->
+        <button type="submit" class="btn btn-success" id="btnGenerarPDF" disabled>
+          <i class="bi bi-file-earmark-pdf me-1"></i>Generar PDF
+        </button>
+      </form>
 
         </div>
       </div>
@@ -146,6 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const selModelo    = document.getElementById('id_modelo');
   const selColor     = document.getElementById('id_color');
   const selVoltaje   = document.getElementById('id_voltaje');
+  const selMetodo    = document.getElementById('metodo_entrega');
   const btnAgregar   = document.getElementById('btnAgregarLinea');
   const btnPDF       = document.getElementById('btnGenerarPDF');
   const formPDF      = document.getElementById('formPDF');
@@ -169,7 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(`/cotizacion/colores/${selModelo.value}`),
         fetch(`/cotizacion/voltajes/${selModelo.value}`)
       ]);
-      if (!colRes.ok || !volRes.ok) throw new Error('Error al obtener datos');
       const [colores, voltajes] = await Promise.all([colRes.json(), volRes.json()]);
 
       selColor.innerHTML = '<option disabled selected>Seleccione color</option>';
@@ -187,74 +204,81 @@ document.addEventListener('DOMContentLoaded', () => {
         opt.textContent = v.tipo_voltaje;
         selVoltaje.appendChild(opt);
       });
-
     } catch (err) {
       selColor.innerHTML = '<option disabled>Error</option>';
       selVoltaje.innerHTML = '<option disabled>Error</option>';
       console.error(err);
     }
-
     habilitarBtn();
   });
   selColor.addEventListener('change', habilitarBtn);
   selVoltaje.addEventListener('change', habilitarBtn);
 
   btnAgregar.addEventListener('click', async (e) => {
-  e.preventDefault();
-  const idM  = selMembresia.value;
-  const idMo = selModelo.value;
-  const idC  = selColor.value;
-  const idV  = selVoltaje.value;
-  const params = new URLSearchParams({ id_membresia: idM, id_modelo: idMo, id_colorM: idC, id_voltaje: idV });
+    e.preventDefault();
+    const idM  = selMembresia.value;
+    const idMo = selModelo.value;
+    const idC  = selColor.value;
+    const idV  = selVoltaje.value;
 
-  try {
-    const res = await fetch(`/cotizacion/precio?${params}`);
-    if (!res.ok) throw new Error('Error al obtener precio');
-    const ju = await res.json();
-    if (!ju.success) throw new Error(ju.message || 'Precio no encontrado');
-    const precioNum = parseFloat(ju.precio);
+    try {
+      const res = await fetch(`/cotizacion/precio?${new URLSearchParams({
+        id_membresia: idM,
+        id_modelo:    idMo,
+        id_colorM:    idC,
+        id_voltaje:   idV
+      })}`);
+      const ju = await res.json();
+      const precioNum = parseFloat(ju.precio);
 
-    // Verificar si ya existe la bici con mismas características
-    const lineaExistente = lineas.find(l =>
-      l.idM === idM &&
-      l.idMo === idMo &&
-      l.idC === idC &&
-      l.idV === idV
-    );
+      // Extraer textos actuales
+      const membText = selMembresia.options[selMembresia.selectedIndex].text;
+      const modText  = selModelo   .options[selModelo.selectedIndex].text;
+      const colText  = selColor    .options[selColor.selectedIndex].text;
+      const volText  = selVoltaje  .options[selVoltaje.selectedIndex].text;
 
-    if(lineaExistente) {
-      // Aumentar cantidad y mostrar modal
-      lineaExistente.cantidad += 1;
-      renderizarTabla();
+      // Verificar duplicado
+      const lineaExistente = lineas.find(l =>
+        l.idM === idM && l.idMo === idMo && l.idC === idC && l.idV === idV
+      );
 
-      // Mostrar modal informativo
-      document.getElementById('infoModalBody').textContent = 'Esta bicicleta ya está en la cotización. Se aumentó la cantidad en 1.';
-      new bootstrap.Modal(document.getElementById('infoModal')).show();
-    } else {
-      // Agregar nueva línea
-      lineas.push({ idM, idMo, idC, idV, precio: precioNum, cantidad: 1 });
-      renderizarTabla();
+      if (lineaExistente) {
+        // Aumentar cantidad
+        lineaExistente.cantidad += 1;
+        renderizarTabla();
+        // Mostrar modal informativo al duplicar
+        document.getElementById('infoModalBody').textContent = 'Esta bicicleta ya está en la cotización. Se aumentó la cantidad en 1.';
+        new bootstrap.Modal(document.getElementById('infoModal')).show();
+      } else {
+        // Agregar nueva línea con textos fijos
+        lineas.push({
+          idM, idMo, idC, idV,
+          precio: precioNum,
+          cantidad: 1,
+          membresiaText: membText,
+          modeloText:    modText,
+          colorText:     colText,
+          voltajeText:   volText
+        });
+        renderizarTabla();
+      }
+    } catch (err) {
+      document.getElementById('errorModalBody').textContent = err.message;
+      new bootstrap.Modal(document.getElementById('errorModal')).show();
     }
-
-  } catch (err) {
-    document.getElementById('errorModalBody').textContent = err.message;
-    new bootstrap.Modal(document.getElementById('errorModal')).show();
-  }
-});
+  });
 
   window.quitarLinea = function(i) {
     lineas.splice(i, 1);
     renderizarTabla();
   };
 
-  window.cambiarCantidad = function(i, incremento) {
+  window.cambiarCantidad = function(i, inc) {
     const linea = lineas[i];
     if (!linea) return;
-
-    const nuevaCantidad = linea.cantidad + incremento;
-    if (nuevaCantidad < 1) return; // mínimo 1
-
-    linea.cantidad = nuevaCantidad;
+    const nueva = linea.cantidad + inc;
+    if (nueva < 1) return;
+    linea.cantidad = nueva;
     renderizarTabla();
   };
 
@@ -262,29 +286,24 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.innerHTML = '';
     let total = 0;
     lineas.forEach((l, i) => {
-      const memb = selMembresia.querySelector(`option[value="${l.idM}"]`).text;
-      const mod  = selModelo   .querySelector(`option[value="${l.idMo}"]`).text;
-      const col  = selColor    .querySelector(`option[value="${l.idC}"]`).text;
-      const vol  = selVoltaje  .querySelector(`option[value="${l.idV}"]`).text;
-      const sub  = l.precio * l.cantidad;
+      const sub = l.precio * l.cantidad;
       total += sub;
-
       tbody.innerHTML += `
         <tr class="text-center small">
           <td>${i+1}</td>
-          <td >${memb}</td>
-          <td>${mod}</td>
-          <td>${col}</td>
-          <td>${vol}</td>
+          <td>${l.membresiaText}</td>
+          <td>${l.modeloText}</td>
+          <td>${l.colorText}</td>
+          <td>${l.voltajeText}</td>
           <td>${formatPesos(l.precio)}</td>
-          <td class="text-center">
-            <button class="btn btn-sm btn-outline-danger me-1" onclick="cambiarCantidad(${i}, -1)">-</button>
-            ${l.cantidad}
-            <button class="btn btn-sm btn-outline-success ms-1" onclick="cambiarCantidad(${i}, 1)">+</button>
-          </td>
-          <td >${formatPesos(sub)}</td>
           <td>
-            <button type="button" class="btn btn-sm btn-outline-danger" onclick="quitarLinea(${i})">
+            <button class="btn btn-sm btn-outline-danger" onclick="cambiarCantidad(${i}, -1)">-</button>
+            ${l.cantidad}
+            <button class="btn btn-sm btn-outline-success" onclick="cambiarCantidad(${i}, 1)">+</button>
+          </td>
+          <td>${formatPesos(sub)}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-danger" onclick="quitarLinea(${i})">
               <i class="bi bi-trash"></i>
             </button>
           </td>
@@ -297,26 +316,24 @@ document.addEventListener('DOMContentLoaded', () => {
         <th class="text-end">${formatPesos(total)}</th>
         <th></th>
       </tr>`;
-
-    const totalCantidad = lineas.reduce((acc, l) => acc + l.cantidad, 0);
-    btnPDF.disabled = totalCantidad < 5;
-
+    btnPDF.disabled = lineas.reduce((sum, l) => sum + l.cantidad, 0) < 5;
   }
 
   formPDF.addEventListener('submit', () => {
     inputMember.value = selMembresia.options[selMembresia.selectedIndex].text;
-    inputLines.value = JSON.stringify(
-      lineas.map(l => ({
-        membresia: selMembresia.options[selMembresia.selectedIndex].text,
-        modelo:    selModelo.options[selModelo.selectedIndex].text,
-        color:     selColor.options[selColor.selectedIndex].text,
-        voltaje:   selVoltaje.options[selVoltaje.selectedIndex].text,
-        precio:    l.precio,
-        cantidad:  l.cantidad
-      }))
-    );
+    inputLines.value = JSON.stringify(lineas.map(l => ({
+      membresia:      l.membresiaText,
+      modelo:         l.modeloText,
+      color:          l.colorText,
+      voltaje:        l.voltajeText,
+      precio:         l.precio,
+      cantidad:       l.cantidad,
+      metodo_entrega: selMetodo.value
+    })));
   });
 });
 </script>
+
+
 
 @endsection
