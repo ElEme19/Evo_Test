@@ -20,7 +20,7 @@ use App\Http\Controllers\VoltajeController;
 use App\Models\modelos_bici;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\PedidosController;
-
+use App\Http\Controllers\CotizacionController;
 /*
 |--------------------------------------------------------------------------
 | Web Routess
@@ -151,9 +151,14 @@ Route::post('/pedido/store', [PedidosController::class, 'store'])->name('pedido.
 Route::get('/pedido/pdf/{id_pedido}', [PedidosController::class, 'generarPDF'])->name('pedido.pdf');
 Route::get('/pedido/buscar', [PedidosController::class, 'buscar'])->name('pedido.buscar');
 
+//Cotizacion
 
-//Debatible
-//Route::get('/Mexico/inicio', [DashboardController::class, 'index'])->name('Mexico.inicio');
+Route::get('/Cotizacion/crear', [CotizacionController::class, 'index'])->name('cotizacion.create');
+Route::get('/cotizacion/voltajes/{id_modelo}', [CotizacionController::class, 'voltajePorModelo'])->name('cotizacion.voltajes');
+Route::get('/cotizacion/precio', [CotizacionController::class, 'precioParaCotizacion'])->name('cotizacion.precio');
+Route::get('/cotizacion/colores/{id_modelo}', [CotizacionController::class, 'coloresPorModelo'])->name('cotizacion.colores');
+Route::post('/cotizacion/pdf', [CotizacionController::class, 'generarPDF'])->name('cotizacion.pdf');
+
 
 });
 
