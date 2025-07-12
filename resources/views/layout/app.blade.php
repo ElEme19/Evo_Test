@@ -153,6 +153,15 @@
                         <a class="nav-link" href="/Cotizacion/crear">
                             <i class="bi bi-receipt-cutoff me-1"></i>@lang('Cotizacion')
                         </a>
+                        
+                    </li>
+                    @endif
+                    @if (in_array($tipo, ['0', '2']))
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Disponibles/listado">
+                            <i class="bi bi-receipt-cutoff me-1"></i>@lang('Listado')
+                        </a>
+                        
                     </li>
                     @endif
                 </ul>

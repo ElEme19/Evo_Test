@@ -20,6 +20,7 @@ use App\Http\Controllers\VoltajeController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\CotizacionController;
+use App\Http\Controllers\ListaModelosController;
 /*
 |--------------------------------------------------------------------------
 | Web Routess
@@ -157,6 +158,11 @@ Route::get('/cotizacion/voltajes/{id_modelo}', [CotizacionController::class, 'vo
 Route::get('/cotizacion/precio', [CotizacionController::class, 'precioParaCotizacion'])->name('cotizacion.precio');
 Route::get('/cotizacion/colores/{id_modelo}', [CotizacionController::class, 'coloresPorModelo'])->name('cotizacion.colores');
 Route::post('/cotizacion/pdf', [CotizacionController::class, 'generarPDF'])->name('cotizacion.pdf');
+
+
+//Lista de bicis 
+
+Route::get('/Disponibles/listado', [ListaModelosController::class, 'index'])->name('Listado.modelos');
 
 
 });
