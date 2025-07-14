@@ -102,35 +102,25 @@ public function store(Request $request)
 
 
 
-
-    /**
-     * Envía impresión a PrintNode API
-     */
-private function enviarPrintNode(string $codigo, $color): array
+private function enviarPrintNode(string $code, $color): array
 {
     try {
-        $connector = new DummyPrintConnector();
-        $printer = new Printer($connector);
+        // Configuración ZPL para QR robusto
+        $zpl = <<<EOT
 
-        // NO usar initialize(), para evitar resetear la cola
-        $printer->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->setLineSpacing(30); // valor pequeño pero no cero, para evitar problemas
+^XA
+^FO350,10
+^BQN,2,6,H
+^FD{$code}
+^FS
+^FO320,170  
+^A0N,10,10  
+^FD{$code}
+^FS
+^XZ
+EOT;
 
-       
-        // QR con corrección alta y tamaño moderado
-        $printer->qrCode($codigo, Printer::QR_ECLEVEL_H, 7, Printer::QR_MODEL_2);
-
-        $printer->feed(1);
-
-        $printer->text("No. Serie: $codigo\nColor: $color\n");
-
-        $printer->feed(2); // algo de espacio para corte
-
-        $printer->cut();
-
-        $raw = $connector->getData();
-
-        // Enviar a PrintNode
+        // Enviar a PrintNode como RAW
         $client = new Client([
             'base_uri' => 'https://api.printnode.com/account',
             'auth'     => [config('printnode.api_key'), ''],
@@ -140,31 +130,32 @@ private function enviarPrintNode(string $codigo, $color): array
         $response = $client->post('printjobs', [
             'json' => [
                 'printerId'   => config('printnode.printer_id'),
-                'title'       => 'QR ' . $codigo,
+                'title'       => 'Etiqueta QR ' . $code,
                 'contentType' => 'raw_base64',
-                'content'     => base64_encode($raw),
+                'content'     => base64_encode($zpl),
                 'source'      => 'MiAppLaravel',
             ],
         ]);
 
         $body = (string) $response->getBody();
         $decoded = json_decode($body, true);
+        
         if (!is_array($decoded)) {
             throw new \Exception('Respuesta inesperada de PrintNode: ' . $body);
         }
 
         return [
-            'status' => 'success',
-            'message' => '🎉 ¡QR impreso con éxito!',
-            'data' => $decoded,
-            'timestamp' => now()->toDateTimeString()
+            'status'    => 'success',
+            'message'   => '🎉 ¡Etiqueta ZPL impresa con éxito!',
+            'data'      => $decoded,
+            'timestamp' => now()->toDateTimeString(),
         ];
     } catch (\Exception $e) {
         Log::error('Error al imprimir con PrintNode:', [
             'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
+            'trace' => $e->getTraceAsString(),
         ]);
-        throw new \Exception('⚠️ Error en impresión: ' . $e->getMessage());
+        throw new \Exception('⚠️ Error en impresión ZPL: ' . $e->getMessage());
     }
 }
 
