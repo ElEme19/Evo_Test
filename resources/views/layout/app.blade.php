@@ -134,20 +134,7 @@
                     </li>
                     @endif
                     
-                    @if ($tipo == '0')
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-gear me-1"></i>@lang('Administración')
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                            <li><a class="dropdown-item" href="/Precio/index"><i class="bi bi-tag me-2"></i>@lang('Precios')</a></li>
-                            <li><a class="dropdown-item" href="/Clientes/index"><i class="bi bi-people me-2"></i>@lang('Clientes')</a></li>
-                            <li><a class="dropdown-item" href="/Membresia/index"><i class="bi bi-card-checklist me-2"></i>@lang('Membresías')</a></li>
-                        </ul>
-                    </li>
-                    @endif
-
+                    
                     @if (in_array($tipo, ['0', '2']))
                     <li class="nav-item">
                         <a class="nav-link" href="/Cotizacion/crear">
@@ -164,6 +151,20 @@
                         
                     </li>
                     @endif
+                    @if ($tipo == '0')
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gear me-1"></i>@lang('Administración')
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                            <li><a class="dropdown-item" href="/Precio/index"><i class="bi bi-tag me-2"></i>@lang('Precios')</a></li>
+                            <li><a class="dropdown-item" href="/Clientes/index"><i class="bi bi-people me-2"></i>@lang('Clientes')</a></li>
+                            <li><a class="dropdown-item" href="/Membresia/index"><i class="bi bi-card-checklist me-2"></i>@lang('Membresías')</a></li>
+                        </ul>
+                    </li>
+                    @endif
+
                 </ul>
                 
                 <ul class="navbar-nav">
@@ -216,7 +217,7 @@
                 <div class="col-md-6 text-center text-md-end">
                     <p class="mb-0">
                         <i class="bi bi-envelope me-2"></i>contacto@evobike.com<br>
-                        <i class="bi bi-telephone me-2"></i>+52 55 1234 5678
+                        <i class="bi bi-telephone me-2"></i>+52 55 1241 6031
                     </p>
                 </div>
             </div>
