@@ -151,6 +151,14 @@ Route::post('/pedido/store', [PedidosController::class, 'store'])->name('pedido.
 Route::get('/pedido/pdf/{id_pedido}', [PedidosController::class, 'generarPDF'])->name('pedido.pdf');
 Route::get('/pedido/buscar', [PedidosController::class, 'buscar'])->name('pedido.buscar');
 
+Route::get('/pedido/{id}/editar', [PedidosController::class, 'editar'])->name('pedido.editar');
+Route::put('/pedido/{id}/actualizar', [PedidosController::class, 'actualizar'])->name('pedido.actualizar');
+Route::post('/pedido/{id}/agregar-bici', [PedidosController::class, 'agregarBici'])->name('pedido.bici.agregar');
+Route::delete('/pedido/{id}/eliminar-bici/{biciId}', [PedidosController::class, 'eliminarBici'])->name('pedido.bici.eliminar');
+Route::post('/pedido/{id}/finalizar', [PedidosController::class, 'finalizar'])->name('pedido.finalizar');
+
+
+
 //Cotizacion
 
 Route::get('/Cotizacion/crear', [CotizacionController::class, 'index'])->name('cotizacion.create');

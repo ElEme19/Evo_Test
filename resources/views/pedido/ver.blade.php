@@ -179,11 +179,12 @@
                                 data-bs-target="#detalle-{{ $index }}">
                           <i class="bi bi-eye me-1"></i>Ver
                         </button>
-                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#modalEditar{{ $pedidoGroup->id_pedido }}">
+                        
+                        <a href="{{ route('pedido.editar', $pedidoGroup->id_pedido) }}"
+                          class="btn btn-outline-primary btn-sm rounded-pill px-3">
                           <i class="bi bi-pencil-square me-1"></i>Editar
-                        </button>
+                        </a>
+
                         <a href="{{ route('pedido.pdf', $pedidoGroup->id_pedido) }}" 
                            class="btn btn-outline-danger btn-sm rounded-pill px-3">
                           <i class="bi bi-filetype-pdf me-1"></i>PDF

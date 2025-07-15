@@ -111,4 +111,70 @@ public function store(Request $request)
 
     return view('pedido.ver', compact('pedidos'))->with('busqueda', $termino);
 }
+
+//   ==> Editar el pedido
+
+public function editar($id_pedido)
+{
+    $pedido = Pedidos::with([
+        'bicicletas.modelo',
+        'bicicletas.color',
+        'bicicletas.voltaje',
+        'sucursal'
+    ])->where('id_pedido', $id_pedido)->firstOrFail();
+
+    return view('pedido.editar', compact('pedido'));
+}
+
+
+public function agregarBici(Request $request, $id_pedido)
+{
+    $request->validate([
+        'num_chasis' => 'required|exists:bicicleta,num_chasis',
+    ]);
+
+    $bicicleta = Bicicleta::where('num_chasis', $request->num_chasis)->first();
+
+    // Verifica que no esté ya asignada a otro pedido
+    if ($bicicleta->id_pedido && $bicicleta->id_pedido !== $id_pedido) {
+        return back()->with('error', 'La bicicleta ya pertenece a otro pedido.');
+    }
+
+    $bicicleta->update(['id_pedido' => $id_pedido]);
+
+    return back()->with('success', 'Bicicleta añadida al pedido correctamente.');
+}
+
+
+public function eliminarBici($id_pedido, $num_chasis)
+{
+    // Busca la bici en ese pedido
+    $bicicleta = Bicicleta::where('num_chasis', $num_chasis)
+                          ->where('id_pedido', $id_pedido)
+                          ->firstOrFail();
+
+    // Desasocia del pedido
+    $bicicleta->update(['id_pedido' => null]);
+
+    return back()->with('success', "Bicicleta {$num_chasis} eliminada del pedido.");
+}
+
+
+public function finalizar($id_pedido)
+{
+    $pedido = Pedidos::with('bicicletas')->where('id_pedido', $id_pedido)->firstOrFail();
+
+    if ($pedido->bicicletas->isEmpty()) {
+        return back()->with('error', 'El pedido no puede finalizarse sin bicicletas.');
+    }
+
+    // Si tienes un campo `estado`, podrías hacer:
+    // $pedido->update(['estado' => 'finalizado']);
+
+    return redirect()
+        ->route('pedido.ver')
+        ->with('success', "Pedido {$id_pedido} finalizado correctamente.");
+}
+
+
 }
