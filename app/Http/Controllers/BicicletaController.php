@@ -109,11 +109,11 @@ private function enviarPrintNode(string $code, $color): array
         $zpl = <<<EOT
 
 ^XA
-^FO350,10
+^FO350,40
 ^BQN,2,6,H
 ^FD{$code}
 ^FS
-^FO320,170  
+^FO320,200  
 ^A0N,10,10  
 ^FD{$code}
 ^FS
