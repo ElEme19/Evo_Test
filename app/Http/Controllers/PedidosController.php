@@ -62,7 +62,6 @@ public function store(Request $request)
         $pedido = Pedidos::create([
             'id_pedido'   => $nuevoId,
             'id_sucursal' => $request->id_sucursal,
-            'num_chasis'  => null,
             'fecha_envio' => now(),
         ]);
 
@@ -133,48 +132,48 @@ public function agregarBici(Request $request, $id_pedido)
         'num_chasis' => 'required|exists:bicicleta,num_chasis',
     ]);
 
-    $bicicleta = Bicicleta::where('num_chasis', $request->num_chasis)->first();
+    $bici = Bicicleta::where('num_chasis', $request->num_chasis)->firstOrFail();
 
-    // Verifica que no esté ya asignada a otro pedido
-    if ($bicicleta->id_pedido && $bicicleta->id_pedido !== $id_pedido) {
+    if ($bici->id_pedido && $bici->id_pedido != $id_pedido) {
         return back()->with('error', 'La bicicleta ya pertenece a otro pedido.');
     }
 
-    $bicicleta->update(['id_pedido' => $id_pedido]);
+    // FORZAMOS la asignación con save()
+    $bici->id_pedido = $id_pedido;
+    $bici->save();
 
     return back()->with('success', 'Bicicleta añadida al pedido correctamente.');
 }
 
 
-public function eliminarBici($id_pedido, $num_chasis)
+
+public function eliminarBici($id_pedido, $biciId)
 {
-    // Busca la bici en ese pedido
-    $bicicleta = Bicicleta::where('num_chasis', $num_chasis)
-                          ->where('id_pedido', $id_pedido)
-                          ->firstOrFail();
+    $bicicleta = \App\Models\Bicicleta::where('num_chasis', $biciId)
+        ->where('id_pedido', $id_pedido)
+        ->firstOrFail();
 
-    // Desasocia del pedido
-    $bicicleta->update(['id_pedido' => null]);
+    $bicicleta->id_pedido = null;
+    $bicicleta->save();
 
-    return back()->with('success', "Bicicleta {$num_chasis} eliminada del pedido.");
+    return back()->with('error', "Bicicleta {$biciId} eliminada del pedido.");
 }
+
+
 
 
 public function finalizar($id_pedido)
-{
-    $pedido = Pedidos::with('bicicletas')->where('id_pedido', $id_pedido)->firstOrFail();
+    {
+        // Opcional: valida que exista
+        $pedido = Pedidos::findOrFail($id_pedido);
 
-    if ($pedido->bicicletas->isEmpty()) {
-        return back()->with('error', 'El pedido no puede finalizarse sin bicicletas.');
+        // Aquí podrías marcarlo como "finalizado" si tienes un campo estado:
+        // $pedido->update(['estado' => 'finalizado']);
+
+        // Redirige al formulario de creación con mensaje
+        return redirect()
+            ->route('pedido.ver')
+            ->with('success', "Pedido {$id_pedido} guardado correctamente. Ahora puedes crear uno nuevo.");
     }
-
-    // Si tienes un campo `estado`, podrías hacer:
-    // $pedido->update(['estado' => 'finalizado']);
-
-    return redirect()
-        ->route('pedido.ver')
-        ->with('success', "Pedido {$id_pedido} finalizado correctamente.");
-}
-
 
 }

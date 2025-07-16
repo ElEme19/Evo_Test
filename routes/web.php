@@ -154,8 +154,8 @@ Route::get('/pedido/buscar', [PedidosController::class, 'buscar'])->name('pedido
 Route::get('/pedido/{id}/editar', [PedidosController::class, 'editar'])->name('pedido.editar');
 Route::put('/pedido/{id}/actualizar', [PedidosController::class, 'actualizar'])->name('pedido.actualizar');
 Route::post('/pedido/{id}/agregar-bici', [PedidosController::class, 'agregarBici'])->name('pedido.bici.agregar');
-Route::delete('/pedido/{id}/eliminar-bici/{biciId}', [PedidosController::class, 'eliminarBici'])->name('pedido.bici.eliminar');
-Route::post('/pedido/{id}/finalizar', [PedidosController::class, 'finalizar'])->name('pedido.finalizar');
+Route::put('/pedido/{id}/eliminar-bici/{biciId}', [PedidosController::class, 'eliminarBici'])->name('pedido.bici.eliminar');
+Route::post('/pedido/{id}/finalizar',[PedidosController::class, 'finalizar'])->name('pedido.finalizar');
 
 
 
@@ -178,8 +178,8 @@ Route::get('/Disponibles/listado', [ListaModelosController::class, 'index'])->na
 
 // NO TOCAR!!!!!!
 
-Route::get('/piezas/registrarse', [RegistroController::class, 'registrarse'])->name('registrarse');
-Route::post('/piezas/registrar', [RegistroController::class, 'registrar'])->name('registrar');
+//Route::get('/piezas/registrarse', [RegistroController::class, 'registrarse'])->name('registrarse');
+//Route::post('/piezas/registrar', [RegistroController::class, 'registrar'])->name('registrar');
 
 Route::get('/Mexico/inicio', [PiezasController::class ,'inicio'])->name ('piezas.inicio');
 

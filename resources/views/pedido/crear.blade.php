@@ -178,41 +178,31 @@
 </div>
 
 <!-- Modal de Información -->
-<div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="infoModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0">
-      <div class="modal-body p-4 text-center">
-        <div class="mb-3">
-          <i class="fas fa-info-circle text-primary fs-1"></i>
-        </div>
-        <h5 class="mb-3">Información</h5>
-        <p class="text-muted mb-4" id="infoModalBody">Mensaje de información</p>
-        <button type="button" class="btn btn-sm btn-outline-primary px-4" data-bs-dismiss="modal">
-          Aceptar
-        </button>
+    <div class="modal-content border-0 text-center">
+      <div class="modal-body p-4">
+        <i class="bi bi-info-circle fs-2 text-primary mb-3"></i>
+        <p id="infoModalBody" class="mb-0"></p>
+        <button class="btn btn-sm btn-outline-primary mt-3" data-bs-dismiss="modal">Aceptar</button>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Modal de Error -->
-<div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="errorModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0">
-      <div class="modal-body p-4 text-center">
-        <div class="mb-3">
-          <i class="fas fa-exclamation-circle text-danger fs-1"></i>
-        </div>
-        <h5 class="mb-3">Error</h5>
-        <p class="text-muted mb-4" id="errorModalBody">Mensaje de error</p>
-        <button type="button" class="btn btn-sm btn-outline-danger px-4" data-bs-dismiss="modal">
-          Cerrar
-        </button>
+    <div class="modal-content border-0 text-center">
+      <div class="modal-body p-4">
+        <i class="bi bi-x-circle fs-2 text-danger mb-3"></i>
+        <p id="errorModalBody" class="mb-0"></p>
+        <button class="btn btn-sm btn-outline-danger mt-3" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>
 </div>
-</div>
+
 
 
 <script>
