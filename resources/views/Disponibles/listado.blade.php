@@ -54,17 +54,6 @@
     display: inline-block;
   }
 
-  .variant-badge {
-    background-color: #fef9e7;
-    color: #b45309;
-    padding: 0.35rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    display: inline-block;
-    text-transform: capitalize;
-  }
-
   .mini-table {
     width: 100%;
     border-collapse: collapse;
@@ -114,15 +103,14 @@
     <div class="col-12 col-xl-10">
 
       <div class="inventory-header d-flex justify-content-between align-items-center">
-  <div class="d-flex align-items-center">
-    <i class="bi bi-box-seam fs-4 me-3"></i>
-    <h1 class="h4 fw-bold mb-0 text-gray-800">Gestión de Inventario</h1>
-  </div>
-  <button onclick="location.reload()" class="refresh-btn">
-    <i class="bi bi-arrow-clockwise me-2"></i>Actualizar
-  </button>
-</div>
-
+        <div class="d-flex align-items-center">
+          <i class="bi bi-box-seam fs-4 me-3"></i>
+          <h1 class="h4 fw-bold mb-0 text-gray-800">Gestión de Inventario</h1>
+        </div>
+        <button onclick="location.reload()" class="refresh-btn">
+          <i class="bi bi-arrow-clockwise me-2"></i>Actualizar
+        </button>
+      </div>
 
       <input id="searchInput" type="text" class="search-input" placeholder="Buscar modelos, colores...">
 
@@ -132,65 +120,102 @@
             <tr>
               <th>Modelo</th>
               <th>Color</th>
-              <th>Variantes</th>
               <th class="text-end">Total</th>
             </tr>
           </thead>
           <tbody>
             @php
-            $grouped = [];
-            foreach ($resultados as $item) {
-              $key = "{$item->nombre_modelo}|{$item->nombre_color}";
-              if (!isset($grouped[$key])) {
-                $grouped[$key] = ['modelo'=>$item->nombre_modelo,'color'=>$item->nombre_color,'items'=>[],'total'=>0];
+              $grouped = [];
+              foreach ($bicicletas as $item) {
+                $key = "{$item->nombre_modelo}|{$item->nombre_color}";
+                if (!isset($grouped[$key])) {
+                  $grouped[$key] = [
+                    'modelo' => $item->nombre_modelo,
+                    'color'  => $item->nombre_color,
+                    'items'  => [],
+                    'total'  => 0
+                  ];
+                }
+                $grouped[$key]['items'][] = $item;
+                $grouped[$key]['total'] += 1;
               }
-              $grouped[$key]['items'][] = $item;
-              $grouped[$key]['total'] += $item->total_disponibles;
-            }
             @endphp
 
             @forelse($grouped as $idx => $group)
-            <tr class="group-header" data-index="{{ $idx }}">
-              <td><i class="collapse-icon bi bi-chevron-down"></i> <span class="model-text">{{ $group['modelo'] }}</span></td>
-              <td><span class="color-chip">{{ $group['color'] }}</span></td>
-              <td><span class="variant-badge">{{ count($group['items']) }} variantes</span></td>
-              <td class="text-end fw-bold"><span class="total-text">{{ $group['total'] }}</span></td>
-            </tr>
-            <tr class="detail-row" data-index="{{ $idx }}" style="display:none;">
-              <td colspan="4">
-                <table class="mini-table">
-                  <thead>
-                    <tr><th>Voltaje</th><th>Unidades</th><th>Estado</th></tr>
-                  </thead>
-                  <tbody>
-                    @foreach($group['items'] as $item)
-                    <tr>
-                      <td><i class="bi {{ $item->tipo_voltaje==='Sin voltaje'?'bi-x-circle volt-no':'bi-lightning-fill volt-yes' }}"></i> {{ $item->tipo_voltaje }}</td>
-                      <td>{{ $item->total_disponibles }}</td>
-                      <td class="{{ $item->total_disponibles<30?'status-low':($item->total_disponibles<50?'status-medium':'status-high') }}">
-                        <i class="bi {{ $item->total_disponibles<30?'bi-exclamation-circle':($item->total_disponibles<50?'bi-exclamation-triangle':'bi-check-circle') }}"></i>
-                        {{ $item->total_disponibles<30?'Bajo stock':($item->total_disponibles<50?'Stock medio':'Disponible') }}
-                      </td>
-                    </tr>
-                    @endforeach
-                  </tbody>
-                </table>
-              </td>
-            </tr>
+              <tr class="group-header" data-index="{{ $idx }}">
+                <td>
+                  <i class="collapse-icon bi bi-chevron-down"></i>
+                  <span class="model-text">{{ $group['modelo'] }}</span>
+                </td>
+                <td>
+                  <span class="color-chip">{{ $group['color'] }}</span>
+                </td>
+                <td class="text-end fw-bold">
+                  <span class="total-text">{{ $group['total'] }}</span>
+                </td>
+              </tr>
+
+              <tr class="detail-row" data-index="{{ $idx }}" style="display:none;">
+                <td colspan="3">
+                  <table class="mini-table">
+                    <thead>
+                      <tr>
+                        <th>Chasis</th>
+                        <th>Voltaje</th>
+                        <th>Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach($group['items'] as $item)
+                        <tr>
+                          <td class="fw-monospace">{{ $item->num_chasis }}</td>
+                          <td>
+                            <i class="bi {{ $item->tipo_voltaje === 'Sin voltaje'
+                                         ? 'bi-x-circle volt-no'
+                                         : 'bi-lightning-fill volt-yes' }}"></i>
+                            {{ $item->tipo_voltaje }}
+                          </td>
+                          <td class="{{ $group['total'] < 30
+                                       ? 'status-low'
+                                       : ($group['total'] < 50 ? 'status-medium' : 'status-high') }}">
+                            <i class="bi {{ $group['total'] < 30
+                                         ? 'bi-exclamation-circle'
+                                         : ($group['total'] < 50 ? 'bi-exclamation-triangle' : 'bi-check-circle') }}"></i>
+                            {{ $group['total'] < 30
+                              ? 'Bajo stock'
+                              : ($group['total'] < 50 ? 'Stock medio' : 'Disponible') }}
+                          </td>
+                        </tr>
+                      @endforeach
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
             @empty
-            <tr><td colspan="4" class="text-center text-muted py-4">No hay productos registrados.</td></tr>
+              <tr>
+                <td colspan="3" class="text-center text-muted py-4">
+                  No hay bicicletas disponibles.
+                </td>
+              </tr>
             @endforelse
           </tbody>
         </table>
 
-        @if(count($resultados)>0)
-        <div class="card-footer d-flex justify-content-between align-items-center">
-          <small><i class="bi bi-grid-3x3-gap me-1"></i>{{ count($grouped) }} grupos / {{ count($resultados) }} variantes</small>
-          <small><i class="bi bi-box-seam me-1"></i>Total: {{ $resultados->sum('total_disponibles') }} unidades</small>
-        </div>
+        @if(count($bicicletas) > 0)
+          <div class="card-footer d-flex justify-content-between align-items-center">
+            <small>
+              <i class="bi bi-grid-3x3-gap me-1"></i>
+              {{ count($grouped) }} grupos / {{ count($bicicletas) }} bicicletas
+            </small>
+            <small>
+              <i class="bi bi-box-seam me-1"></i>
+              Total: {{ count($bicicletas) }} unidades
+            </small>
+          </div>
         @endif
 
       </div>
+
     </div>
   </div>
 </div>
@@ -198,28 +223,37 @@
 <script>
 (function(){
   const searchInput = document.getElementById('searchInput');
-  const rows = document.querySelectorAll('.group-header');
-  const details = document.querySelectorAll('.detail-row');
+  const rows        = document.querySelectorAll('.group-header');
+  const details     = document.querySelectorAll('.detail-row');
 
   // Toggle detail rows
-  rows.forEach(r => r.addEventListener('click', ()=>{
-    const idx = r.dataset.index;
-    const detail = document.querySelector(`.detail-row[data-index="${idx}"]`);
-    const icon = r.querySelector('.collapse-icon');
-    if(detail.style.display==='none'){
-      detail.style.display=''; icon.classList.add('opened');
-    } else { detail.style.display='none'; icon.classList.remove('opened'); }
-  }));
+  rows.forEach((r,i) => {
+    r.addEventListener('click', () => {
+      const detail = details[i];
+      const icon   = r.querySelector('.collapse-icon');
+      if (detail.style.display === 'none') {
+        detail.style.display = '';
+        icon.classList.add('opened');
+      } else {
+        detail.style.display = 'none';
+        icon.classList.remove('opened');
+      }
+    });
+  });
 
   // Search filter
-  searchInput.addEventListener('input', ()=>{
+  searchInput.addEventListener('input', () => {
     const term = searchInput.value.toLowerCase().trim();
-    rows.forEach((r,i)=>{
+    rows.forEach((r,i) => {
       const model = r.querySelector('.model-text').textContent.toLowerCase();
       const color = r.querySelector('.color-chip').textContent.toLowerCase();
-      if(model.includes(term)||color.includes(term)){
-        r.style.display=''; details[i].style.display='none';
-      } else { r.style.display='none'; details[i].style.display='none'; }
+      if (model.includes(term) || color.includes(term)) {
+        r.style.display = '';
+        details[i].style.display = 'none';
+      } else {
+        r.style.display = 'none';
+        details[i].style.display = 'none';
+      }
     });
   });
 })();
