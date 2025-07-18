@@ -26,9 +26,4 @@ class Pieza extends Model
     {
         return $this->belongsTo(modelos_bici::class, 'id_modelo', 'id_modelo');
     }
-
-    public function colorModelo()
-    {
-        return $this->belongsTo(ColorModelo::class, 'id_colorM', 'id_colorM');
-    }
 }

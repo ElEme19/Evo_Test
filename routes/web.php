@@ -3,7 +3,6 @@
 use App\Http\Controllers\ModelosBController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PiezasController;
 use App\Http\Controllers\ColorModeloController;
 use App\Http\Controllers\RegistroController;
@@ -21,6 +20,7 @@ use App\Http\Controllers\AreaController;
 use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\ListaModelosController;
+use App\Http\Controllers\PiezasBController;
 /*
 |--------------------------------------------------------------------------
 | Web Routess
@@ -40,10 +40,10 @@ Route::get('/',[PiezasController::class ,'inicio'])->name ('piezas.inicio');
 Route::middleware(['auth:usuarios','check.user.type:0'])->group(function(){  // ==> Tener acceso dependiendo del usuario a las vistas (/piezas/crear)
 
 // Laboratorio
-Route::get('/piezas/crear', [PiezasController::class, 'crear']) -> name('piezas.crear');
-Route::post('/piezas/store', [PiezasController::class, 'store']) -> name('piezas.store');
-Route::get('/piezas/ver', [PiezasController::class, 'ver']) -> name('piezas.ver');
-Route::put('/piezas/{piezas}', [PiezasController::class, 'update']) -> name('piezas.update');
+//Route::get('/piezas/crear', [PiezasController::class, 'crear']) -> name('piezas.crear');
+//Route::post('/piezas/store', [PiezasController::class, 'store']) -> name('piezas.store');
+//Route::get('/piezas/ver', [PiezasController::class, 'ver']) -> name('piezas.ver');
+//Route::put('/piezas/{piezas}', [PiezasController::class, 'update']) -> name('piezas.update');
 Route::get('/hola', function () {  return view('Mexico.prueba');});
 
 
@@ -171,6 +171,17 @@ Route::post('/cotizacion/pdf', [CotizacionController::class, 'generarPDF'])->nam
 //Lista de bicis 
 
 Route::get('/Disponibles/listado', [ListaModelosController::class, 'index'])->name('Listado.modelos');
+
+
+//Piezas
+
+Route::get('pieza', [PiezasBController::class, 'ver'])->name('pieza.ver');
+Route::get('pieza/crear', [PiezasBController::class, 'crear'])->name('pieza.crear');
+Route::post('pieza/store', [PiezasBController::class, 'store'])->name('pieza.store');
+Route::get('pieza/{pieza}/editar', [PiezasBController::class, 'editar'])->name('pieza.editar');
+Route::put('pieza/{pieza}', [PiezasBController::class, 'update'])->name('pieza.update');
+
+
 
 
 });
