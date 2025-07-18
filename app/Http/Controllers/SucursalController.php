@@ -102,15 +102,15 @@ public function crear()
 
 
 
-    public function mostrarImagen(string $path)
-{
-    if (! Storage::disk('local')->exists($path)) {
-        abort(404);
+public function mostrarImagen(string $path)
+    {
+        // Acceder a storage/app/
+        $fullPath = storage_path('app/' . ltrim($path, '/'));
+        if (!file_exists($fullPath)) {
+            abort(404);
+        }
+        return response()->file($fullPath);
     }
-
-    $fullPath = storage_path('app/' . $path);
-    return response()->file($fullPath);
-}
 
 
 }

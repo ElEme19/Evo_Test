@@ -4,7 +4,7 @@
 
 <div class="text-center my-4">
     <h3>
-        Pieza
+        Piezas
         <span class="badge rounded-pill text-bg-success">Nueva</span>
     </h3>
 </div>
@@ -27,48 +27,59 @@
 @endif
 
 @if ($errors->any())
-<div class="text-center">
-    <div class="alert alert-danger d-inline-flex align-items-center py-1 px-2 rounded-3 shadow-sm" role="alert">
-        <strong>Corrige los errores:</strong>
-        <ul class="mb-0 ms-2 text-start">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+    <div class="text-center">
+        <div class="alert alert-danger d-inline-flex align-items-center py-1 px-2 rounded-3 shadow-sm" role="alert">
+            <strong>Corrige los errores:</strong>
+            <ul class="mb-0 ms-2 text-start">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
     </div>
-</div>
 @endif
-
 
 <form id="formulario-pieza" class="row g-3 was-validated" method="POST" action="{{ route('pieza.store') }}" enctype="multipart/form-data" novalidate>
     @csrf
 
-        <div class="col-md-4">
-            <label for="id_modelo" class="form-label">Modelo</label>
-            <select class="form-select" name="id_modelo" id="id_modelo" required>
-                <option value="">Selecciona un modelo</option>
-                @foreach($modelos as $modelo)
-                    <option value="{{ $modelo->id_modelo }}"> {{ $modelo->nombre_modelo ?? 'Sin nombre' }}</option>
-                @endforeach
-            </select>
+    <div class="col-md-4">
+        <label for="id_modelo" class="form-label">Modelo</label>
+        <select class="form-select" name="id_modelo" id="id_modelo" required>
+            <option value="">Selecciona un modelo</option>
+            @foreach($modelos as $modelo)
+                <option value="{{ $modelo->id_modelo }}" {{ old('id_modelo') == $modelo->id_modelo ? 'selected' : '' }}>
+                    {{ $modelo->nombre_modelo ?? 'Sin nombre' }}
+                </option>
+            @endforeach
+        </select>
         <div class="invalid-feedback">Seleccione un modelo válido.</div>
     </div>
 
-    <div class="col-md-6">
-        <label for="id_colorM" class="form-label">Color</label>
-        <input type="text" class="form-control" id="id_colorM" name="id_colorM" placeholder="Ingrese el Color de la refacción" value="{{ old('id_colorM') }}" required>
+    <div class="col-md-4">
+        <label for="nombre_pieza" class="form-label">Nombre de la Pieza</label>
+        <input type="text" class="form-control" id="nombre_pieza" name="nombre_pieza"   placeholder="Asigne un Nombre a la pieza"
+            value="{{ old('nombre_pieza') }}" required>
+        <div class="invalid-feedback">Ingrese el nombre de la pieza.</div>
+    </div>
+
+    <div class="col-md-4">
+        <label for="color" class="form-label">Color</label>
+        <input type="text" class="form-control" id="color" name="color"
+            placeholder="Ingrese el color" value="{{ old('color') }}" >
         <div class="invalid-feedback">Ingrese un color para la pieza.</div>
     </div>
 
     <div class="col-md-6">
         <label for="descripcion_general" class="form-label">Descripción General</label>
-        <input type="text" class="form-control" id="descripcion_general" name="descripcion_general"  placeholder="Ingrese una pequeña descripcion" value="{{ old('descripcion_general') }}" required>
+        <input type="text" class="form-control" id="descripcion_general" name="descripcion_general"
+            placeholder="Ingrese una descripción" value="{{ old('descripcion_general') }}" required>
         <div class="invalid-feedback">Ingrese la descripción general.</div>
     </div>
 
     <div class="col-md-6">
         <label for="foto_pieza" class="form-label">Foto de la Pieza</label>
         <input type="file" class="form-control" id="foto_pieza" name="foto_pieza" accept="image/*">
+        <div class="form-text">Formatos permitidos: JPG, PNG. Máx: 2MB.</div>
     </div>
 
     <div class="row mb-3 align-items-center mt-4">

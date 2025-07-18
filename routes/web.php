@@ -180,6 +180,9 @@ Route::get('pieza/crear', [PiezasBController::class, 'crear'])->name('pieza.crea
 Route::post('pieza/store', [PiezasBController::class, 'store'])->name('pieza.store');
 Route::get('pieza/{pieza}/editar', [PiezasBController::class, 'editar'])->name('pieza.editar');
 Route::put('pieza/{pieza}', [PiezasBController::class, 'update'])->name('pieza.update');
+Route::get('pieza', [PiezasBController::class, 'ver'])->name('pieza.ver');
+Route::get('pieza/imagen/{path}', [PiezasBController::class, 'mostrarImagen'])->where('path', '.*')->name('pieza.imagen');
+
 
 
 
