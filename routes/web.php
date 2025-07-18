@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PiezasController;
 use App\Http\Controllers\ColorModeloController;
-use App\Http\Controllers\RegistroController;
+//use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\LoteController;
 use App\Http\Controllers\TipoStockController;
 use App\Http\Controllers\BicicletaController;
@@ -111,6 +111,8 @@ Route::get('/Sucursal/crear', [SucursalController::class, 'crear'])->name('Sucur
 Route::post('/Sucursal/store', [SucursalController::class, 'store'])->name('Sucursal.store');
 Route::get('/Sucursal/vista', [SucursalController::class, 'ver'])->name('Sucursal.ver');
 Route::get('/sucursal/imagen/{path}', [SucursalController::class, 'mostrarImagen'])->where('path', '.*')->name('sucursal.imagen');
+Route::get('sucursal/buscar', [SucursalController::class, 'buscar'])->name('sucursal.buscar');
+
 
 //Membresia
 Route::get('/Membresia/index', [MembresiaController::class, 'index'])->name('Membresia.index');
@@ -180,7 +182,6 @@ Route::get('pieza/crear', [PiezasBController::class, 'crear'])->name('pieza.crea
 Route::post('pieza/store', [PiezasBController::class, 'store'])->name('pieza.store');
 Route::get('pieza/{pieza}/editar', [PiezasBController::class, 'editar'])->name('pieza.editar');
 Route::put('pieza/{pieza}', [PiezasBController::class, 'update'])->name('pieza.update');
-Route::get('pieza', [PiezasBController::class, 'ver'])->name('pieza.ver');
 Route::get('pieza/imagen/{path}', [PiezasBController::class, 'mostrarImagen'])->where('path', '.*')->name('pieza.imagen');
 
 

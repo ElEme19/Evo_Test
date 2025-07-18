@@ -61,7 +61,31 @@ public function crear()
    public function ver()
 {
     $sucursales = Sucursal::with('cliente')->get(); 
+     $sucursales = Sucursal::with('cliente')->paginate(15);
+
     return view('Sucursal.vista', compact('sucursales'));
+}
+
+
+public function buscar(Request $request)
+{
+    $query = Sucursal::with('cliente');
+
+    if ($request->filled('q')) {
+        $busqueda = $request->q;
+        $query->where(function($q) use ($busqueda) {
+            $q->where('id_sucursal', 'like', "%{$busqueda}%")
+              ->orWhere('nombre_sucursal', 'like', "%{$busqueda}%")
+              ->orWhere('localizacion', 'like', "%{$busqueda}%");
+        });
+    } else {
+        $busqueda = null;
+    }
+
+    // paginate y luego appends() para conservar ?q=
+    $sucursales = $query->paginate(15)->appends($request->only('q'));
+
+    return view('sucursal.vista', compact('sucursales', 'busqueda'));
 }
 
 

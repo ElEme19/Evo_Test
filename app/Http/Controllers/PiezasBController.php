@@ -22,6 +22,9 @@ class PiezasBController extends Controller
         return view('PiezasB.ver', compact('piezas'));
     }
 
+
+    
+
     public function crear()
     {
         $modelos = modelos_bici::all();
