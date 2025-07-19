@@ -21,6 +21,8 @@ use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\ListaModelosController;
 use App\Http\Controllers\PiezasBController;
+use App\Http\Controllers\PedidosPiezasController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routess
@@ -158,6 +160,19 @@ Route::put('/pedido/{id}/actualizar', [PedidosController::class, 'actualizar'])-
 Route::post('/pedido/{id}/agregar-bici', [PedidosController::class, 'agregarBici'])->name('pedido.bici.agregar');
 Route::put('/pedido/{id}/eliminar-bici/{biciId}', [PedidosController::class, 'eliminarBici'])->name('pedido.bici.eliminar');
 Route::post('/pedido/{id}/finalizar',[PedidosController::class, 'finalizar'])->name('pedido.finalizar');
+
+
+
+//Pedidos Piezas
+Route::get('/PedidosPiezas/ver', [PedidosPiezasController::class, 'index'])->name('pedidos_piezas.index');
+Route::get('/PedidosPiezas/crear', [PedidosPiezasController::class, 'crear'])->name('pedidos_piezas.crear');
+Route::post('/PedidosPiezas', [PedidosPiezasController::class, 'store'])->name('pedidos_piezas.store');
+Route::get('/PedidosPiezas/{id}/editar', [PedidosPiezasController::class, 'edit'])->name('pedidos_piezas.edit');
+Route::put('/PedidosPiezas/{id}', [PedidosPiezasController::class, 'update'])->name('pedidos_piezas.update');
+Route::delete('/PedidosPiezas/{id}', [PedidosPiezasController::class, 'destroy'])->name('pedidos_piezas.destroy');
+Route::get('/pieza/buscar', [PedidosPiezasController::class, 'buscarPieza'])->name('pieza.buscar');
+
+
 
 
 

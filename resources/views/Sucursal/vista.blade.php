@@ -41,11 +41,7 @@
     transition: transform .2s ease;
   }
   
-  .fachada-img:hover {
-    transform: scale(1.8);
-    z-index: 10;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  }
+
 </style>
 
 <div class="container mt-4 px-2 px-md-4">
@@ -154,11 +150,22 @@
                     <td>{{ $sucursal->nombre_sucursal }}</td>
                     <td>{{ $sucursal->localizacion }}</td>
                     <td class="text-center">
-                      @if($sucursal->foto_fachada)
-                        <img src="{{ route('sucursal.imagen', ['path' => $sucursal->foto_fachada]) }}"
-                             alt="Fachada" class="fachada-img rounded shadow-sm">
-                      @else
-                        <span class="badge bg-secondary">Sin imagen</span>
+                     @if($sucursal->foto_fachada)
+                      <img src="{{ route('sucursal.imagen', ['path' => $sucursal->foto_fachada]) }}"
+                          alt="Fachada"
+                          class="fachada-img rounded shadow-sm"
+                          style="cursor:pointer"
+                          data-bs-toggle="modal"
+                          data-bs-target="#modalImagen"
+                          data-src="{{ route('sucursal.imagen', ['path' => $sucursal->foto_fachada]) }}">
+                    @else
+                      <div class="fachada-img bg-light rounded d-flex align-items-center justify-content-center" >
+                        <i class="bi bi-image text-muted"></i>
+                      </div>
+
+
+
+                        <span class="badge bg-danger">Sin imagen</span>
                       @endif
                     </td>
                     <td class="text-center">
@@ -202,6 +209,35 @@
     </div>
   </div>
 </div>
+
+
+<!-- Modal para ver imagen en grande -->
+<div class="modal fade" id="modalImagen" tabindex="-1" aria-labelledby="modalImagenLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="modalImagenLabel">Vista ampliada</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="imagenAmpliada" src="" class="img-fluid rounded shadow" alt="Imagen ampliada">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<script>
+  const modalImagen = document.getElementById('modalImagen');
+  modalImagen.addEventListener('show.bs.modal', function (event) {
+    const img = event.relatedTarget;
+    const src = img.getAttribute('data-src');
+    const modalImg = modalImagen.querySelector('#imagenAmpliada');
+    modalImg.src = src;
+  });
+</script>
 
 <!-- FILTRADO DINÁMICO -->
 <script>

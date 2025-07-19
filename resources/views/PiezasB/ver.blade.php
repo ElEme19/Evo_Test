@@ -71,7 +71,14 @@
               <tr>
                 <td class="text-center">
                   @if($pieza->foto_pieza)
-                    <img src="{{ route('pieza.imagen', ['path' => $pieza->foto_pieza]) }}" alt="Foto" class="profile-img rounded">
+                      <img src="{{ route('pieza.imagen', ['path' => $pieza->foto_pieza]) }}"
+                          alt="Foto"
+                          class="profile-img rounded"
+                          style="cursor:pointer"
+                          data-bs-toggle="modal"
+                          data-bs-target="#modalImagen"
+                          data-src="{{ route('pieza.imagen', ['path' => $pieza->foto_pieza]) }}">
+
                   @else
                     <div class="profile-img rounded bg-light d-flex align-items-center justify-content-center">
                       <i class="bi bi-image text-muted"></i>
@@ -110,4 +117,32 @@
 
   </div>
 </div>
+
+
+<!-- Modal para ver imagen en grande -->
+<div class="modal fade" id="modalImagen" tabindex="-1" aria-labelledby="modalImagenLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="modalImagenLabel">Vista ampliada</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="imagenAmpliada" src="" class="img-fluid rounded shadow" alt="Imagen ampliada">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  const modalImagen = document.getElementById('modalImagen');
+  modalImagen.addEventListener('show.bs.modal', function (event) {
+    const img = event.relatedTarget;
+    const src = img.getAttribute('data-src');
+    const modalImg = modalImagen.querySelector('#imagenAmpliada');
+    modalImg.src = src;
+  });
+</script>
+
 @endsection
