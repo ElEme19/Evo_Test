@@ -122,7 +122,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="bicicletaDropdown">
                             <li><a class="nav-link" href="/pedido/ver"><i class="bi bi-truck me-2"></i>@lang('Pedidos Bicicleta')</a></li>
-                            <li><a class="nav-link" href="/PedidosPiezas/crear"><i class="bi bi-tools me-2"></i>@lang('Pedido Piezas')</a></li>
+                            <li><a class="nav-link" href="/PedidosPiezas/ver"><i class="bi bi-tools me-2"></i>@lang('Pedido Piezas')</a></li>
                         </ul>
                     </li>
                     @endif

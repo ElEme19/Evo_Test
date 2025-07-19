@@ -8,6 +8,9 @@ use App\Models\Pedidos;
 use App\Models\Pieza;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 
 class PedidosPiezasController extends Controller
 {
@@ -17,15 +20,23 @@ class PedidosPiezasController extends Controller
     }
 
     // Mostrar lista de piezas por pedido (con paginación)
-    public function index()
-    {
-        $pedidosPiezas = PedidosPiezas::with(['pedido', 'pieza.modelo'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+    public function ver()
+{
+    $pedidosPiezas = PedidosPiezas::with(['pedido.sucursal', 'pieza.modelo'])
+        ->orderBy('id_control', 'desc')
+        ->paginate(10);
 
-        return view('pedidos_piezas.ver', compact('pedidosPiezas'));
-    }
+    return view('PedidosPiezas.ver', compact('pedidosPiezas'));
+}
 
+
+public function generarPDF($id_pedido)
+{
+    $pedido = Pedidos::with(['sucursal', 'piezas.pieza.modelo'])->findOrFail($id_pedido);
+
+    $pdf = Pdf::loadView('PedidosPiezas.pdf', compact('pedido'));
+    return $pdf->stream("pedido_piezas_{$pedido->id_pedido}.pdf");
+}
 
 
 
@@ -74,7 +85,7 @@ class PedidosPiezasController extends Controller
     });
 
     return redirect()
-        ->route('pedidos_piezas.index')
+        ->route('pedidos_piezas.ver')
         ->with('success', "Piezas agregadas correctamente al pedido {$request->id_pedido}.");
 }
 
@@ -192,7 +203,7 @@ public function buscarPieza(Request $request)
         // Aquí podrías actualizar estado o hacer alguna acción
 
         return redirect()
-            ->route('pedidos_piezas.index')
+            ->route('pedidos_piezas.ver')
             ->with('success', "Pedido piezas {$id_pedido} finalizado correctamente.");
     }
 

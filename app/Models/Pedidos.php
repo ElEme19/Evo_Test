@@ -39,4 +39,11 @@ protected $casts = [
     return $this->hasMany(Bicicleta::class, 'id_pedido', 'id_pedido');
 }
 
+
+
+public function piezas()
+{
+    return $this->hasMany(PedidosPiezas::class, 'id_pedido', 'id_pedido');
+}
+
 }

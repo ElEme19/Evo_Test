@@ -167,61 +167,46 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const piezaInput = document.getElementById('pieza_code');
-  //const btnBuscarPieza = document.getElementById('btnBuscarPieza');
-  const pedidoSelect = document.getElementById('id_pedido');
-  const tabla = document.querySelector('#tablaPiezas tbody');
-  const btnFinalizar = document.getElementById('btnFinalizarPiezas');
+  const piezaInput       = document.getElementById('pieza_code');
+  const pedidoSelect     = document.getElementById('id_pedido');
+  const tabla            = document.querySelector('#tablaPiezas tbody');
+  const btnFinalizar     = document.getElementById('btnFinalizarPiezas');
   const formPedidoPiezas = document.getElementById('formPedidoPiezas');
-  const contadorPiezas = document.getElementById('contadorPiezas');
+  const contadorPiezas   = document.getElementById('contadorPiezas');
 
-  const confirmModal = new bootstrap.Modal(document.getElementById('confirmModalPieza'));
-  const infoModal = new bootstrap.Modal(document.getElementById('infoModalPieza'));
-  const errorModal = new bootstrap.Modal(document.getElementById('errorModalPieza'));
-  const confirmAddBtn = document.getElementById('confirmAddBtnPieza');
+  const infoModal      = new bootstrap.Modal(document.getElementById('infoModalPieza'));
+  const errorModal     = new bootstrap.Modal(document.getElementById('errorModalPieza'));
 
   let listaPiezas = [];
-  let piezaActual = null;
-  let isBuscando = false;
+  let isBuscando  = false;
 
+  // Habilita el input cuando se selecciona un pedido
   pedidoSelect.addEventListener('change', () => {
-    piezaInput.disabled = !pedidoSelect.value;
-    piezaInput.value = '';
-    listaPiezas = [];
+    piezaInput.disabled    = !pedidoSelect.value;
+    piezaInput.value       = '';
+    listaPiezas            = [];
     renderizarTabla();
-    btnFinalizar.disabled = true;
-
+    btnFinalizar.disabled  = true;
     if (pedidoSelect.value) piezaInput.focus();
   });
 
-  
-
+  // Al escribir, buscar pieza
   piezaInput.addEventListener('keyup', (e) => {
-  const valor = piezaInput.value.trim();
-  if (valor) buscarPieza(valor);
-});
-
+    const termino = piezaInput.value.trim();
+    if (termino && !isBuscando) {
+      buscarPieza(termino);
+    }
+  });
 
   async function buscarPieza(termino) {
-    if (!termino || isBuscando) return;
-    if (listaPiezas.some(p => p.id_pieza.toUpperCase() === termino.toUpperCase())) {
-      mostrarInfoModal('Esta pieza ya fue agregada al pedido.');
-      piezaInput.value = '';
-      return;
-    }
-
     isBuscando = true;
-
     try {
       const url = `/pieza/buscar?term=${encodeURIComponent(termino)}`;
       const res = await fetch(url);
-
-      // Validar que la respuesta sea JSON
       const contentType = res.headers.get('content-type') || '';
       if (!contentType.includes('application/json')) {
         throw new Error('Respuesta no es JSON válida');
       }
-
       const data = await res.json();
 
       if (!res.ok || !data.success || !data.pieza) {
@@ -229,44 +214,36 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-        piezaActual = {
-        id_pieza: data.pieza.id_pieza,
+      const nueva = {
+        id_pieza:     data.pieza.id_pieza,
         nombre_pieza: data.pieza.nombre_pieza,
-        modelo: data.pieza.modelo ?? 'N/D',
-        color: data.pieza.color ?? 'N/D',
-        cantidad: 1,
-        };
+        modelo:       data.pieza.modelo       ?? 'N/D',
+        color:        data.pieza.color        ?? 'N/D',
+        cantidad:     1
+      };
 
+      // Si ya existe, sólo incrementar cantidad
+      const existe = listaPiezas.find(p => p.id_pieza === nueva.id_pieza);
+      if (existe) {
+        existe.cantidad++;
+      } else {
+        // Agregar nueva pieza directamente
+        listaPiezas.push(nueva);
+      }
 
-    agregarPieza(piezaActual);
-
-
+      renderizarTabla();
     } catch (error) {
       mostrarErrorModal('Error al buscar la pieza: ' + error.message);
     } finally {
-      isBuscando = false;
+      isBuscando       = false;
       piezaInput.value = '';
       piezaInput.focus();
     }
   }
 
-
-  confirmAddBtn.addEventListener('click', () => {
-    if (piezaActual) {
-      agregarPieza(piezaActual);
-      confirmModal.hide();
-      piezaActual = null;
-    }
-  });
-
-  function agregarPieza(pieza) {
-    listaPiezas.push(pieza);
-    renderizarTabla();
-  }
-
+  // Renderiza la tabla según listaPiezas
   function renderizarTabla() {
     tabla.innerHTML = '';
-
     listaPiezas.forEach((pieza, i) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -276,23 +253,26 @@ document.addEventListener('DOMContentLoaded', () => {
         <td class="text-center">${pieza.nombre_pieza}</td>
         <td class="text-center">${pieza.color}</td>
         <td class="text-center">
-          <input type="number" min="1" value="${pieza.cantidad}" data-index="${i}" class="form-control form-control-sm cantidad-input" style="width: 70px; margin: auto;">
+          <input type="number" min="1" value="${pieza.cantidad}" data-index="${i}"
+                 class="form-control form-control-sm cantidad-input"
+                 style="width: 70px; margin: auto;">
         </td>
         <td class="text-center">
-          <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" onclick="quitarPieza('${pieza.id_pieza}')">
+          <button type="button" class="btn btn-sm btn-outline-danger rounded-pill"
+                  onclick="quitarPieza('${pieza.id_pieza}')">
             <i class="bi bi-trash"></i>
           </button>
         </td>`;
       tabla.appendChild(tr);
     });
 
-    btnFinalizar.disabled = listaPiezas.length === 0;
     contadorPiezas.textContent = listaPiezas.length;
+    btnFinalizar.disabled      = listaPiezas.length === 0;
 
     document.querySelectorAll('.cantidad-input').forEach(input => {
       input.addEventListener('change', (e) => {
         const index = e.target.dataset.index;
-        const val = parseInt(e.target.value);
+        const val   = parseInt(e.target.value);
         if (val >= 1) {
           listaPiezas[index].cantidad = val;
         } else {
@@ -302,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Quitar pieza completamente
   window.quitarPieza = function(id_pieza) {
     listaPiezas = listaPiezas.filter(p => p.id_pieza !== id_pieza);
     renderizarTabla();
@@ -317,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
     errorModal.show();
   }
 
+  // Enviar formulario con JSON de piezas
   formPedidoPiezas.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -324,15 +306,14 @@ document.addEventListener('DOMContentLoaded', () => {
       mostrarErrorModal('Debe seleccionar un pedido.');
       return;
     }
-
     if (listaPiezas.length === 0) {
       mostrarErrorModal('Debe agregar al menos una pieza al pedido.');
       return;
     }
 
     const inputHidden = document.createElement('input');
-    inputHidden.type = 'hidden';
-    inputHidden.name = 'piezas_json';
+    inputHidden.type  = 'hidden';
+    inputHidden.name  = 'piezas_json';
     inputHidden.value = JSON.stringify(listaPiezas);
     formPedidoPiezas.appendChild(inputHidden);
 
@@ -340,5 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 </script>
+
 
 @endsection

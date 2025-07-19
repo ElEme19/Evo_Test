@@ -164,13 +164,18 @@ Route::post('/pedido/{id}/finalizar',[PedidosController::class, 'finalizar'])->n
 
 
 //Pedidos Piezas
-Route::get('/PedidosPiezas/ver', [PedidosPiezasController::class, 'index'])->name('pedidos_piezas.index');
+Route::get('/PedidosPiezas/ver', [PedidosPiezasController::class, 'ver'])->name('pedidos_piezas.ver');
 Route::get('/PedidosPiezas/crear', [PedidosPiezasController::class, 'crear'])->name('pedidos_piezas.crear');
 Route::post('/PedidosPiezas', [PedidosPiezasController::class, 'store'])->name('pedidos_piezas.store');
+Route::get('/pieza/buscar', [PedidosPiezasController::class, 'buscarPieza'])->name('pieza.buscar');
+Route::get('/pedidos_piezas/pdf/{id}', [PedidosPiezasController::class, 'generarPDF'])->name('pedidos_piezas.pdf');
+
+
+
 Route::get('/PedidosPiezas/{id}/editar', [PedidosPiezasController::class, 'edit'])->name('pedidos_piezas.edit');
 Route::put('/PedidosPiezas/{id}', [PedidosPiezasController::class, 'update'])->name('pedidos_piezas.update');
 Route::delete('/PedidosPiezas/{id}', [PedidosPiezasController::class, 'destroy'])->name('pedidos_piezas.destroy');
-Route::get('/pieza/buscar', [PedidosPiezasController::class, 'buscarPieza'])->name('pieza.buscar');
+
 
 
 

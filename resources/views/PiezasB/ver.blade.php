@@ -58,7 +58,7 @@
           <thead class="bg-light">
             <tr>
               <th class="fw-semibold text-center">Foto</th>
-              <th class="fw-semibold">ID</th>
+              <th class="fw-semibold">Codigo de Pieza</th>
               <th class="fw-semibold">Modelo</th>
               <th class="fw-semibold">Nombre</th>
               <th class="fw-semibold">Color</th>

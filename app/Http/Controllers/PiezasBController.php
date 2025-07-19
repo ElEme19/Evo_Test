@@ -94,6 +94,10 @@ class PiezasBController extends Controller
         }
     }
 
+
+
+    
+
     public function editar(Pieza $pieza)
     {
         $modelos = modelos_bici::all();

@@ -96,6 +96,10 @@ public function store(Request $request)
         ;
     }
 
+
+
+
+    
     public function buscar(Request $request)
 {
     $termino = $request->input('q');
