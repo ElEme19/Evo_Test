@@ -195,34 +195,46 @@
           <form id="updateForm{{ $modelo->id_modelo }}" method="POST" action="{{ route('Modelo.update', $modelo->id_modelo) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
+
             <div class="mb-3">
               <label class="form-label">ID Modelo</label>
               <p class="form-control-plaintext">{{ $modelo->id_modelo }}</p>
             </div>
+
             <div class="mb-3">
               <label class="form-label">Nombre del Modelo</label>
               <input type="text" name="nombre_modelo" class="form-control" value="{{ $modelo->nombre_modelo }}" required>
             </div>
+
             <div class="mb-3">
-              <label class="form-label">Imagen actual</label>
-              @if ($modelo->foto_modelo)
-                <div class="mb-2">
-                  <img src="{{ asset('storage/' . $modelo->foto_modelo) }}" width="100" class="rounded mb-2" alt="Imagen actual">
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" name="eliminar_foto" id="delFoto{{ $modelo->id_modelo }}">
-                    <label class="form-check-label" for="delFoto{{ $modelo->id_modelo }}">Eliminar imagen</label>
-                  </div>
-                </div>
+              <label class="form-label">Foto Actual</label><br>
+              @if($modelo->foto_modelo)
+                <img src="{{ route('Modelo.imagen', ['path' => $modelo->foto_modelo]) }}"
+                     alt="{{ $modelo->nombre_modelo }}"
+                     class="modelo-img rounded shadow-sm"
+                     style="cursor:pointer; max-width: 100px;"
+                     data-bs-toggle="modal"
+                     data-bs-target="#modalImagen"
+                     data-src="{{ route('Modelo.imagen', ['path' => $modelo->foto_modelo]) }}">
+              @else
+                <p class="text-muted">Sin imagen</p>
               @endif
-              <input type="file" name="foto_modelo" class="form-control" accept="image/*">
-              <small class="text-muted">Dejar vacío para mantener la imagen</small>
             </div>
+
+            <div class="mb-3">
+              <label class="form-label">Nueva Imagen (opcional)</label>
+              <input type="file" name="foto_modelo" class="form-control" accept="image/*">
+              <small class="text-muted">Dejar vacío para mantener la imagen actual.</small>
+            </div>
+
+            <!-- Botón para confirmar -->
             <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#confirmModal{{ $modelo->id_modelo }}">Actualizar</button>
           </form>
         </div>
       </div>
     </div>
   </div>
+
 
   <div class="modal fade" id="confirmModal{{ $modelo->id_modelo }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmLabel{{ $modelo->id_modelo }}" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
