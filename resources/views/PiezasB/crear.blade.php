@@ -69,14 +69,26 @@
         <div class="invalid-feedback">Ingrese un color para la pieza.</div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-4">
         <label for="descripcion_general" class="form-label">Descripción General</label>
         <input type="text" class="form-control" id="descripcion_general" name="descripcion_general"
             placeholder="Ingrese una descripción" value="{{ old('descripcion_general') }}" required>
         <div class="invalid-feedback">Ingrese la descripción general.</div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-4">
+    <label for="Unidad" class="form-label">Unidad</label>
+    <select class="form-select" id="Unidad" name="Unidad" required>
+        <option value="" disabled {{ old('Unidad') ? '' : 'selected' }}>Seleccione una opción</option>
+        <option value="Pz" {{ old('Unidad') == 'Pz' ? 'selected' : '' }}>Pz</option>
+        <option value="Par" {{ old('Unidad') == 'Par' ? 'selected' : '' }}>Par</option>
+    </select>
+    <div class="invalid-feedback">Seleccione la unidad correspondiente.</div>
+    </div>
+
+
+
+    <div class="col-md-4">
         <label for="foto_pieza" class="form-label">Foto de la Pieza</label>
         <input type="file" class="form-control" id="foto_pieza" name="foto_pieza" accept="image/*">
         <div class="form-text">Formatos permitidos: JPG, PNG. Máx: 2MB.</div>

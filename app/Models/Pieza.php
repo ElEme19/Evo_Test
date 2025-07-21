@@ -20,6 +20,7 @@ class Pieza extends Model
         'id_modelo',
         'nombre_pieza',
         'color',
+        'Unidad',
         'descripcion_general',
         'foto_pieza',
         

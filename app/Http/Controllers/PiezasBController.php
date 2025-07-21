@@ -38,6 +38,7 @@ class PiezasBController extends Controller
             'nombre_pieza'        => 'required|string|max:255',
             'color'               => 'nullable|string|max:100',
             'descripcion_general' => 'required|string',
+            'Unidad'              => 'required|string|max:10',
             'foto_pieza'          => 'nullable|image|max:2048',
         ]);
 
@@ -70,6 +71,7 @@ class PiezasBController extends Controller
                 'id_pieza'            => $id,
                 'id_modelo'           => $request->id_modelo,
                 'nombre_pieza'        => $request->nombre_pieza,
+                'Unidad'              => $request->Unidad,
                 'color'               => $color,
                 'descripcion_general' => $request->descripcion_general,
             ]);

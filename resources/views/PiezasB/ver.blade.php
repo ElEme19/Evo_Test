@@ -77,7 +77,8 @@
                           style="cursor:pointer"
                           data-bs-toggle="modal"
                           data-bs-target="#modalImagen"
-                          data-src="{{ route('pieza.imagen', ['path' => $pieza->foto_pieza]) }}">
+                          data-src="{{ route('pieza.imagen', ['path' => $pieza->foto_pieza]) }}"
+                          data-nombre="{{ $pieza->nombre_pieza }}">
 
                   @else
                     <div class="profile-img rounded bg-light d-flex align-items-center justify-content-center">
@@ -124,7 +125,7 @@
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header border-0">
-        <h5 class="modal-title" id="modalImagenLabel">Vista ampliada</h5>
+        <h3 class="modal-title text-center w-100" id="modalImagenLabel"></h3>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body text-center">
@@ -134,14 +135,18 @@
   </div>
 </div>
 
-
 <script>
   const modalImagen = document.getElementById('modalImagen');
   modalImagen.addEventListener('show.bs.modal', function (event) {
     const img = event.relatedTarget;
     const src = img.getAttribute('data-src');
+    const nombre = img.getAttribute('data-nombre');
+
     const modalImg = modalImagen.querySelector('#imagenAmpliada');
+    const modalTitle = modalImagen.querySelector('#modalImagenLabel');
+
     modalImg.src = src;
+    modalTitle.textContent = nombre;
   });
 </script>
 
