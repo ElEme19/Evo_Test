@@ -17,10 +17,10 @@ class PiezasBController extends Controller
     }
 
     public function ver()
-    {
-        $piezas = Pieza::with('modelo')->get();
-        return view('PiezasB.ver', compact('piezas'));
-    }
+{
+    $piezas = Pieza::with('modelo')->paginate(10); 
+    return view('PiezasB.ver', compact('piezas'));
+}
 
 
     

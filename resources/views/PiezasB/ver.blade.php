@@ -8,6 +8,16 @@
   .card-header, .card-footer { padding: .75rem 1rem !important; }
   .table-hover tbody tr { line-height: 1.2 !important; }
   .profile-img { width: 40px; height: 40px; object-fit: cover; }
+    .pagination .page-link {
+        color: #198754; /* Verde Bootstrap */
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #198754;
+        border-color: #198754;
+        color: #fff;
+    }
+
+
 </style>
 
 <div class="container mt-4 px-2 px-md-4">
@@ -58,11 +68,12 @@
           <thead class="bg-light">
             <tr>
               <th class="fw-semibold text-center">Foto</th>
-              <th class="fw-semibold">Codigo de Pieza</th>
-              <th class="fw-semibold">Modelo</th>
-              <th class="fw-semibold">Nombre</th>
-              <th class="fw-semibold">Color</th>
-              <th class="fw-semibold">Descripción</th>
+              <th class="fw-semibold text-center">Codigo de Pieza</th>
+              <th class="fw-semibold text-center">Modelo</th>
+              <th class="fw-semibold text-center">Nombre</th>
+              <th class="fw-semibold text-center">Color</th>
+              <th class="fw-semibold text-center">Descripción</th>
+              <th class="fw-semibold text-center">Unidad</th>
               <th class="fw-semibold text-center">Acciones</th>
             </tr>
           </thead>
@@ -86,15 +97,21 @@
                     </div>
                   @endif
                 </td>
-                <td>{{ $pieza->id_pieza }}</td>
-                <td>{{ $pieza->modelo->nombre_modelo ?? $pieza->id_modelo }}</td>
-                <td>{{ $pieza->nombre_pieza }}</td>
-                <td>{{ $pieza->color }}</td>
-                <td>{{ Str::limit($pieza->descripcion_general, 40) }}</td>
+                <td class="text-center">{{ $pieza->id_pieza }}</td>
+                <td class="text-center">{{ $pieza->modelo->nombre_modelo ?? $pieza->id_modelo }}</td>
+                <td class="text-center">{{ $pieza->nombre_pieza }}</td>
+                <td class="text-center">{{ $pieza->color }}</td>
+                <td class="text-center">{{ Str::limit($pieza->descripcion_general, 40) }}</td>
+                <td class="text-center">{{ $pieza->Unidad }}</td>
                 <td class="text-center">
-                  <a href="{{ route('pieza.editar', $pieza) }}" class="btn btn-outline-primary btn-sm me-1">
+                 <!-- Botón para abrir modal -->
+                  <button type="button"
+                          class="btn btn-outline-primary btn-sm me-1"
+                          data-bs-toggle="modal"
+                          data-bs-target="#modalEditar{{ $pieza->id_pieza }}">
                     <i class="bi bi-pencil-square"></i>
-                  </a>
+                  </button>
+
                  
                     
                 </td>
@@ -112,6 +129,57 @@
       </div>
     </div>
   </div>
+  
+<div id="paginationContainer">
+  @if($piezas->hasPages())
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div class="text-muted small">
+        Mostrando {{ $piezas->firstItem() }} a {{ $piezas->lastItem() }} de {{ $piezas->total() }} registros
+      </div>
+      <nav aria-label="Paginación">
+        <ul class="pagination pagination-sm justify-content-center">
+
+          {{-- Flecha atrás --}}
+          @if($piezas->onFirstPage())
+            <li class="page-item disabled">
+              <span class="page-link text-success border-success bg-white">&laquo;</span>
+            </li>
+          @else
+            <li class="page-item">
+              <a class="page-link text-success border-success bg-white" href="{{ $piezas->previousPageUrl() }}" rel="prev">&laquo;</a>
+            </li>
+          @endif
+
+          {{-- Números de página --}}
+          @foreach($piezas->getUrlRange(1, $piezas->lastPage()) as $page => $url)
+            @if($page == $piezas->currentPage())
+              <li class="page-item active" aria-current="page">
+                <span class="page-link bg-success text-white border-success">{{ $page }}</span>
+              </li>
+            @else
+              <li class="page-item">
+                <a class="page-link text-success border-success bg-white" href="{{ $url }}">{{ $page }}</a>
+              </li>
+            @endif
+          @endforeach
+
+          {{-- Flecha siguiente --}}
+          @if($piezas->hasMorePages())
+            <li class="page-item">
+              <a class="page-link text-success border-success bg-white" href="{{ $piezas->nextPageUrl() }}" rel="next">&raquo;</a>
+            </li>
+          @else
+            <li class="page-item disabled">
+              <span class="page-link text-success border-success bg-white">&raquo;</span>
+            </li>
+          @endif
+
+        </ul>
+      </nav>
+    </div>
+  @endif
+</div>
+
 
 </div>
 
@@ -134,6 +202,10 @@
     </div>
   </div>
 </div>
+
+
+
+
 
 <script>
   const modalImagen = document.getElementById('modalImagen');

@@ -35,6 +35,18 @@
     cursor: pointer;
     transition: transform .2s ease;
   }
+
+  
+    .pagination .page-link {
+        color: #198754; /* Verde Bootstrap */
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #198754;
+        border-color: #198754;
+        color: #fff;
+    }
+
+
 </style>
 
 <div class="container mt-4 px-2 px-md-4">
@@ -76,15 +88,16 @@
 
        <!-- Botón Crear -->
       @if (auth()->user()->rol == 0)
-        <div class="d-flex justify-content-center mb-3">
-          <button type="button" class="btn btn-outline-success shadow-sm py-2 px-3 rounded mx-auto" ...>
-            <i class="bi bi-plus-circle-fill me-2"></i>
-            Crear Nuevo Modelo
-          </button>
-        </div>
+  <div class="d-flex justify-content-center mb-3">
+  <button type="button" class="btn btn-outline-success shadow-sm py-2 px-3 rounded mx-auto" data-bs-toggle="modal" data-bs-target="#modalCrearModelo">
+      <i class="bi bi-plus-circle-fill me-2"></i>
+      Crear Nuevo Modelo
+    </button>
+  </div>
 
-        @include('Modelo.crear')
-      @endif
+  @include('Modelo.crear') 
+@endif
+
 
       <!-- Tabla -->
       <div class="card shadow-sm rounded-3 border-0 overflow-hidden">
@@ -151,17 +164,56 @@
         </div>
       </div>
 
-      <!-- Paginación -->
-      @if($modelos->hasPages())
-        <div class="d-flex justify-content-between align-items-center mt-3">
-          <div class="small text-muted">
-            Mostrando {{ $modelos->firstItem() }}–{{ $modelos->lastItem() }} de {{ $modelos->total() }} registros
-          </div>
-          <nav>
-            {{ $modelos->withQueryString()->links('pagination::bootstrap-4') }}
-          </nav>
-        </div>
-      @endif
+     <div id="paginationContainer">
+  @if($modelos->hasPages())
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div class="text-muted small">
+        Mostrando {{ $modelos->firstItem() }} a {{ $modelos->lastItem() }} de {{ $modelos->total() }} registros
+      </div>
+      <nav aria-label="Paginación">
+        <ul class="pagination pagination-sm justify-content-center">
+
+          {{-- Flecha atrás --}}
+          @if($modelos->onFirstPage())
+            <li class="page-item disabled">
+              <span class="page-link text-success border-success bg-white">&laquo;</span>
+            </li>
+          @else
+            <li class="page-item">
+              <a class="page-link text-success border-success bg-white" href="{{ $modelos->previousPageUrl() }}" rel="prev">&laquo;</a>
+            </li>
+          @endif
+
+          {{-- Números de página --}}
+          @foreach($modelos->getUrlRange(1, $modelos->lastPage()) as $page => $url)
+            @if($page == $modelos->currentPage())
+              <li class="page-item active" aria-current="page">
+                <span class="page-link bg-success text-white border-success">{{ $page }}</span>
+              </li>
+            @else
+              <li class="page-item">
+                <a class="page-link text-success border-success bg-white" href="{{ $url }}">{{ $page }}</a>
+              </li>
+            @endif
+          @endforeach
+
+          {{-- Flecha siguiente --}}
+          @if($modelos->hasMorePages())
+            <li class="page-item">
+              <a class="page-link text-success border-success bg-white" href="{{ $modelos->nextPageUrl() }}" rel="next">&raquo;</a>
+            </li>
+          @else
+            <li class="page-item disabled">
+              <span class="page-link text-success border-success bg-white">&raquo;</span>
+            </li>
+          @endif
+
+        </ul>
+      </nav>
+    </div>
+  @endif
+</div>
+
 
     </div>
   </div>
