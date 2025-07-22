@@ -105,14 +105,14 @@
       <div class="inventory-header d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
           <i class="bi bi-box-seam fs-4 me-3"></i>
-          <h1 class="h4 fw-bold mb-0 text-gray-800">Gestión de Inventario</h1>
+          <h1 class="h4 fw-bold mb-0 text-gray-800">Gestión de Bicicletas Disponibles</h1>
         </div>
         <button onclick="location.reload()" class="refresh-btn">
           <i class="bi bi-arrow-clockwise me-2"></i>Actualizar
         </button>
       </div>
 
-      <input id="searchInput" type="text" class="search-input" placeholder="Buscar modelos, colores...">
+      <input id="searchInput" type="text" class="search-input" placeholder="Buscar modelo o color...">
 
       <div class="inventory-card">
         <table class="table" id="inventoryTable">
@@ -143,18 +143,12 @@
 
             @forelse($grouped as $idx => $group)
               <tr class="group-header" data-index="{{ $idx }}">
-                <td>
-                  <i class="collapse-icon bi bi-chevron-down"></i>
-                  <span class="model-text">{{ $group['modelo'] }}</span>
-                </td>
-                <td>
-                  <span class="color-chip">{{ $group['color'] }}</span>
-                </td>
+                <td><i class="collapse-icon bi bi-chevron-down"></i> <span class="model-text">{{ $group['modelo'] }}</span></td>
+                <td><span class="color-chip">{{ $group['color'] }}</span></td>
                 <td class="text-end fw-bold">
                   <span class="total-text">{{ $group['total'] }}</span>
                 </td>
               </tr>
-
               <tr class="detail-row" data-index="{{ $idx }}" style="display:none;">
                 <td colspan="3">
                   <table class="mini-table">
@@ -167,25 +161,17 @@
                     </thead>
                     <tbody>
                       @foreach($group['items'] as $item)
-                        <tr>
-                          <td class="fw-monospace">{{ $item->num_chasis }}</td>
-                          <td>
-                            <i class="bi {{ $item->tipo_voltaje === 'Sin voltaje'
-                                         ? 'bi-x-circle volt-no'
-                                         : 'bi-lightning-fill volt-yes' }}"></i>
-                            {{ $item->tipo_voltaje }}
-                          </td>
-                          <td class="{{ $group['total'] < 30
-                                       ? 'status-low'
-                                       : ($group['total'] < 50 ? 'status-medium' : 'status-high') }}">
-                            <i class="bi {{ $group['total'] < 30
-                                         ? 'bi-exclamation-circle'
-                                         : ($group['total'] < 50 ? 'bi-exclamation-triangle' : 'bi-check-circle') }}"></i>
-                            {{ $group['total'] < 30
-                              ? 'Bajo stock'
-                              : ($group['total'] < 50 ? 'Stock medio' : 'Disponible') }}
-                          </td>
-                        </tr>
+                      <tr>
+                        <td class="fw-monospace">{{ $item->num_chasis }}</td>
+                        <td>
+                          <i class="bi {{ $item->tipo_voltaje === 'Sin voltaje' ? 'bi-x-circle volt-no' : 'bi-lightning-fill volt-yes' }}"></i>
+                          {{ $item->tipo_voltaje }}
+                        </td>
+                        <td class="{{ $group['total'] < 10 ? 'status-low' : ($group['total'] < 30 ? 'status-medium' : 'status-high') }}">
+                          <i class="bi {{ $group['total'] < 10 ? 'bi-exclamation-circle' : ($group['total'] < 30 ? 'bi-exclamation-triangle' : 'bi-check-circle') }}"></i>
+                          {{ $group['total'] < 10 ? 'Bajo stock' : ($group['total'] < 30 ? 'Stock medio' : 'Disponible') }}
+                        </td>
+                      </tr>
                       @endforeach
                     </tbody>
                   </table>
@@ -193,29 +179,20 @@
               </tr>
             @empty
               <tr>
-                <td colspan="3" class="text-center text-muted py-4">
-                  No hay bicicletas disponibles.
-                </td>
+                <td colspan="3" class="text-center text-muted py-4">No hay bicicletas disponibles.</td>
               </tr>
             @endforelse
           </tbody>
         </table>
 
         @if(count($bicicletas) > 0)
-          <div class="card-footer d-flex justify-content-between align-items-center">
-            <small>
-              <i class="bi bi-grid-3x3-gap me-1"></i>
-              {{ count($grouped) }} grupos / {{ count($bicicletas) }} bicicletas
-            </small>
-            <small>
-              <i class="bi bi-box-seam me-1"></i>
-              Total: {{ count($bicicletas) }} unidades
-            </small>
-          </div>
+        <div class="card-footer d-flex justify-content-between align-items-center">
+          <small><i class="bi bi-grid-3x3-gap me-1"></i>{{ count($grouped) }} grupos / {{ count($bicicletas) }} bicicletas</small>
+          <small><i class="bi bi-box-seam me-1"></i>Total: {{ count($bicicletas) }} unidades</small>
+        </div>
         @endif
 
       </div>
-
     </div>
   </div>
 </div>
@@ -223,14 +200,13 @@
 <script>
 (function(){
   const searchInput = document.getElementById('searchInput');
-  const rows        = document.querySelectorAll('.group-header');
-  const details     = document.querySelectorAll('.detail-row');
+  const rows = document.querySelectorAll('.group-header');
+  const details = document.querySelectorAll('.detail-row');
 
-  // Toggle detail rows
   rows.forEach((r,i) => {
     r.addEventListener('click', () => {
       const detail = details[i];
-      const icon   = r.querySelector('.collapse-icon');
+      const icon = r.querySelector('.collapse-icon');
       if (detail.style.display === 'none') {
         detail.style.display = '';
         icon.classList.add('opened');
@@ -241,7 +217,6 @@
     });
   });
 
-  // Search filter
   searchInput.addEventListener('input', () => {
     const term = searchInput.value.toLowerCase().trim();
     rows.forEach((r,i) => {

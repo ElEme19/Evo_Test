@@ -32,4 +32,32 @@ class ListaModelosController extends Controller
        return view('Disponibles.listado', compact('bicicletas'));
 
     }
+
+
+
+    public function refacciones()
+{
+    $piezas = DB::table('piezas as p')
+        ->join('modelos as m', 'p.id_modelo', '=', 'm.id_modelo')
+        ->where('p.cantidad', '>', 10)
+        ->select([
+            'p.id_pieza',
+            'p.nombre_pieza',
+            'p.descripcion_general',
+            'p.color',
+            'p.Unidad',
+            'p.cantidad',
+            'p.foto_pieza',
+            'm.nombre_modelo'
+        ])
+        ->orderBy('m.nombre_modelo')
+        ->orderBy('p.color')
+        ->orderBy('p.nombre_pieza')
+        ->get();
+
+    return view('Disponibles.listadoP', compact('piezas'));
+}
+
+
+
 }

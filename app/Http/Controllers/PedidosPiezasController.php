@@ -57,7 +57,7 @@ public function generarPDF($id_pedido)
 
 
     // Guardar pieza en pedido (similar a store de pedidos)
-    public function store(Request $request)
+public function store(Request $request)
 {
     $request->validate([
         'id_pedido' => 'required|string|exists:pedidos,id_pedido',
@@ -69,26 +69,44 @@ public function generarPDF($id_pedido)
         return back()->with('error', 'No se han agregado piezas al pedido.');
     }
 
-    DB::transaction(function () use ($piezas, $request) {
-        foreach ($piezas as $pieza) {
-            do {
-                $id_control = Str::upper(Str::random(10));
-            } while (PedidosPiezas::where('id_control', $id_control)->exists());
+    try {
+        DB::transaction(function () use ($piezas, $request) {
+            foreach ($piezas as $piezaData) {
+                $pieza = Pieza::findOrFail($piezaData['id_pieza']);
+                $cantidadSolicitada = intval($piezaData['cantidad'] ?? 1);
 
-            PedidosPiezas::create([
-                'id_control' => $id_control,
-                'id_pedido' => $request->id_pedido,
-                'id_pieza' => $pieza['id_pieza'],
-                'cantidad' => $pieza['cantidad'] ?? 1,
-            ]);
-        }
-    });
+                // Verificar stock disponible
+                if ($pieza->cantidad < $cantidadSolicitada) {
+                    throw new \Exception("Stock insuficiente para la pieza {$pieza->nombre_pieza} ({$pieza->id_pieza}). Disponibles: {$pieza->cantidad}, solicitados: {$cantidadSolicitada}.");
+                }
 
-    return redirect()
-        ->route('pedidos_piezas.ver')
-        ->with('success', "Piezas agregadas correctamente al pedido {$request->id_pedido}.");
+                // Generar ID único para el control
+                do {
+                    $id_control = strtoupper(Str::random(10));
+                } while (PedidosPiezas::where('id_control', $id_control)->exists());
+
+                // Crear el registro del pedido de pieza
+                PedidosPiezas::create([
+                    'id_control' => $id_control,
+                    'id_pedido' => $request->id_pedido,
+                    'id_pieza' => $pieza->id_pieza,
+                    'cantidad' => $cantidadSolicitada,
+                ]);
+
+                // Descontar del stock
+                $pieza->cantidad -= $cantidadSolicitada;
+                $pieza->save();
+            }
+        });
+
+        return redirect()
+            ->route('pedidos_piezas.ver')
+            ->with('success', "Piezas agregadas correctamente al pedido {$request->id_pedido}.");
+
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error al procesar el pedido: ' . $e->getMessage());
+    }
 }
-
 
 
 

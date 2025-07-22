@@ -21,6 +21,7 @@ class Pieza extends Model
         'nombre_pieza',
         'color',
         'Unidad',
+        'cantidad',
         'descripcion_general',
         'foto_pieza',
         

@@ -39,6 +39,7 @@ class PiezasBController extends Controller
             'color'               => 'nullable|string|max:100',
             'descripcion_general' => 'required|string',
             'Unidad'              => 'required|string|max:10',
+            'cantidad'            => 'required|int|max:10',
             'foto_pieza'          => 'nullable|image|max:2048',
         ]);
 
@@ -73,6 +74,7 @@ class PiezasBController extends Controller
                 'nombre_pieza'        => $request->nombre_pieza,
                 'Unidad'              => $request->Unidad,
                 'color'               => $color,
+                'cantidad'            => $request->cantidad,
                 'descripcion_general' => $request->descripcion_general,
             ]);
 
@@ -100,51 +102,44 @@ class PiezasBController extends Controller
 
     
 
-    public function editar(Pieza $pieza)
-    {
-        $modelos = modelos_bici::all();
-        return view('PiezasB.editar', compact('pieza', 'modelos'));
-    }
+ 
 
     public function update(Request $request, Pieza $pieza)
-    {
-        $request->validate([
-            'id_pieza'             => 'required|string|max:45|unique:piezas,id_pieza,' . $pieza->id_pieza . ',id_pieza',
-            'id_modelo'            => 'required|string|max:65',
-            'nombre_pieza'         => 'required|string|max:255',
-            'color'                => 'nullable|string|max:100',
-            'descripcion_general'  => 'required|string',
-            'foto_pieza'           => 'nullable|image|max:2048',
-        ]);
+{
+    $request->validate([
+        'nombre_pieza'        => 'required|string|max:255',
+        'color'               => 'nullable|string|max:100',
+        'descripcion_general' => 'required|string',
+        'cantidad'            => 'required|integer|min:0',
+        'foto_pieza'          => 'nullable|image|max:2048',
+    ]);
 
-        try {
-            // Actualizar campos
-            $pieza->id_pieza            = $request->id_pieza;
-            $pieza->id_modelo           = $request->id_modelo;
-            $pieza->nombre_pieza        = $request->nombre_pieza;
-            $pieza->color               = $request->filled('color') ? $request->color : 'No aplica';
-            $pieza->descripcion_general = $request->descripcion_general;
+    try {
+        $pieza->nombre_pieza = $request->nombre_pieza;
+        $pieza->color = $request->color ?? 'No aplica';
+        $pieza->descripcion_general = $request->descripcion_general;
+        $pieza->cantidad = $request->cantidad;
 
-            // Reemplazar imagen si se envía nueva
-            if ($request->hasFile('foto_pieza')) {
-                // Eliminar antigua si existe
-                if ($pieza->foto_pieza && Storage::exists($pieza->foto_pieza)) {
-                    Storage::delete($pieza->foto_pieza);
-                }
-                $file = $request->file('foto_pieza');
-                $filename = time() . '_' . Str::slug($request->id_pieza) . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('fotos_piezas', $filename);
-                $pieza->foto_pieza = $path;
+        if ($request->hasFile('foto_pieza')) {
+            if ($pieza->foto_pieza && Storage::exists($pieza->foto_pieza)) {
+                Storage::delete($pieza->foto_pieza);
             }
-
-            $pieza->save();
-
-            return redirect()->route('pieza.crear')
-                             ->with('success', 'Pieza actualizada correctamente!');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error al actualizar la pieza: ' . $e->getMessage());
+            $file = $request->file('foto_pieza');
+            $filename = time() . '_' . Str::slug($pieza->id_pieza) . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('fotos_piezas', $filename);
+            $pieza->foto_pieza = $path;
         }
+
+        $pieza->save();
+
+        return redirect()->route('pieza.ver')
+                         ->with('success', 'Pieza actualizada correctamente!');
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error al actualizar la pieza: ' . $e->getMessage());
     }
+}
+
+
 
     public function mostrarImagen(string $path)
     {

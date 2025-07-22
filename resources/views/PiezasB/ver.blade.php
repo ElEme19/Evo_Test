@@ -20,6 +20,8 @@
 
 </style>
 
+
+
 <div class="container mt-4 px-2 px-md-4">
   <div class="row justify-content-center">
     <div class="col-12 col-xl-10">
@@ -43,18 +45,22 @@
     </div>
   </header>
 
-  @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
-      <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  @endif
-  @if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
-      <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  @endif
+  @if (session('success'))
+        <div class="alert alert-success d-inline-flex align-items-center py-2 px-3 rounded-3 shadow-sm mb-3" role="alert">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          <small class="fw-semibold">{{ session('success') }}</small>
+          <button type="button" class="btn-close ms-2" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      @endif
+
+      @if (session('error'))
+        <div class="alert alert-danger d-inline-flex align-items-center py-2 px-3 rounded-3 shadow-sm mb-3" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          <small class="fw-semibold">{{ session('error') }}</small>
+          <button type="button" class="btn-close ms-2" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      @endif
+ 
 
   <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
     <div class="card-header bg-white py-3 border-bottom">
@@ -74,57 +80,72 @@
               <th class="fw-semibold text-center">Color</th>
               <th class="fw-semibold text-center">Descripción</th>
               <th class="fw-semibold text-center">Unidad</th>
+              <th class="fw-semibold text-center">Cantidad</th>
               <th class="fw-semibold text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            @forelse($piezas as $pieza)
-              <tr>
-                <td class="text-center">
-                  @if($pieza->foto_pieza)
-                      <img src="{{ route('pieza.imagen', ['path' => $pieza->foto_pieza]) }}"
-                          alt="Foto"
-                          class="profile-img rounded"
-                          style="cursor:pointer"
-                          data-bs-toggle="modal"
-                          data-bs-target="#modalImagen"
-                          data-src="{{ route('pieza.imagen', ['path' => $pieza->foto_pieza]) }}"
-                          data-nombre="{{ $pieza->nombre_pieza }}">
+  @forelse($piezas as $pieza)
+    <tr>
+      <td class="text-center">
+        @if($pieza->foto_pieza)
+          <img src="{{ route('pieza.imagen', ['path' => $pieza->foto_pieza]) }}"
+               alt="Foto"
+               class="profile-img rounded"
+               style="cursor:pointer"
+               data-bs-toggle="modal"
+               data-bs-target="#modalImagen"
+               data-src="{{ route('pieza.imagen', ['path' => $pieza->foto_pieza]) }}"
+               data-nombre="{{ $pieza->nombre_pieza }}">
+        @else
+          <div class="profile-img rounded bg-light d-flex align-items-center justify-content-center">
+            <i class="bi bi-image text-muted"></i>
+          </div>
+        @endif
+      </td>
+      <td class="text-center">{{ $pieza->id_pieza }}</td>
+      <td class="text-center">{{ $pieza->modelo->nombre_modelo ?? $pieza->id_modelo }}</td>
+      <td class="text-center">{{ $pieza->nombre_pieza }}</td>
+      <td class="text-center">{{ $pieza->color }}</td>
+      <td class="text-center">{{ Str::limit($pieza->descripcion_general, 40) }}</td>
+      <td class="text-center">{{ $pieza->Unidad }}</td>
+     <td class="text-center
+        @if($pieza->cantidad > 100) text-success fw-bold
+        @elseif($pieza->cantidad > 20) text-warning fw-bold
+        @else text-danger fw-bold
+        @endif
+      ">
+        @if($pieza->cantidad > 100)
+          <i class="bi bi-check-circle-fill me-1"></i>
+        @elseif($pieza->cantidad > 20)
+          <i class="bi bi-exclamation-triangle-fill me-1"></i>
+        @else
+          <i class="bi bi-x-circle-fill me-1"></i>
+        @endif
+        {{ $pieza->cantidad }}
+      </td>
 
-                  @else
-                    <div class="profile-img rounded bg-light d-flex align-items-center justify-content-center">
-                      <i class="bi bi-image text-muted"></i>
-                    </div>
-                  @endif
-                </td>
-                <td class="text-center">{{ $pieza->id_pieza }}</td>
-                <td class="text-center">{{ $pieza->modelo->nombre_modelo ?? $pieza->id_modelo }}</td>
-                <td class="text-center">{{ $pieza->nombre_pieza }}</td>
-                <td class="text-center">{{ $pieza->color }}</td>
-                <td class="text-center">{{ Str::limit($pieza->descripcion_general, 40) }}</td>
-                <td class="text-center">{{ $pieza->Unidad }}</td>
-                <td class="text-center">
-                 <!-- Botón para abrir modal -->
-                  <button type="button"
-                          class="btn btn-outline-primary btn-sm me-1"
-                          data-bs-toggle="modal"
-                          data-bs-target="#modalEditar{{ $pieza->id_pieza }}">
-                    <i class="bi bi-pencil-square"></i>
-                  </button>
 
-                 
-                    
-                </td>
-              </tr>
-            @empty
-              <tr>
-                <td colspan="7" class="text-center py-5 text-muted">
-                  <i class="bi bi-box-seam display-4 mb-3"></i><br>
-                  No hay piezas registradas.
-                </td>
-              </tr>
-            @endforelse
-          </tbody>
+      <td class="text-center">
+        <!-- Botón para abrir modal -->
+        <button type="button"
+                class="btn btn-outline-primary btn-sm me-1"
+                data-bs-toggle="modal"
+                data-bs-target="#modalActualizar{{ $pieza->id_pieza }}">
+          <i class="bi bi-pencil-square"></i>
+        </button>
+      </td>
+    </tr>
+  @empty
+    <tr>
+      <td colspan="9" class="text-center py-5 text-muted">
+        <i class="bi bi-box-seam display-4 mb-3"></i><br>
+        No hay piezas registradas.
+      </td>
+    </tr>
+  @endforelse
+</tbody>
+
         </table>
       </div>
     </div>
@@ -203,6 +224,100 @@
   </div>
 </div>
 
+<!-- Modal para actualizar pieza -->
+@foreach($piezas as $pieza)
+  <div class="modal fade" id="modalActualizar{{ $pieza->id_pieza }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editLabel{{ $pieza->id_pieza }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fs-5" id="editLabel{{ $pieza->id_pieza }}">Editar Pieza: {{ $pieza->nombre_pieza }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form id="updateForm{{ $pieza->id_pieza }}" method="POST" action="{{ route('pieza.update', $pieza->id_pieza) }}" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+
+            <div class="mb-3">
+              <label class="form-label">ID Pieza</label>
+              <p class="form-control-plaintext">{{ $pieza->id_pieza }}</p>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Nombre de la Pieza</label>
+              <input type="text" name="nombre_pieza" class="form-control" value="{{ old('nombre_pieza', $pieza->nombre_pieza) }}" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Descripción</label>
+              <textarea name="descripcion_general" class="form-control" rows="3" required>{{ old('descripcion_general', $pieza->descripcion_general) }}</textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Color</label>
+              <input type="text" name="color" class="form-control" value="{{ old('color', $pieza->color) }}">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Cantidad</label>
+              <input type="number" name="cantidad" class="form-control" value="{{ old('cantidad', $pieza->cantidad) }}" min="0" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Foto Actual</label><br>
+              @if($pieza->foto_pieza)
+                <img src="{{ route('pieza.imagen', ['path' => $pieza->foto_pieza]) }}"
+                     alt="{{ $pieza->nombre_pieza }}"
+                     class="profile-img rounded shadow-sm"
+                     style="cursor:pointer; max-width: 100px;"
+                     data-bs-toggle="modal"
+                     data-bs-target="#modalImagen"
+                     data-src="{{ route('pieza.imagen', ['path' => $pieza->foto_pieza]) }}"
+                     data-nombre="{{ $pieza->nombre_pieza }}">
+              @else
+                <p class="text-muted">Sin imagen</p>
+              @endif
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Nueva Imagen (opcional)</label>
+              <input type="file" name="foto_pieza" class="form-control" accept="image/*">
+              <small class="text-muted">Dejar vacío para mantener la imagen actual.</small>
+            </div>
+
+            <!-- Botón para abrir modal de confirmación -->
+            <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#confirmModal{{ $pieza->id_pieza }}">
+              Actualizar
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación -->
+  <div class="modal fade" id="confirmModal{{ $pieza->id_pieza }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmLabel{{ $pieza->id_pieza }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmLabel{{ $pieza->id_pieza }}">¿Confirmar actualización?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          Esta acción actualizará los datos de la pieza <strong>{{ $pieza->nombre_pieza }}</strong>. ¿Deseas continuar?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalActualizar{{ $pieza->id_pieza }}">
+            Volver
+          </button>
+          <button type="button" class="btn btn-success" onclick="document.getElementById('updateForm{{ $pieza->id_pieza }}').submit()">
+            Sí, actualizar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+@endforeach
 
 
 

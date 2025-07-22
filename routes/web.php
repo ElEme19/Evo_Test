@@ -22,6 +22,7 @@ use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\ListaModelosController;
 use App\Http\Controllers\PiezasBController;
 use App\Http\Controllers\PedidosPiezasController;
+use App\Http\Controllers\PedidoQRController;
 
 /*
 |--------------------------------------------------------------------------
@@ -163,6 +164,7 @@ Route::post('/pedido/{id}/finalizar',[PedidosController::class, 'finalizar'])->n
 
 
 
+
 //Pedidos Piezas
 Route::get('/PedidosPiezas/ver', [PedidosPiezasController::class, 'ver'])->name('pedidos_piezas.ver');
 Route::get('/PedidosPiezas/crear', [PedidosPiezasController::class, 'crear'])->name('pedidos_piezas.crear');
@@ -179,8 +181,6 @@ Route::delete('/PedidosPiezas/{id}', [PedidosPiezasController::class, 'destroy']
 
 
 
-
-
 //Cotizacion
 
 Route::get('/Cotizacion/crear', [CotizacionController::class, 'index'])->name('cotizacion.create');
@@ -190,9 +190,10 @@ Route::get('/cotizacion/colores/{id_modelo}', [CotizacionController::class, 'col
 Route::post('/cotizacion/pdf', [CotizacionController::class, 'generarPDF'])->name('cotizacion.pdf');
 
 
-//Lista de bicis 
+//Lista de Disponibles
 
 Route::get('/Disponibles/listado', [ListaModelosController::class, 'index'])->name('Listado.modelos');
+Route::get('/Disponibles/listadoRefacciones', [ListaModelosController::class, 'refacciones'])->name('Listado.refacciones');
 
 
 //Piezas
@@ -200,8 +201,7 @@ Route::get('/Disponibles/listado', [ListaModelosController::class, 'index'])->na
 Route::get('pieza', [PiezasBController::class, 'ver'])->name('pieza.ver');
 Route::get('pieza/crear', [PiezasBController::class, 'crear'])->name('pieza.crear');
 Route::post('pieza/store', [PiezasBController::class, 'store'])->name('pieza.store');
-Route::get('pieza/{pieza}/editar', [PiezasBController::class, 'editar'])->name('pieza.editar');
-Route::put('pieza/{pieza}', [PiezasBController::class, 'update'])->name('pieza.update');
+Route::put('/pieza/{pieza}', [PiezasBController::class, 'update'])->name('pieza.update');
 Route::get('pieza/imagen/{path}', [PiezasBController::class, 'mostrarImagen'])->where('path', '.*')->name('pieza.imagen');
 
 

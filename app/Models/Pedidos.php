@@ -23,6 +23,8 @@ protected $casts = [
     'id_sucursal',
     'num_chasis',
     'fecha_envio',
+    'status',
+    'qr_token',
 ];
 
 
