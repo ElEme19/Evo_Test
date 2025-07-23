@@ -161,7 +161,7 @@
                     </li>
                     @endif
 
-                     @if (in_array($tipo, ['0','5']))
+                     @if (in_array($tipo, ['0','9']))
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="bicicletaDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">

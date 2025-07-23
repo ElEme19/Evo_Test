@@ -9,7 +9,7 @@ use App\Http\Controllers\ColorModeloController;
 use App\Http\Controllers\LoteController;
 use App\Http\Controllers\TipoStockController;
 use App\Http\Controllers\BicicletaController;
-use App\Http\Controllers\EnvioController;
+//use App\Http\Controllers\EnvioController;
 use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\MembresiaController;
@@ -22,7 +22,7 @@ use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\ListaModelosController;
 use App\Http\Controllers\PiezasBController;
 use App\Http\Controllers\PedidosPiezasController;
-use App\Http\Controllers\PedidoQRController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -105,8 +105,8 @@ Route::get('/voltaje-por-modelo/{id_modelo}', [VoltajeController::class, 'porMod
 
 // Envios
 
-Route::get('/Envio/crear', [EnvioController::class, 'crear'])->name('Envio.crear');
-Route::post('/Envio/store', [EnvioController::class, 'store'])->name('Envio.store');
+//Route::get('/Envio/crear', [EnvioController::class, 'crear'])->name('Envio.crear');
+//Route::post('/Envio/store', [EnvioController::class, 'store'])->name('Envio.store');
 
 // Sucursal
 
@@ -161,6 +161,8 @@ Route::put('/pedido/{id}/actualizar', [PedidosController::class, 'actualizar'])-
 Route::post('/pedido/{id}/agregar-bici', [PedidosController::class, 'agregarBici'])->name('pedido.bici.agregar');
 Route::put('/pedido/{id}/eliminar-bici/{biciId}', [PedidosController::class, 'eliminarBici'])->name('pedido.bici.eliminar');
 Route::post('/pedido/{id}/finalizar',[PedidosController::class, 'finalizar'])->name('pedido.finalizar');
+Route::get('/pedidos/confirmar/{token}', [PedidosController::class, 'confirmarQR'])->name('pedido.confirmarQR');
+
 
 
 

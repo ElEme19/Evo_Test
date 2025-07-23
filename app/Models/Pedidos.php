@@ -42,6 +42,11 @@ protected $casts = [
 }
 
 
+  public function cliente()
+    {
+        return $this->belongsTo(Cliente::class, 'cliente_id');
+    }
+
 
 public function piezas()
 {

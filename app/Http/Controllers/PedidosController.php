@@ -9,6 +9,7 @@ use App\Models\Bicicleta;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PedidosController extends Controller
 {
@@ -52,20 +53,24 @@ public function store(Request $request)
         return back()->with('error', 'No se han agregado bicicletas al pedido.');
     }
 
-    DB::transaction(function () use ($bicis, $request, &$nuevoId) {
-        // Generar un ID aleatorio único de 8 caracteres
+    DB::transaction(function () use ($bicis, $request, &$nuevoId, &$pedido) {
         do {
-            $nuevoId = Str::upper(Str::random(8));  // p.ej. "A1B2C3D4"
+            $nuevoId = Str::upper(Str::random(8));
         } while (Pedidos::where('id_pedido', $nuevoId)->exists());
 
-        // Crear nuevo pedido
         $pedido = Pedidos::create([
             'id_pedido'   => $nuevoId,
             'id_sucursal' => $request->id_sucursal,
             'fecha_envio' => now(),
+            'status'      => 1,
         ]);
 
-        // Asociar cada bicicleta al nuevo pedido
+        // Generar token único solo si no existe (al crear siempre es null)
+        if (!$pedido->qr_token) {
+            $pedido->qr_token = Str::random(200); // cadena aleatoria 40 caracteres
+            $pedido->save();
+        }
+
         foreach ($bicis as $bici) {
             Bicicleta::where('num_chasis', $bici['num_chasis'])
                      ->update(['id_pedido' => $nuevoId]);
@@ -81,20 +86,62 @@ public function store(Request $request)
 }
 
 
-    // Generar PDF del pedido con sucursal, bicicletas, modelos y colores cargados
-    public function generarPDF($id_pedido)
-    {
-        $pedido = Pedidos::with([
-            'sucursal',
-            'bicicletas.modelo',
-            'bicicletas.color',
-        ])->where('id_pedido', $id_pedido)->firstOrFail();
 
-        $pdf = Pdf::loadView('pedido.pdf', compact('pedido'));
-       return $pdf
-        ->stream("Pedido_{$id_pedido}.pdf")
-        ;
+    // Generar PDF del pedido con sucursal, bicicletas, modelos y colores cargados
+  public function generarPDF($id_pedido)
+{
+    $pedido = Pedidos::with([
+        'sucursal',
+        'cliente',
+        'bicicletas.modelo',
+        'bicicletas.color'
+    ])->where('id_pedido', $id_pedido)->firstOrFail();
+
+    if ($pedido->status == 2) {
+        // Eliminar el token QR (ya no se usará)
+        $pedido->qr_token = 'Ya usado';
+        $pedido->save();
+
+        $sucursal = $pedido->sucursal;
+        $cliente = $pedido->sucursal->cliente;
+
+        // Construir la información que irá en el QR
+        $payload = "SUCURSAL:\n";
+        $payload .= "Nombre: {$sucursal->nombre_sucursal}\n";
+        $payload .= "Ubicación: {$sucursal->localizacion}\n";
+
+        if ($cliente) {
+            $payload .= "Cliente: {$cliente->nombre} {$cliente->apellido}\n";
+            $telefono = preg_replace('/\D/', '', $cliente->telefono); 
+
+            if (!Str::startsWith($telefono, '52')) {
+                $telefono = '52' . ltrim($telefono, '0'); 
+            }
+
+            $whatsappLink = "https://wa.me/{$telefono}";
+
+            $payload .= "WhatsApp: {$whatsappLink}\n";
+
+        } else {
+            $payload .= "Cliente: Sin valor\n";
+            $payload .= "WhatsApp: Sin valor\n";
+        }
+
+        $qr_svg = base64_encode(QrCode::format('svg')->size(200)->generate($payload));
+    } else {
+        if (!$pedido->qr_token) {
+            abort(500, 'Token QR no generado para este pedido.');
+        }
+
+        $qr_url = route('pedido.confirmarQR', ['token' => $pedido->qr_token]);
+        $qr_svg = base64_encode(QrCode::format('svg')->size(200)->generate($qr_url));
     }
+
+    $pdf = Pdf::loadView('pedido.pdf', compact('pedido', 'qr_svg'));
+    return $pdf->stream("Pedido_{$id_pedido}.pdf");
+}
+
+
 
 
 
@@ -179,5 +226,27 @@ public function finalizar($id_pedido)
             ->route('pedido.ver')
             ->with('success', "Pedido {$id_pedido} guardado correctamente. Ahora puedes crear uno nuevo.");
     }
+
+
+
+    public function confirmarQR($token)
+{
+    $pedido = Pedidos::where('qr_token', $token)->first();
+
+    if (!$pedido) {
+        return abort(404, 'Pedido no encontrado');
+    }
+
+    if ($pedido->status == 2) {
+        // Ya usado, no permitir confirmar otra vez
+        return abort(404, 'Este pedido ya fue confirmado y enviado');
+    }
+
+    // Cambiar status a 2 (saliente)
+    $pedido->status = 2;
+    $pedido->save();
+
+    return view('pedido.confirmado', compact('pedido'));
+}
 
 }

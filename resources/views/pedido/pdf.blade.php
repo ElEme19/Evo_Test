@@ -199,7 +199,7 @@
 <table class="table header-table">
     <tr>
         <td class="emision">
-            Recibo de Emicion<br>
+            Recibo de Emisión<br>
         </td>
     </tr> 
 </table>
@@ -237,6 +237,12 @@
     </tr>
 </table>
 
+
+<div style="position: relative; text-align: center; margin: 20px 0;">
+    <img src="data:image/png;base64,{{ $qr_svg }}" 
+         style="width: 120px; height: 120px; margin: 0 auto; display: block; border: 0px solid #ddd;">
+  
+</div>
 
 <div  class="footer" style="display: flex; align-items: center; height: 22px; position: relative;">
         <svg xmlns="http://www.w3.org/2000/svg" 
