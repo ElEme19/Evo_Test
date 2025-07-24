@@ -13,7 +13,7 @@
     <div class="text-center">
         <div class="alert alert-success d-inline-flex align-items-center py-1 px-2 rounded-3 shadow-sm" role="alert">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2" viewBox="0 0 16 16" role="img" aria-label="success:">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.97 11.03a.75.75 0 0 0 1.08-.02l3.99-4.99a.75.75 0 1 0-1.08-1.04L7.5 9.585 5.97 8.06a.75.75 0 0 0-1.08 1.04l2.08 1.93z"/>
             </svg>
             <small class="fw-semibold">{{ session('success') }}</small>
         </div>
@@ -130,8 +130,8 @@ $(document).ready(function () {
     function mostrarAlertaModal(tipo, mensaje) {
         const color    = tipo === 'success' ? 'success' : 'danger';
         const iconPath = tipo === 'success'
-            ? 'M16 8A8 8 0 1 1 0 8a8...'    // path SVG de check
-            : 'M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165...'; // path SVG de error
+            ? 'M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.97 11.03a.75.75 0 0 0 1.08-.02l3.99-4.99a.75.75 0 1 0-1.08-1.04L7.5 9.585 5.97 8.06a.75.75 0 0 0-1.08 1.04l2.08 1.93z'    // path SVG de check
+            : 'M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 11a.5.5 0 0 1-.5-.5V8.707L5.354 6.561a.5.5 0 1 1 .707-.707L8 7.293l1.939-1.939a.5.5 0 1 1 .707.707L8.5 8.707V11.5a.5.5 0 0 1-.5.5z'; // path SVG de error
 
         const html = `
         <div class="text-center">
