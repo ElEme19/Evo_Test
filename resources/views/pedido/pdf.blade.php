@@ -54,7 +54,7 @@
                     <strong>Cliente:</strong><br>{{ $pedido->sucursal->nombre_sucursal }}
                 </td>
                 <td style="width:10%; text-align: center;">
-                    <strong>Distancia:</strong><br>{{ $pedido->sucursal->distancia_km ?? '-1' }} KM
+                    <strong>Distancia:</strong><br>{{ $pedido->sucursal->distancia_km ?? 'Error' }} KM
                 </td>
                 <td style="width:25%; text-align: center;">
                     <strong>Transporte:</strong><br>Evobike

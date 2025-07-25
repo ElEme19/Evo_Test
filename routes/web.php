@@ -190,6 +190,7 @@ Route::get('/cotizacion/voltajes/{id_modelo}', [CotizacionController::class, 'vo
 Route::get('/cotizacion/precio', [CotizacionController::class, 'precioParaCotizacion'])->name('cotizacion.precio');
 Route::get('/cotizacion/colores/{id_modelo}', [CotizacionController::class, 'coloresPorModelo'])->name('cotizacion.colores');
 Route::post('/cotizacion/pdf', [CotizacionController::class, 'generarPDF'])->name('cotizacion.pdf');
+Route::post('/cotizacion/distancia', [CotizacionController::class, 'distancia'])->name('cotizacion.distancia');
 
 
 //Lista de Disponibles
