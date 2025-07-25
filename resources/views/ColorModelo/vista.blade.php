@@ -70,7 +70,7 @@
                         <table class="table table-hover mb-0" id="tablaColores" data-search-route="{{ route('colores.search') }}">
                             <thead class="table-light">
                                 <tr>
-                                    <th class="text-center">ID Modelo</th>
+                                    <th class="text-center">Modelo</th>
                                     <th class="text-center">Color</th>
                                     <th class="text-center">Acciones</th>
                                 </tr>
@@ -78,7 +78,7 @@
                             <tbody id="tableBody">
                                 @forelse ($colores as $color)
                                     <tr>
-                                        <td class="text-center fw-semibold">{{ $color->id_modelo ?? 'N/A' }}</td>
+                                        <td class="text-center fw-semibold">{{ $color->modelo->nombre_modelo ?? 'N/A' }}</td>
                                         <td class="text-center fw-semibold">{{ $color->nombre_color }}</td>
                                         <td class="text-center">
                                              <button 
