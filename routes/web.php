@@ -115,8 +115,8 @@ Route::post('/Precio', [PrecioController::class, 'store'])->name('Precio.store')
 
 // NO TOCAR!!!!!!
 
-Route::get('/piezas/registrarse', [RegistroController::class, 'registrarse'])->name('registrarse');
-Route::post('/piezas/registrar', [RegistroController::class, 'registrar'])->name('registrar');
+Route::get('/registrarse', [RegistroController::class, 'registrarse'])->name('registrarse');
+Route::post('/registrar', [RegistroController::class, 'registrar'])->name('registrar');
 
 Route::get('/Mexico/inicio', [PiezasController::class ,'inicio'])->name ('piezas.inicio');
 
