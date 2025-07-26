@@ -34,88 +34,13 @@ Route::get('/', function () {
 
 Route::middleware(['auth:usuarios','check.user.type:0'])->group(function(){  // ==> Tener acceso dependiendo del usuario a las vistas (/piezas/crear)
 
-// Laboratorio
-Route::get('/piezas/crear', [PiezasController::class, 'crear']) -> name('piezas.crear');
-Route::post('/piezas/store', [PiezasController::class, 'store']) -> name('piezas.store');
-Route::get('/piezas/ver', [PiezasController::class, 'ver']) -> name('piezas.ver');
-Route::put('/piezas/{piezas}', [PiezasController::class, 'update']) -> name('piezas.update');
-Route::get('/hola', function () {  return view('Mexico.prueba');});
-
-
-// Color-Modelo
-
-Route::get('/ColorModelo/crear', [ColorModeloController::class, 'crear']) -> name('Color.crear');
-Route::post('/ColorModelo/store', [ColorModeloController::class, 'store']) -> name('Color.store');
-Route::get('/ColorModelo/vista', [ColorModeloController::class, 'ver']) -> name('Color.vista');
-Route::put('/ColorModelo/{color}', [ColorModeloController::class, 'update'])->name('Color.update');
-Route::get('/colores/search', [ColorModeloController::class, 'search'])->name('colores.search');
-
-
-// Lote
-Route::get('/Lote/crear', [LoteController::class, 'crear'])->name('Lote.crear');
-Route::post('/Lote/store', [LoteController::class, 'store'])->name('Lote.store');
-Route::get('/Lote/vista', [LoteController::class, 'ver'])->name('Lote.vista');
-Route::put('/Lote/{lote}', [LoteController::class, 'update'])->name('Lote.update');
-
-
-// Stock
-Route::get('/Stock/crear', [TipoStockController::class, 'crear'])->name('Stock.crear');
-Route::post('/Stock/store', [TipoStockController::class, 'store'])->name('Stock.store');
-Route::get('/Stock/vista', [TipoStockController::class, 'ver'])->name('Stock.ver');
-Route::put('/Stock/{tipostock}', [TipoStockController::class, 'update'])->name('Stock.update');
-
-// Bicicleta
-
-Route::get('/Bicicleta/crear', [BicicletaController::class, 'crear'])->name('Bicicleta.crear');
-Route::post('/Bicicleta/store', [BicicletaController::class, 'store'])->name('Bicicleta.store');
-Route::get('/Bicicleta/vista', [BicicletaController::class, 'ver'])->name('Bicicleta.ver');
-/* Route::put('/Bicicleta/{bicicleta}', [BicicletaController::class, 'update'])->name('Bicicleta.update'); */
-Route::get('/colores-por-modelo/{id_modelo}', [BicicletaController::class, 'coloresPorModelo']);
-
-
-// Busquedas
-
-Route::get('/Busquedas/busChasis', [BicicletaController::class, 'buscarC'])->name('Busquedas.busChasis');
-Route::get('/Busquedas/busMotor', [BicicletaController::class, 'buscarMotor'])->name('Busquedas.busMotor');
-Route::get('/Busquedas/busModelo', [BicicletaController::class, 'buscarModelo'])->name('Busquedas.busModelo');
-Route::get('/Busquedas/busStock', [BicicletaController::class, 'buscarPorStock']) ->name('Busquedas.busStock');
-
-// Envios
-
-Route::get('/Envio/crear', [EnvioController::class, 'crear'])->name('Envio.crear');
-Route::post('/Envio/store', [EnvioController::class, 'store'])->name('Envio.store');
-
-// Sucursal
-
-Route::get('/Sucursal/crear', [SucursalController::class, 'crear'])->name('Sucursal.crear');
-Route::post('/Sucursal/store', [SucursalController::class, 'store'])->name('Sucursal.store');
-Route::get('/Sucursal/vista', [SucursalController::class, 'ver'])->name('Sucursal.ver');
-Route::get('/sucursal/imagen/{path}', [SucursalController::class, 'mostrarImagen'])->where('path', '.*')->name('sucursal.imagen');
-
-//Membresia
-Route::get('/Membresia/index', [MembresiaController::class, 'index'])->name('Membresia.index');
-Route::get('/Membresia', [MembresiaController::class, 'create'])->name('Membresia.create');
-Route::put('/Membresia/{id}', [MembresiaController::class, 'actualizar'])->name('Membresia.actualizar');
-Route::post('/Membresia', [MembresiaController::class, 'store'])->name('Membresia.store');
-
-//Clientes
-Route::get('/Clientes/index', [ClientesController::class, 'index'])->name('Clientes.index');
-Route::get('/Clientes', [ClientesController::class, 'create'])->name('Clientes.create');
-Route::put('/Clientes/{id}', [ClientesController::class, 'update'])->name('Clientes.update');
-Route::post('/Clientes', [ClientesController::class, 'store'])->name('Clientes.store');
-
-//Precios
-Route::get('/Precio/index', [PrecioController::class, 'index'])->name('Precio.index');
-Route::get('/Precio', [PrecioController::class, 'create'])->name('Precio.create');
-Route::put('/Precio/{id}', [PrecioController::class, 'update'])->name('Precio.update');
-Route::post('/Precio', [PrecioController::class, 'store'])->name('Precio.store');
 
 });
 
 
 // NO TOCAR!!!!!!
 
-Route::get('/registrarse', [RegistroController::class, 'registrarse'])->name('registrarse');
+Route::get('registrarse', [RegistroController::class, 'registrarse'])->name('registrarse');
 Route::post('/registrar', [RegistroController::class, 'registrar'])->name('registrar');
 
 Route::get('/Mexico/inicio', [PiezasController::class ,'inicio'])->name ('piezas.inicio');

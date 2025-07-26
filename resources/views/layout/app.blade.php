@@ -1,130 +1,85 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Evobike</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="{{ asset('images/favico.ico') }}">
+@extends('layout.app2')
+@section('fondo')
 
-    <style>
-        .navbar-nav .dropdown:hover .dropdown-menu {
-            display: block;
-            margin-top: 0;
-        }
-        .dropdown-toggle::after {
-            display: none;
-        }
-        .dropdown-item:active {
-            background-color: rgb(185, 180, 180) !important;
-            color: white !important;
-        }
-        .dropdown-item:hover {
-            background-color: rgba(185, 180, 180);
-            color: black !important;
-        }
-        .dropdown-item {
-            color: black !important;
-        }
-    </style>
-</head>
+<div class="text-center mb-4">
+    <img src="{{ asset('images/logo.webp') }}" alt="EvoBike Logo" class="auth-logo">
+</div>
 
-<body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/Mexico/inicio">
-            <img src="{{ asset('images/logos.png') }}" alt="Evobike" height="40">
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav" aria-controls="navbarNav"
-                aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                @php
-                    $tipo = Auth::user()->user_tipo;
-                @endphp
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/Mexico/inicio">Home</a>
-                </li>
-
-                @if (in_array($tipo, ['0', '1', '2', '3', '5']))
-                   
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="/Bicicleta/vista" id="crearDropdown" role="button"
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            Bicicleta
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="crearDropdown">
-                            <li><a class="dropdown-item" href="/Bicicleta/vista">Nuevo</a></li>
-                            <li><a class="dropdown-item" href="/ColorModelo/vista">Colores</a></li>
-                            <li><a class="dropdown-item" href="/Lote/vista">Lote</a></li>
-                            <li><a class="dropdown-item" href="/Stock/vista">Stock</a></li>
-                        </ul>
-                    </li>
-                @endif
-
-                @if (in_array($tipo, ['0', '2','3', '4']))
-                    <li class="nav-item"><a class="nav-link" href="/Envio/crear">Envios</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Sucursal/vista">Sucursales</a></li>
-                @endif
-
-                @if (in_array($tipo, ['0', '2']))
-                    <li class="nav-item"><a class="nav-link" href="#">Estadísticas</a></li>
-                @endif
-
-                @if ($tipo == '0')
-                    <li class="nav-item"><a class="nav-link" href="/Precio/index">Precio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Clientes/index">Clientes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Membresia">Memebresia</a></li>
-                @endif
-
-                @if (!in_array($tipo, ['0', '1', '2', '3', '4', '5']))
-                    <li class="nav-item"><a class="nav-link" href="/piezas/registrarse">Registro</a></li>
-                @endif
-
-                <li class="nav-item">
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button class="nav-link active" type="submit" style="background: none; border: none;">
-                            <img src="{{ asset('images/power.svg') }}" alt="Cerrar sesión" style="width: 20px; height: 20px; margin-right: 5px;">
-                        </button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-@php
-    $actual = url()->current();
-    $prev = url()->previous();
-    $fallback = session('last_useful_url', route('piezas.inicio'));
-    $volverA = $prev !== $actual ? $prev : $fallback;
-@endphp
-
-<a href="{{ $volverA }}" class="btn btn-outline-success p-1 ms-3 mt-2">
-    <img src="{{ asset('images/arrow-left-square-fill.svg') }}" alt="Volver" style="width: 30px; height: 30px;">
-</a>
-
-<!-- Título -->
-<h1 class="text-center my-3">@yield('title')</h1>
-
-<!-- Contenido -->
-@if (View::hasSection('conten-wrapper'))
-    @yield('conten-wrapper')
-@else
-    <div class="container d-flex justify-content-center mt-5">
-        <div class="card shadow p-4 w-100" style="max-width: 800px;">
-            @yield('conten')
-        </div>
-    </div>
+@if ($errors->any())
+<div class="alert alert-danger alert-dismissible fade show">
+    <ul class="mb-0 ps-3">
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 @endif
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+<h2 class="auth-title text-center">Registro de cuenta</h2>
+<p class="auth-subtitle text-center">Completa tus datos para crear una cuenta</p>
+
+<form method="POST" action="{{ route('registrar') }}">
+    @csrf
+    
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input type="text" name="nombre_user" id="nombre_user" class="form-control" 
+                       placeholder="Nombre" value="{{ old('nombre_user') }}" required>
+                <label for="nombre_user">Nombre</label>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input type="text" name="apellido_usuario" id="apellido_usuario" class="form-control" 
+                       placeholder="Apellido" value="{{ old('apellido_usuario') }}" required>
+                <label for="apellido_usuario">Apellido</label>
+            </div>
+        </div>
+        
+        <div class="col-12">
+            <div class="form-floating">
+                <input type="email" name="correo" id="correo" class="form-control" 
+                       placeholder="Correo electrónico" value="{{ old('correo') }}" required>
+                <label for="correo">Correo electrónico</label>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input type="password" name="user_pass" id="user_pass" class="form-control" 
+                       placeholder="Contraseña" required>
+                <label for="user_pass">Contraseña</label>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="form-floating">
+                <input type="password" name="confirm_password" id="confirm_password" class="form-control" 
+                       placeholder="Confirmar contraseña" required>
+                <label for="confirm_password">Confirmar contraseña</label>
+            </div>
+        </div>
+        
+        <div class="col-12 mt-3">
+            <button type="submit" class="btn btn-primary w-100 py-3">
+                <i class="fas fa-user-plus me-2"></i> Registrar cuenta
+            </button>
+        </div>
+        
+        <div class="col-12 auth-footer">
+            ¿Ya tienes cuenta? <a href="{{ route('login') }}" class="auth-link">Inicia sesión</a>
+        </div>
+    </div>
+</form>
+
+@endsection
