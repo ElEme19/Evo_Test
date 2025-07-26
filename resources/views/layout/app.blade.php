@@ -1,85 +1,97 @@
-@extends('layout.app2')
-@section('fondo')
-
-<div class="text-center mb-4">
-    <img src="{{ asset('images/logo.webp') }}" alt="EvoBike Logo" class="auth-logo">
-</div>
-
-@if ($errors->any())
-<div class="alert alert-danger alert-dismissible fade show">
-    <ul class="mb-0 ps-3">
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-@endif
-
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show">
-    {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-@endif
-
-<h2 class="auth-title text-center">Registro de cuenta</h2>
-<p class="auth-subtitle text-center">Completa tus datos para crear una cuenta</p>
-
-<form method="POST" action="{{ route('registrar') }}">
-    @csrf
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CloudLabs</title>
+   <link rel="icon" type="image/png" href="{{ asset('images/favico.ico') }}?v=3">
     
-    <div class="row g-3">
-        <div class="col-md-6">
-            <div class="form-floating">
-                <input type="text" name="nombre_user" id="nombre_user" class="form-control" 
-                       placeholder="Nombre" value="{{ old('nombre_user') }}" required>
-                <label for="nombre_user">Nombre</label>
-            </div>
-        </div>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #4DB53F;
+            --dark-bg: #0D1117;
+            --card-radius: 1.25rem;
+            --transition-speed: 0.3s;
+        }
         
-        <div class="col-md-6">
-            <div class="form-floating">
-                <input type="text" name="apellido_usuario" id="apellido_usuario" class="form-control" 
-                       placeholder="Apellido" value="{{ old('apellido_usuario') }}" required>
-                <label for="apellido_usuario">Apellido</label>
-            </div>
-        </div>
+        body {
+            background-color: var(--dark-bg);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
         
-        <div class="col-12">
-            <div class="form-floating">
-                <input type="email" name="correo" id="correo" class="form-control" 
-                       placeholder="Correo electrónico" value="{{ old('correo') }}" required>
-                <label for="correo">Correo electrónico</label>
-            </div>
-        </div>
+        .login-card {
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transition: transform var(--transition-speed) ease;
+        }
         
-        <div class="col-md-6">
-            <div class="form-floating">
-                <input type="password" name="user_pass" id="user_pass" class="form-control" 
-                       placeholder="Contraseña" required>
-                <label for="user_pass">Contraseña</label>
-            </div>
-        </div>
+        .login-card:hover {
+            transform: translateY(-5px);
+        }
         
-        <div class="col-md-6">
-            <div class="form-floating">
-                <input type="password" name="confirm_password" id="confirm_password" class="form-control" 
-                       placeholder="Confirmar contraseña" required>
-                <label for="confirm_password">Confirmar contraseña</label>
-            </div>
-        </div>
+        .login-image {
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--card-radius) 0 0 var(--card-radius);
+        }
         
-        <div class="col-12 mt-3">
-            <button type="submit" class="btn btn-primary w-100 py-3">
-                <i class="fas fa-user-plus me-2"></i> Registrar cuenta
-            </button>
-        </div>
+        .login-content {
+            padding: 3rem;
+        }
         
-        <div class="col-12 auth-footer">
-            ¿Ya tienes cuenta? <a href="{{ route('login') }}" class="auth-link">Inicia sesión</a>
-        </div>
-    </div>
-</form>
+        @media (max-width: 768px) {
+            .login-image {
+                border-radius: var(--card-radius) var(--card-radius) 0 0;
+                height: 200px;
+            }
+            
+            .login-content {
+                padding: 2rem;
+            }
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(77, 181, 63, 0.25);
+        }
+    </style>
+</head>
 
-@endsection
+<body>
+    <section class="vh-100 d-flex align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-10">
+                    <div class="login-card card overflow-hidden">
+                        <div class="row g-0">
+                            <!-- Imagen de fondo -->
+                            <div class="col-lg-5 d-none d-lg-flex">
+                                <img src="{{ asset('images/urban.png') }}" 
+                                     alt="Login visual" 
+                                     class="login-image img-fluid">
+                            </div>
+                            
+                            <!-- Contenido del formulario -->
+                            <div class="col-lg-7 d-flex align-items-center">
+                                <div class="login-content card-body p-lg-5">
+                                    @yield('fondo')
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

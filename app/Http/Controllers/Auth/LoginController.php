@@ -19,12 +19,12 @@ class LoginController extends Controller
     {
         // Validación básica
         $request->validate([
-            'user_name' => 'required|string',
+            'correo' => 'required|string',
             'user_pass' => 'required|string',
         ]);
 
-        $credenciales = $request->only('user_name', 'user_pass');
-        $usuario = usuarios::where('user_name', $credenciales['user_name'])->first();
+        $credenciales = $request->only('correo', 'user_pass');
+        $usuario = usuarios::where('correo', $credenciales['correo'])->first();
 
         if ($usuario && Hash::check($credenciales['user_pass'], $usuario->user_pass)) {
             Auth::guard('usuarios')->login($usuario);
@@ -32,7 +32,7 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'user_name' => 'Credenciales erróneas.',
+            'correo' => 'Credenciales erróneas.',
         ]);
     }
 

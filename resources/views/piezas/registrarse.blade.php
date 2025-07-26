@@ -1,83 +1,63 @@
-@extends('layout.app')
+@extends('layout.app2')
 @section('fondo')
 
-<div class="register-form-container">
-    <form method="POST" action="{{ route('registrar') }}" class="register-form">
-        @csrf
-        
-        <div class="text-center mb-4">
-            <img src="{{ asset('images/logo.webp') }}" alt="EvoBike Logo" class="register-logo">
-        </div>
-        
-        @if ($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show">
-            <ul class="mb-0 ps-3">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        @endif
+<div class="w-100">
+    <div class="text-center mb-4">
+        <img src="{{ asset('images/logo.webp') }}" alt="EvoBike Logo" class="register-logo mb-3" style="height: 60px;">
+        <h3 class="fw-bold mb-1">Registro de cuenta</h3>
+        <p class="text-muted">Completa tus datos para crear una cuenta</p>
+    </div>
 
-        @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        @endif
-        
-        <h2 class="text-center mb-1 fw-bold">Registro de cuenta</h2>
-        <p class="text-center text-muted mb-4">Completa tus datos para crear una cuenta</p>
-        
-        <div class="row g-3">
+    @if ($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show">
+        <ul class="mb-0 ps-3">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    <form method="POST" action="{{ route('registrar') }}">
+        @csrf
+
+        <div class="row g-3 mb-3">
             <div class="col-md-6">
-                <div class="form-floating">
-                    <input type="text" name="nombre_user" id="nombre_user" class="form-control" placeholder="Nombre" value="{{ old('nombre_user') }}" required>
-                    <label for="nombre_user">Nombre</label>
-                </div>
+                <input type="text" name="nombre_user" class="form-control" placeholder="Nombre" value="{{ old('nombre_user') }}" required>
             </div>
-            
             <div class="col-md-6">
-                <div class="form-floating">
-                    <input type="text" name="apellido_usuario" id="apellido_usuario" class="form-control" placeholder="Apellido" value="{{ old('apellido_usuario') }}" required>
-                    <label for="apellido_usuario">Apellido</label>
-                </div>
+                <input type="text" name="apellido_usuario" class="form-control" placeholder="Apellido" value="{{ old('apellido_usuario') }}" required>
             </div>
-            
             <div class="col-12">
-                <div class="form-floating">
-                    <input type="email" name="correo" id="correo" class="form-control" placeholder="Correo electrónico" value="{{ old('correo') }}" required>
-                    <label for="correo">Correo electrónico</label>
-                </div>
+                <input type="email" name="correo" class="form-control" placeholder="Correo electrónico" value="{{ old('correo') }}" required>
             </div>
-            
             <div class="col-md-6">
-                <div class="form-floating">
-                    <input type="password" name="user_pass" id="user_pass" class="form-control" placeholder="Contraseña" required>
-                    <label for="user_pass">Contraseña</label>
-                </div>
+                <input type="password" name="user_pass" class="form-control" placeholder="Contraseña" required>
             </div>
-            
             <div class="col-md-6">
-                <div class="form-floating">
-                    <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Confirmar contraseña" required>
-                    <label for="confirm_password">Confirmar contraseña</label>
-                </div>
+                <input type="password" name="user_pass_confirmation" class="form-control" placeholder="Confirmar contraseña" required>
             </div>
-            
-            <div class="col-12 mt-2">
-                <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-bold">
-                    Registrar cuenta
-                </button>
-            </div>
-            
-            <div class="col-12 text-center mt-3">
-                <p class="text-muted mb-0">¿Ya tienes cuenta? <a href="{{ route('login') }}" class="text-decoration-none fw-semibold">Inicia sesión</a></p>
-            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100 fw-semibold py-2">
+            Registrar cuenta
+        </button>
+
+        <div class="text-center mt-3">
+            <p class="text-muted">¿Ya tienes cuenta? <a href="{{ route('login') }}" class="text-decoration-none fw-bold">Inicia sesión</a></p>
         </div>
     </form>
 </div>
+
+
 
 <style>
     .register-form-container {
@@ -100,15 +80,26 @@
     }
     
     .form-control {
-        height: calc(3.5rem + 2px);
-        border-radius: 0.5rem;
-        border: 1px solid #ced4da;
-    }
-    
-    .form-control:focus {
-        border-color: #4DB53F;
-        box-shadow: 0 0 0 0.25rem rgba(77, 181, 63, 0.25);
-    }
+    height: 3.2rem;
+    font-size: 0.95rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ced4da;
+}
+
+.form-control:focus {
+    border-color: #4DB53F;
+    box-shadow: 0 0 0 0.25rem rgba(77, 181, 63, 0.25);
+}
+
+.btn-success {
+    background-color: #4DB53F;
+    border-color: #4DB53F;
+}
+
+.btn-success:hover {
+    background-color: #3a9a2d;
+    border-color: #3a9a2d;
+}
     
     .btn-primary {
         background-color: #4DB53F;

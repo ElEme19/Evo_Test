@@ -24,9 +24,10 @@ class RegistroController extends Controller
     public function registrar(Request $request){
 
         $validarDatos = FacadesValidator::make($request->all(),[
-            'user_name' => 'required|unique:usuarios,user_name',
-            'user_pass' => 'required|min:7',
-            'user_tipo' => 'required'
+            'correo' => 'required|email|unique:usuarios,correo',
+            'user_pass' => 'required|min:7|confirmed',
+            'nombre_user' => 'required',
+            'apellido_usuario' => 'required'
         ]);
 
         if ($validarDatos->fails()) {
@@ -34,12 +35,13 @@ class RegistroController extends Controller
         }
 
         $user = new usuarios();
-        $user->user_name = $request->user_name;
+        $user->correo = $request->correo;
         $user->user_pass = Hash::make($request->user_pass);
-        $user->user_tipo = $request->user_tipo;
+        $user->nombre_user = $request->nombre_user;
+        $user->apellido_usuario = $request->apellido_usuario;
         $user -> save();
 
-        return redirect()->back()->with('success', 'Usuario Creado');
+        return redirect()->back()->with('success', 'Bienvenido Evobiker');
 
     }
 }

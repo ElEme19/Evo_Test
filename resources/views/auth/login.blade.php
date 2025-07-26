@@ -1,44 +1,51 @@
 @extends('layout.app2')
 @section('fondo')
 
-<div class="login-container">
-    <form method="POST" action="{{route('login')}}" class="login-form">
+<div class="w-100">
+    <div class="text-center mb-4">
+        <img src="{{ asset('images/logo.webp') }}" alt="Logo" style="height: 60px;" class="mb-3">
+        <h3 class="fw-bold mb-1">Inicio de sesión</h3>
+        <p class="text-muted">Ingresa tus credenciales para acceder</p>
+    </div>
+
+    @if ($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show">
+        <ul class="mb-0 ps-3">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    <form method="POST" action="{{ route('login') }}">
         @csrf
-        
-        <div class="logo-container">
-            <img src="images/logo.webp" alt="Logo" class="login-logo">
+
+        <div class="mb-3">
+            <label for="correo" class="form-label">Correo electrónico</label>
+            <input type="text" name="correo" id="correo" class="form-control" placeholder="user@evobike.com" required>
         </div>
-        
-        @if ($errors->any())
-        <div class="alert alert-danger error-alert">
-            <ul class="error-list">
-                @foreach ($errors->all() as $error)
-                    <li>{{$error}}</li>
-                @endforeach
-            </ul>
+
+        <div class="mb-4">
+            <label for="user_pass" class="form-label">Contraseña</label>
+            <input type="password" name="user_pass" id="user_pass" class="form-control" placeholder="*********" required>
         </div>
-        @endif
-        
-        <h2 class="login-title">Inicio de sesión</h2>
-        <p class="login-subtitle">Ingresa tus credenciales para acceder</p>
-        
-        <div class="form-group">
-            <label for="form2Example17" class="form-label">Correo electrónico</label>
-            <input type="text" name="user_name" id="form2Example17" class="form-control" placeholder="user@evobike.com" />
-        </div>
-        
-        <div class="form-group">
-            <label for="form2Example27" class="form-label">Contraseña</label>
-            <input type="password" name="user_pass" id="form2Example27" class="form-control" placeholder="*********" />
-        </div>
-        
-        <div class="form-actions">
-            <button type="submit" class="btn login-btn">
-                Entrar
-            </button>
+
+        <button type="submit" class="btn btn-success w-100 fw-semibold py-2">
+            Entrar
+        </button>
+
+        <div class="text-center mt-3">
+            <p class="text-muted mb-0">¿Aún no tienes cuenta? 
+                <a href="{{ route('registrarse') }}" class="text-decoration-none fw-bold">Registro</a>
+            </p>
         </div>
     </form>
 </div>
+
+
+
 
 <style>
     .login-container {
@@ -79,18 +86,27 @@
     }
     
     .form-control {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 1px solid #ced4da;
-        border-radius: 0.375rem;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
-    
-    .form-control:focus {
-        border-color: #4DB53F;
-        outline: 0;
-        box-shadow: 0 0 0 0.25rem rgba(77, 181, 63, 0.25);
-    }
+    height: 3.2rem;
+    font-size: 0.95rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ced4da;
+}
+
+.form-control:focus {
+    border-color: #4DB53F;
+    box-shadow: 0 0 0 0.25rem rgba(77, 181, 63, 0.25);
+}
+
+.btn-success {
+    background-color: #4DB53F;
+    border-color: #4DB53F;
+}
+
+.btn-success:hover {
+    background-color: #3a9a2d;
+    border-color: #3a9a2d;
+}
+
     
     .login-btn {
         width: 100%;
