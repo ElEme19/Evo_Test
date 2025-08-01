@@ -13,22 +13,22 @@ class Pieza extends Model
     protected $primaryKey = 'id_pieza';
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
 
     protected $fillable = [
         'id_pieza',
         'id_modelo',
-        'id_colorM',
-        'foto_pieza',
+        'nombre_pieza',
+        'color',
+        'Unidad',
+        'cantidad',
         'descripcion_general',
+        'foto_pieza',
+        
     ];
 
     public function modelo()
     {
         return $this->belongsTo(modelos_bici::class, 'id_modelo', 'id_modelo');
-    }
-
-    public function colorModelo()
-    {
-        return $this->belongsTo(ColorModelo::class, 'id_colorM', 'id_colorM');
     }
 }

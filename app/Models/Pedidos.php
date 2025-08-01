@@ -23,6 +23,8 @@ protected $casts = [
     'id_sucursal',
     'num_chasis',
     'fecha_envio',
+    'status',
+    'qr_token',
 ];
 
 
@@ -37,6 +39,18 @@ protected $casts = [
     public function bicicletas()
 {
     return $this->hasMany(Bicicleta::class, 'id_pedido', 'id_pedido');
+}
+
+
+  public function cliente()
+    {
+        return $this->belongsTo(Cliente::class, 'cliente_id');
+    }
+
+
+public function piezas()
+{
+    return $this->hasMany(PedidosPiezas::class, 'id_pedido', 'id_pedido');
 }
 
 }

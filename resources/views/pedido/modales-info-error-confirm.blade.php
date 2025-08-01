@@ -8,7 +8,7 @@
       </div>
       <div class="modal-body" id="confirmModalBody"></div>
       <div class="modal-footer bg-light">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancelar</button>
         <button type="button" class="btn btn-outline-success" id="confirmAddBtn">Confirmar</button>
       </div>
     </div>

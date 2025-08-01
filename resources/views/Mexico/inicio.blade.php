@@ -72,10 +72,10 @@
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1 me-3">
                                         <div class="progress" style="height: 12px;">
-                                            <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: 48%"></div>
+                                            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 58%"></div>
                                         </div>
                                     </div>
-                                    <span class="fw-bold text-dark">48% completado</span>
+                                    <span class="fw-bold text-dark">58% completado</span>
                                 </div>
                             </div>
                             <div class="col-md-4 text-center d-none d-md-block">

@@ -186,13 +186,13 @@
     <strong>NOTA:</strong> El cliente se compromete a recolectar y liquidar los vehículos en un máximo de 30 días a partir de la fecha de cotización. Esta cotización es válida por 7 días naturales.
   </div>
 
-  <!-- FIRMA -->
-  <div style="text-align: center; margin-top: 80px;">
-    <div class="signature-line"></div>
-    <div style="margin-top: 5px;">Firma del Cliente</div>
-  </div>
+ 
+<div style="text-align:center; margin: 70px 0;">
+    <img src="data:image/svg+xml;base64,{{ $qr_base64 }}" alt="QR de Cotización" style="width: 150px; height: 150px;">
+</div>
 
-  <div class="footer" style="display: flex; align-items: center; height: 22px; position: relative;">
+
+  <div class="footer" style="display: flex; align-items: center; height: 50px; position: relative;">
             <svg xmlns="http://www.w3.org/2000/svg" 
                  width="14" 
                  height="14" 

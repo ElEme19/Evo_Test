@@ -12,9 +12,6 @@ use App\Models\ColorModelo;
 use App\Models\Lote;
 use App\Models\TipoStock;
 use App\Models\VoltajeModelo;   
-use Mike42\Escpos\PrintConnectors\DummyPrintConnector;
-use Mike42\Escpos\Printer;
-
 
 
 

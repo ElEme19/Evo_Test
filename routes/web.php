@@ -3,14 +3,13 @@
 use App\Http\Controllers\ModelosBController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PiezasController;
 use App\Http\Controllers\ColorModeloController;
-use App\Http\Controllers\RegistroController;
+//use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\LoteController;
 use App\Http\Controllers\TipoStockController;
 use App\Http\Controllers\BicicletaController;
-use App\Http\Controllers\EnvioController;
+//use App\Http\Controllers\EnvioController;
 use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\MembresiaController;
@@ -21,6 +20,10 @@ use App\Http\Controllers\AreaController;
 use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\ListaModelosController;
+use App\Http\Controllers\PiezasBController;
+use App\Http\Controllers\PedidosPiezasController;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routess
@@ -40,10 +43,10 @@ Route::get('/',[PiezasController::class ,'inicio'])->name ('piezas.inicio');
 Route::middleware(['auth:usuarios','check.user.type:0'])->group(function(){  // ==> Tener acceso dependiendo del usuario a las vistas (/piezas/crear)
 
 // Laboratorio
-Route::get('/piezas/crear', [PiezasController::class, 'crear']) -> name('piezas.crear');
-Route::post('/piezas/store', [PiezasController::class, 'store']) -> name('piezas.store');
-Route::get('/piezas/ver', [PiezasController::class, 'ver']) -> name('piezas.ver');
-Route::put('/piezas/{piezas}', [PiezasController::class, 'update']) -> name('piezas.update');
+//Route::get('/piezas/crear', [PiezasController::class, 'crear']) -> name('piezas.crear');
+//Route::post('/piezas/store', [PiezasController::class, 'store']) -> name('piezas.store');
+//Route::get('/piezas/ver', [PiezasController::class, 'ver']) -> name('piezas.ver');
+//Route::put('/piezas/{piezas}', [PiezasController::class, 'update']) -> name('piezas.update');
 Route::get('/hola', function () {  return view('Mexico.prueba');});
 
 
@@ -102,8 +105,8 @@ Route::get('/voltaje-por-modelo/{id_modelo}', [VoltajeController::class, 'porMod
 
 // Envios
 
-Route::get('/Envio/crear', [EnvioController::class, 'crear'])->name('Envio.crear');
-Route::post('/Envio/store', [EnvioController::class, 'store'])->name('Envio.store');
+//Route::get('/Envio/crear', [EnvioController::class, 'crear'])->name('Envio.crear');
+//Route::post('/Envio/store', [EnvioController::class, 'store'])->name('Envio.store');
 
 // Sucursal
 
@@ -111,6 +114,8 @@ Route::get('/Sucursal/crear', [SucursalController::class, 'crear'])->name('Sucur
 Route::post('/Sucursal/store', [SucursalController::class, 'store'])->name('Sucursal.store');
 Route::get('/Sucursal/vista', [SucursalController::class, 'ver'])->name('Sucursal.ver');
 Route::get('/sucursal/imagen/{path}', [SucursalController::class, 'mostrarImagen'])->where('path', '.*')->name('sucursal.imagen');
+Route::get('sucursal/buscar', [SucursalController::class, 'buscar'])->name('sucursal.buscar');
+
 
 //Membresia
 Route::get('/Membresia/index', [MembresiaController::class, 'index'])->name('Membresia.index');
@@ -154,8 +159,27 @@ Route::get('/pedido/buscar', [PedidosController::class, 'buscar'])->name('pedido
 Route::get('/pedido/{id}/editar', [PedidosController::class, 'editar'])->name('pedido.editar');
 Route::put('/pedido/{id}/actualizar', [PedidosController::class, 'actualizar'])->name('pedido.actualizar');
 Route::post('/pedido/{id}/agregar-bici', [PedidosController::class, 'agregarBici'])->name('pedido.bici.agregar');
-Route::delete('/pedido/{id}/eliminar-bici/{biciId}', [PedidosController::class, 'eliminarBici'])->name('pedido.bici.eliminar');
-Route::post('/pedido/{id}/finalizar', [PedidosController::class, 'finalizar'])->name('pedido.finalizar');
+Route::put('/pedido/{id}/eliminar-bici/{biciId}', [PedidosController::class, 'eliminarBici'])->name('pedido.bici.eliminar');
+Route::post('/pedido/{id}/finalizar',[PedidosController::class, 'finalizar'])->name('pedido.finalizar');
+Route::get('/pedidos/confirmar/{token}', [PedidosController::class, 'confirmarQR'])->name('pedido.confirmarQR');
+
+
+
+
+
+//Pedidos Piezas
+Route::get('/PedidosPiezas/ver', [PedidosPiezasController::class, 'ver'])->name('pedidos_piezas.ver');
+Route::get('/PedidosPiezas/crear', [PedidosPiezasController::class, 'crear'])->name('pedidos_piezas.crear');
+Route::post('/PedidosPiezas', [PedidosPiezasController::class, 'store'])->name('pedidos_piezas.store');
+Route::get('/pieza/buscar', [PedidosPiezasController::class, 'buscarPieza'])->name('pieza.buscar');
+Route::get('/pedidos_piezas/pdf/{id}', [PedidosPiezasController::class, 'generarPDF'])->name('pedidos_piezas.pdf');
+
+
+
+Route::get('/PedidosPiezas/{id}/editar', [PedidosPiezasController::class, 'edit'])->name('pedidos_piezas.edit');
+Route::put('/PedidosPiezas/{id}', [PedidosPiezasController::class, 'update'])->name('pedidos_piezas.update');
+Route::delete('/PedidosPiezas/{id}', [PedidosPiezasController::class, 'destroy'])->name('pedidos_piezas.destroy');
+
 
 
 
@@ -166,11 +190,25 @@ Route::get('/cotizacion/voltajes/{id_modelo}', [CotizacionController::class, 'vo
 Route::get('/cotizacion/precio', [CotizacionController::class, 'precioParaCotizacion'])->name('cotizacion.precio');
 Route::get('/cotizacion/colores/{id_modelo}', [CotizacionController::class, 'coloresPorModelo'])->name('cotizacion.colores');
 Route::post('/cotizacion/pdf', [CotizacionController::class, 'generarPDF'])->name('cotizacion.pdf');
+Route::post('/cotizacion/distancia', [CotizacionController::class, 'distancia'])->name('cotizacion.distancia');
 
 
-//Lista de bicis 
+//Lista de Disponibles
 
 Route::get('/Disponibles/listado', [ListaModelosController::class, 'index'])->name('Listado.modelos');
+Route::get('/Disponibles/listadoRefacciones', [ListaModelosController::class, 'refacciones'])->name('Listado.refacciones');
+
+
+//Piezas
+
+Route::get('pieza', [PiezasBController::class, 'ver'])->name('pieza.ver');
+Route::get('pieza/crear', [PiezasBController::class, 'crear'])->name('pieza.crear');
+Route::post('pieza/store', [PiezasBController::class, 'store'])->name('pieza.store');
+Route::put('/pieza/{pieza}', [PiezasBController::class, 'update'])->name('pieza.update');
+Route::get('pieza/imagen/{path}', [PiezasBController::class, 'mostrarImagen'])->where('path', '.*')->name('pieza.imagen');
+
+
+
 
 
 });
@@ -178,8 +216,8 @@ Route::get('/Disponibles/listado', [ListaModelosController::class, 'index'])->na
 
 // NO TOCAR!!!!!!
 
-Route::get('/piezas/registrarse', [RegistroController::class, 'registrarse'])->name('registrarse');
-Route::post('/piezas/registrar', [RegistroController::class, 'registrar'])->name('registrar');
+//Route::get('/piezas/registrarse', [RegistroController::class, 'registrarse'])->name('registrarse');
+//Route::post('/piezas/registrar', [RegistroController::class, 'registrar'])->name('registrar');
 
 Route::get('/Mexico/inicio', [PiezasController::class ,'inicio'])->name ('piezas.inicio');
 

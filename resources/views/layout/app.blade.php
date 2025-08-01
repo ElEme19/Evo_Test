@@ -104,13 +104,30 @@
                         </ul>
                     </li>
                     @endif
-                    
+
                     @if (in_array($tipo, ['0', '2','3', '4']))
                     <li class="nav-item">
-                        <a class="nav-link" href="/pedido/ver">
-                            <i class="bi bi-truck me-1"></i>@lang('Pedidos')
+                        <a class="nav-link" href="/pieza">
+                            <i class="bi bi-tools me-1"></i>@lang('Refacciones')
                         </a>
                     </li>
+                    @endif
+
+
+                     @if (in_array($tipo, ['0', '1', '2', '3', '5']))
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="bicicletaDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-cart me-1"></i>@lang('Pedidos')
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="bicicletaDropdown">
+                            <li><a class="nav-link" href="/pedido/ver"><i class="bi bi-truck me-2"></i>@lang('Pedidos Bicicleta')</a></li>
+                            <li><a class="nav-link" href="/PedidosPiezas/ver"><i class="bi bi-tools me-2"></i>@lang('Pedido Piezas')</a></li>
+                        </ul>
+                    </li>
+                    @endif
+                    
+                    @if (in_array($tipo, ['0', '2','3', '4']))
                     <li class="nav-item">
                         <a class="nav-link" href="/Sucursal/vista">
                             <i class="bi bi-shop me-1"></i>@lang('Sucursales')
@@ -118,13 +135,13 @@
                     </li>
                     @endif
 
-@if (in_array($tipo, ['0', '2', '3', '4']))
-    <li class="nav-item">
-        <a class="nav-link" href="/area/ver">
-            <i class="bi bi-diagram-3 me-1"></i>@lang('Áreas')
-        </a>
-    </li>
-@endif
+                    @if (in_array($tipo, ['0', '2', '3', '4']))
+                        <li class="nav-item">
+                            <a class="nav-link" href="/area/ver">
+                                <i class="bi bi-diagram-3 me-1"></i>@lang('Áreas')
+                            </a>
+                        </li>
+                    @endif
 
                     @if (in_array($tipo, ['0', '2']))
                     <li class="nav-item">
@@ -143,14 +160,21 @@
                         
                     </li>
                     @endif
-                    @if (in_array($tipo, ['0', '2']))
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Disponibles/listado">
-                            <i class="bi bi-bar-chart me-1"></i>@lang('Listado')
+
+                     @if (in_array($tipo, ['0','9']))
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="bicicletaDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bar-chart-line me-1"></i>@lang('Listado')
                         </a>
-                        
+                        <ul class="dropdown-menu" aria-labelledby="bicicletaDropdown">
+                            <li><a class="dropdown-item" href="/Disponibles/listado"><i class="bi bi-bicycle me-2"></i>@lang('Bicicleta')</a></li>
+                            <li><a class="dropdown-item" href="/Disponibles/listadoRefacciones"><i class="bi bi-screwdriver me-2"></i>@lang('Refacciones')</a></li>
+                        </ul>
                     </li>
                     @endif
+
+
                     @if ($tipo == '0')
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
