@@ -40,7 +40,7 @@ Route::get('/',[PiezasController::class ,'inicio'])->name ('piezas.inicio');
 
 
 
-Route::middleware(['auth:usuarios','check.user.type:0'])->group(function(){  // ==> Tener acceso dependiendo del usuario a las vistas (/piezas/crear)
+Route::middleware(['auth:usuarios','check.user.type:0,1'])->group(function () {  // ==> Tener acceso dependiendo del usuario a las vistas (/piezas/crear)
 
 // Laboratorio
 //Route::get('/piezas/crear', [PiezasController::class, 'crear']) -> name('piezas.crear');
@@ -86,11 +86,16 @@ Route::put('/Stock/{tipostock}', [TipoStockController::class, 'update'])->name('
 Route::get('/Bicicleta/buscarC', [BicicletaController::class, 'buscarC']);
 Route::get('/Bicicleta/crear', [BicicletaController::class, 'crear'])->name('Bicicleta.crear');
 Route::post('/Bicicleta/store', [BicicletaController::class, 'store'])->name('Bicicleta.store');
+Route::get('/Bicicleta/guarda', [BicicletaController::class, 'guarda'])->name('Bicicleta.guarda');
+Route::post('/Bicicleta/biciensistema', [BicicletaController::class, 'biciensistema'])->name('Bicicleta.biciensistema');
 Route::get('/Bicicleta/vista', [BicicletaController::class, 'ver'])->name('Bicicleta.ver');
 /* Route::put('/Bicicleta/{bicicleta}', [BicicletaController::class, 'update'])->name('Bicicleta.update'); */
 Route::get('/colores-por-modelo/{id_modelo}', [BicicletaController::class, 'coloresPorModelo'])->name('Bicicleta.ptoEmilioNoleMuevas');
 Route::get('/voltaje-por-modelo/{id_modelo}', [BicicletaController::class, 'voltajePorModelo'])->name('Bicicleta.voltajeXmodelo');
 Route::get('/Bicicleta/buscar-por-ultimos4', [BicicletaController::class, 'buscarPorUltimosSx'])->name('Bicicleta.buscarUltimos4');
+
+Route::get('/imprimir-bicis', [BicicletaController::class, 'imprimirTodasBicicletas']);
+
 
 
 // Busquedas
@@ -162,6 +167,7 @@ Route::post('/pedido/{id}/agregar-bici', [PedidosController::class, 'agregarBici
 Route::put('/pedido/{id}/eliminar-bici/{biciId}', [PedidosController::class, 'eliminarBici'])->name('pedido.bici.eliminar');
 Route::post('/pedido/{id}/finalizar',[PedidosController::class, 'finalizar'])->name('pedido.finalizar');
 Route::get('/pedidos/confirmar/{token}', [PedidosController::class, 'confirmarQR'])->name('pedido.confirmarQR');
+Route::delete('/pedido/{id}/eliminar', [PedidosController::class, 'eliminar'])->name('pedido.eliminar');
 
 
 

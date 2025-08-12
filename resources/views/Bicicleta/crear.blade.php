@@ -2,6 +2,25 @@
 
 @section('conten')
 
+<!-- Modal para elegir prefijo -->
+<div class="modal fade" id="prefijoModal" tabindex="-1" aria-labelledby="prefijoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-success">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="prefijoModalLabel">@lang('Seleccione los primeros 7 dígitos')</h5>
+      </div>
+      <div class="modal-body text-center">
+        <p class="fw-semibold">@lang('Elija una opción:')</p>
+        <div class="d-grid gap-2">
+          <button type="button" class="btn btn-outline-success prefijo-btn" data-prefijo="HE0EA2A">HE0EA2A</button>
+          <button type="button" class="btn btn-outline-success prefijo-btn" data-prefijo="HMDNA2A">HMDNA2A</button>
+          <button type="button" class="btn btn-outline-success prefijo-btn" data-prefijo="HMDMA2A">HMDMA2A</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="text-center my-4">
     <h3>
         @lang('Crear Bicicleta')
@@ -45,206 +64,112 @@
     @csrf
 
     <div class="col-md-6">
-        <label for="num_chasis_parcial" class="form-label">@lang('Últimos 4 Dígitos de Número de Chasis')</label>
-        <input type="text" name="num_chasis_parcial" id="num_chasis_parcial" maxlength="4" class="form-control" placeholder="@lang('Ingrese últimos 4 dígitos')" required autocomplete="off">
-        <input type="hidden" name="num_chasis" id="num_chasis_full" value="">
-        <div class="form-text">@lang('Al ingresar los últimos 4 dígitos, se buscará automáticamente la bicicleta.')</div>
-    </div>
-
-    <div class="col-md-6">
-        <label for="num_chasis_mostrar" class="form-label">@lang('Número de Chasis completo')</label>
-        <input type="text" id="num_chasis_mostrar" class="form-control" readonly placeholder="@lang('Será llenado automáticamente')" disabled>
+        <label for="num_chasis" class="form-label">@lang('Número de Chasis (17 dígitos)')</label>
+        <input type="text" name="num_chasis" id="num_chasis" maxlength="17" class="form-control" placeholder="@lang('Ingrese número de chasis completo')" required autocomplete="off">
+        <div class="form-text">@lang('Debe ingresar los 17 caracteres del número de chasis.')</div>
     </div>
 
     <div class="col-md-6">
         <label for="id_modelo" class="form-label">@lang('Seleccione un modelo')</label>
-        <select name="id_modelo" id="id_modelo" class="form-select" required disabled>
+        <select name="id_modelo" id="id_modelo" class="form-select" required>
             <option value="">@lang('Seleccione un modelo')</option>
-        </select>
-    </div>
-
-
-    <div class="col-md-6">
-        <label for="id_color" class="form-label">@lang('Color (Disponible según modelo)')</label>
-        <select name="id_color" id="id_color" class="form-select" required>
-            <option value="">@lang('Seleccione un color')</option>
-        </select>
-    </div>
-
-    <div class="col-md-4">
-        <label for="id_lote" class="form-label">@lang('Lote')</label>
-        <select name="id_lote" class="form-select" required>
-            @foreach($lotes as $lote)
-                <option value="{{ $lote->id_lote }}">{{ $lote->fecha_produccion }}</option>
+            @foreach($modelos as $modelo)
+                <option value="{{ $modelo->id_modelo }}">{{ $modelo->nombre_modelo }}</option>
             @endforeach
         </select>
     </div>
 
-   <div class="col-md-4">
-        <label for="id_tipoStock" class="form-label">@lang('Tipo de Stock')</label>
-        <input type="text" class="form-control" value="{{ $tipos->firstWhere('id_tipoStock', 'STK000')->nombre_stock ?? 'STK000' }}" disabled>
-        <input type="hidden" name="id_tipoStock" value="STK000">
+    <div class="col-12 mt-3 text-center">
+        <button type="submit" class="btn btn-outline-success">@lang('Guardar Bicicleta')</button>
     </div>
 
-    <div class="col-md-4">
-        <label for="id_voltaje" class="form-label">@lang('Voltaje (Disponible según modelo)')</label>
-        <select name="id_voltaje" id="id_voltaje" class="form-select" required>
-            <option value="">@lang('Seleccione un voltaje')</option>
-        </select>
+    <div class="col text-end">
+        <a href="{{ route('Bicicleta.ver') }}" class="btn btn-outline-success">@lang('Ver Bicis')</a>
     </div>
+</form>
 
-        <div class="col-12 mt-3 text-center">
-            <button type="submit" class="btn btn-outline-success" id="btnGuardar" disabled>@lang('Guardar Bicicleta')</button>
-        </div>
-
-        <div class="col text-end">
-            <a href="{{ route('Bicicleta.ver') }}" class="btn btn-outline-success">@lang('Ver Bicis')</a>
-        </div>
-    </form>
-
-<!-- Modal de resultado búsqueda -->
-<div class="modal fade" id="modalResultadoBusqueda" tabindex="-1" aria-labelledby="modalResultadoBusquedaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@lang('Resultado de la búsqueda')</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@lang('Cerrar')"></button>
-            </div>
-            <div class="modal-body" id="modalBodyMensaje"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-bs-dismiss="modal">@lang('Ok')</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 $(document).ready(function () {
-    var modalResultadoBusqueda = new bootstrap.Modal(document.getElementById('modalResultadoBusqueda'));
-    var modalBodyMensaje      = $('#modalBodyMensaje');
 
-    // Función para mostrar alerta en modal
-    function mostrarAlertaModal(tipo, mensaje) {
-        const color    = tipo === 'success' ? 'success' : 'danger';
-        const iconPath = tipo === 'success'
-            ? 'M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.97 11.03a.75.75 0 0 0 1.08-.02l3.99-4.99a.75.75 0 1 0-1.08-1.04L7.5 9.585 5.97 8.06a.75.75 0 0 0-1.08 1.04l2.08 1.93z'    // path SVG de check
-            : 'M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 11a.5.5 0 0 1-.5-.5V8.707L5.354 6.561a.5.5 0 1 1 .707-.707L8 7.293l1.939-1.939a.5.5 0 1 1 .707.707L8.5 8.707V11.5a.5.5 0 0 1-.5.5z'; // path SVG de error
+    let prefijoElegido = '';
 
-        const html = `
-        <div class="text-center">
-            <div class="alert alert-${color} d-inline-flex align-items-center py-1 px-2 rounded-3 shadow-sm" role="alert">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2" viewBox="0 0 16 16" role="img" aria-label="${tipo}:">
-                    <path d="${iconPath}"/>
-                </svg>
-                <small class="fw-semibold">${mensaje}</small>
-            </div>
-        </div>`;
+    // Mostrar modal al cargar
+    var modalPrefijo = new bootstrap.Modal(document.getElementById('prefijoModal'), {
+        backdrop: 'static',
+        keyboard: false
+    });
+    modalPrefijo.show();
 
-        modalBodyMensaje.html(html);
-        modalResultadoBusqueda.show();
-    }
+    // Cuando el usuario elige un prefijo
+    $('.prefijo-btn').on('click', function(){
+        prefijoElegido = $(this).data('prefijo');
+        $('#num_chasis').val(prefijoElegido);
 
-    // Resetea modelo, botones y chasis
-    function resetModeloYBoton() {
-        $('#num_chasis_full').val('');
-        $('#num_chasis_mostrar').val('');
-        $('#btnGuardar').prop('disabled', true);
-        $('#id_modelo')
-            .html('<option value="">@lang("Seleccione un modelo")</option>')
-            .prop('disabled', false)
-            .trigger('change');
-        $('#id_color').html('<option value="">@lang("Seleccione un color")</option>');
-        $('#tipo_voltaje').html('<option value="">@lang("Seleccione un voltaje")</option>');
-    }
+        modalPrefijo.hide();
 
-    // Búsqueda por últimos 4 dígitos de chasis
-    $('#num_chasis_parcial').on('input', function () {
-        let ult4 = $(this).val();
+        // Colocar cursor justo después del prefijo
+        setTimeout(function(){
+            let input = document.getElementById('num_chasis');
+            input.setSelectionRange(prefijoElegido.length, prefijoElegido.length);
+            input.focus();
+        }, 100);
+    });
 
-        if (ult4.length === 4) {
-            $.ajax({
-                url: '{{ route("Bicicleta.buscarUltimos4") }}',
-                method: 'GET',
-                data: { ult4: ult4 },
-                success: function (response) {
-                    if (response.success) {
-                        let bici         = response.bici;
-                        let modeloId     = bici.id_modelo;
-                        let modeloNombre = bici.modelo ? bici.modelo.nombre_modelo : 'Modelo desconocido';
-
-                        $('#id_modelo')
-                            .html(`<option value="${modeloId}" selected>${modeloNombre}</option>`)
-                            .prop('disabled', true)
-                            .trigger('change');
-
-                        $('#num_chasis_full').val(bici.num_chasis);
-                        $('#num_chasis_mostrar').val(bici.num_chasis);
-                        $('#btnGuardar').prop('disabled', false);
-
-                        mostrarAlertaModal('success', '@lang("Bicicleta encontrada y modelo preseleccionado.")');
-
-                        // Cargar colores y voltajes al encontrar bici
-                        cargarColores(modeloId);
-                        cargarVoltajes(modeloId);
-                    } else {
-                        mostrarAlertaModal('danger', response.message);
-                        resetModeloYBoton();
-                    }
-                },
-                error: function () {
-                    mostrarAlertaModal('danger', '@lang("Error al buscar la bicicleta, intentá de nuevo.")');
-                    resetModeloYBoton();
-                }
-            });
-        } else {
-            resetModeloYBoton();
+    // Evitar que el usuario modifique o borre el prefijo
+    $('#num_chasis').on('input', function(){
+        let valor = $(this).val();
+        if (!valor.startsWith(prefijoElegido)) {
+            $(this).val(prefijoElegido);
         }
     });
 
-    // Función para cargar colores
-    function cargarColores(idModelo) {
-        let urlColores = '{{ route("Bicicleta.ptoEmilioNoleMuevas", ["id_modelo" => ":id"]) }}'.replace(':id', idModelo);
+    // Prevenir borrar el prefijo con teclas
+    $('#num_chasis').on('keydown', function(e){
+        let pos = this.selectionStart;
+        if ((pos <= prefijoElegido.length) && (e.key === 'Backspace' || e.key === 'Delete')) {
+            e.preventDefault();
+        }
+    });
 
-        $.get(urlColores, function(colores) {
+    // Cargar colores y voltajes cuando se seleccione el modelo
+    $('#id_modelo').on('change', function () {
+        let idModelo = $(this).val();
+
+        if (!idModelo) {
+            $('#id_color').html('<option value="">@lang("Seleccione un color")</option>');
+            $('#id_voltaje').html('<option value="">@lang("Seleccione un voltaje")</option>');
+            return;
+        }
+
+        // Cargar colores
+        let urlColores = '{{ route("Bicicleta.ptoEmilioNoleMuevas", ["id_modelo" => ":id"]) }}'.replace(':id', idModelo);
+        $.get(urlColores, function (colores) {
             let opciones = '<option value="">@lang("Seleccione un color")</option>';
-            $.each(colores, function(i, color) {
+            $.each(colores, function (i, color) {
                 opciones += `<option value="${color.id_colorM}">${color.nombre_color}</option>`;
             });
             $('#id_color').html(opciones);
-        }).fail(function() {
+        }).fail(function () {
             $('#id_color').html('<option value="">@lang("Error al cargar colores")</option>');
         });
-    }
 
-    // Función para cargar voltajes
-    function cargarVoltajes(idModelo) {
+        // Cargar voltajes
         let urlVoltajes = '{{ route("voltaje.porModelo", ["id_modelo" => ":id"]) }}'.replace(':id', idModelo);
-
-        $.get(urlVoltajes, function(voltajes) {
+        $.get(urlVoltajes, function (voltajes) {
             let opciones = '<option value="">@lang("Seleccione un voltaje")</option>';
-            $.each(voltajes, function(i, v) {
+            $.each(voltajes, function (i, v) {
                 opciones += `<option value="${v.id_voltaje}">${v.tipo_voltaje ?? v.id_voltaje}</option>`;
             });
             $('#id_voltaje').html(opciones);
-        }).fail(function() {
-            $('#tipo_voltaje').html('<option value="">@lang("Error al cargar voltajes")</option>');
+        }).fail(function () {
+            $('#id_voltaje').html('<option value="">@lang("Error al cargar voltajes")</option>');
         });
-    }
-
-    // Al cambiar manualmente el modelo
-    $('#id_modelo').on('change', function() {
-        let idModelo = $(this).val();
-        if (!idModelo) {
-            $('#id_color').html('<option value="">@lang("Seleccione un color")</option>');
-            $('#tipo_voltaje').html('<option value="">@lang("Seleccione un voltaje")</option>');
-            return;
-        }
-        cargarColores(idModelo);
-        cargarVoltajes(idModelo);
     });
+
 });
 </script>
 

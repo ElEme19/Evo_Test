@@ -5,32 +5,40 @@
     <meta charset="UTF-8">
     <title>Formulario de Emisión de Fábrica - {{ $pedido->id_pedido }}</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 11px; margin: 0; padding: 0; }
-        .table { width: 100%; border-collapse: collapse; }
-        .table th, .table td { border: 1px solid #000; padding: 4px; }
-        .header-table th, .header-table td { border: 1px solid #000; padding: 6px; }
-        .logo { height: 30px; vertical-align: middle; }
-        .header-logo { text-align: center; font-weight: bold; font-size: 16px; }
-        .title { font-weight: bold; font-size: 20px; font-style: italic; text-align: center; padding: 8px 0; }
-        .emision { font-weight: bold; font-style: italic; text-align: center; }
-        .efirma { font-style: italic; text-align: center; height: 60px; vertical-align: top; }
-        .notas, table.notas td { border: none !important; }
-        .small { font-size: 11px; }
-        .center { text-align: center; }
-        .no-border { border: none !important; }
-        .footer-note { font-size: 8px; }
-        .footer-red { color: red; font-size: 8px; }
-        .merged-cell { border-top: none !important; }
-        .footer {
-            margin-top: 25px;
-            padding-top: 12px;
-            font-family: 'Georgia', 'Times New Roman', serif;
-            border-top: 1px solid #e8e8e8;
-            font-size: 8.5pt;
-            color: #777;
-            text-align: center;
-        }
-    </style>
+    body { 
+        font-family: Arial, sans-serif; 
+        font-size: 10px; 
+        font-weight: bold; 
+        margin: 0; 
+        padding: 0; 
+    }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th, .table td { border: 1px solid #000; padding: 4px; }
+    .header-table th, .header-table td { border: 1px solid #000; padding: 6px; }
+    .logo { height: 30px; vertical-align: middle; }
+    .header-logo { text-align: center; font-weight: bold; font-size: 16px; }
+    .title { font-weight: bold; font-size: 20px; font-style: italic; text-align: center; padding: 8px 0; }
+    .emision { font-weight: bold; font-style: italic; text-align: center; }
+    .efirma { font-style: italic; text-align: center; height: 60px; vertical-align: top; }
+    .notas, table.notas td { border: none !important; }
+    .small { font-size: 10px; font-weight: bold; }
+    .center { text-align: center; }
+    .no-border { border: none !important; }
+    .footer-note { font-size: 8px; }
+    .footer-red { color: red; font-size: 8px; }
+    .merged-cell { border-top: none !important; }
+    .footer {
+        margin-top: 25px;
+        padding-top: 12px;
+        font-family: Arial, sans-serif;
+        border-top: 1px solid #e8e8e8;
+        font-size: 8.5pt;
+        color: #777;
+        text-align: center;
+        font-weight: bold;
+    }
+</style>
+
 </head>
 <body>
     <!-- Encabezado -->
@@ -51,10 +59,10 @@
                     <strong>Código:</strong><br>{{ $pedido->id_pedido }}
                 </td>
                 <td style="width:21%; text-align: center;">
-                    <strong>Cliente:</strong><br>{{ $pedido->sucursal->nombre_sucursal }}
+                    <strong>Cliente:</strong><br>{{ optional($pedido->cliente)->nombre ?? '' }}
                 </td>
                 <td style="width:10%; text-align: center;">
-                    <strong>Distancia:</strong><br>{{ $pedido->sucursal->distancia_km ?? 'Error' }} KM
+                    <strong>Distancia:</strong><br>{{ optional($pedido->sucursal)->distancia_km ?? 'Error' }} KM
                 </td>
                 <td style="width:25%; text-align: center;">
                     <strong>Transporte:</strong><br>Evobike
@@ -226,7 +234,7 @@
     </tr>
     <tr style="border: 1px solid #000;">
         <td style="border: none; padding: 5px;">
-            Para cualquier aclaración o informe de daños comuníquese al siguiente número {{ $pedido->sucursal->telefono ?? '56 4899 6759' }}
+Para cualquier aclaración o informe de daños comuníquese al siguiente número {{ optional($pedido->sucursal)->telefono ?? '56 4899 6759' }}
         </td>
     </tr>
     <tr style="border: 1px solid #000;">

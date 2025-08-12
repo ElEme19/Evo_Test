@@ -89,6 +89,8 @@
               </button>
             </div>
           </form>
+
+          
           
           <!-- Botón NUEVO PEDIDO -->
           <a href="{{ route('pedido.crear') }}"
@@ -190,6 +192,15 @@
                           <i class="bi bi-filetype-pdf me-1"></i>PDF
                         </a>
                       </div>
+                      <form action="{{ route('pedido.eliminar', $pedidoGroup->id_pedido) }}" method="POST" class="d-inline" 
+      onsubmit="return confirm('¿Seguro que deseas eliminar este pedido y devolver las bicicletas al stock?')">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+        <i class="bi bi-trash3 me-1"></i>Eliminar
+    </button>
+</form>
+
                     </td>
                   </tr>
 

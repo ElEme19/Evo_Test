@@ -18,7 +18,7 @@ class Bicicleta extends Model
         'id_color',
         'id_lote',
         'id_tipoStock',
-        'voltaje',
+        'id_voltaje',
         'num_motor',
         'error_iden_produccion',
         'descripcion_general',

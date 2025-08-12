@@ -85,17 +85,20 @@
                 @csrf
 
                 <!-- Sucursal -->
-                <div class="mb-3">
-                    <label for="id_sucursal" class="form-label fw-semibold fs-5">
-                        <i class="bi bi-shop me-1"></i>Sucursal Destino
-                    </label>
-                    <select name="id_sucursal" id="id_sucursal" class="form-select form-select-sm" required>
-                        <option value="" selected disabled>Seleccione una sucursal</option>
-                        @foreach($sucursales as $sucursal)
-                            <option value="{{ $sucursal->id_sucursal }}">{{ $sucursal->nombre_sucursal }}</option>
-                        @endforeach
-                    </select>
-                </div>
+<div class="mb-3">
+    <label for="id_sucursal" class="form-label fw-semibold fs-5">
+        <i class="bi bi-shop me-1"></i>Sucursal Destino
+    </label>
+    <select name="id_sucursal" id="id_sucursal" class="form-select form-select-sm">
+        <option value="" selected>-- Sin seleccionar --</option>
+        @foreach($sucursales as $sucursal)
+            <option value="{{ $sucursal->id_sucursal }}">
+                {{ $sucursal->nombre_sucursal }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 
                 <!-- Escáner Bicicleta -->
                 <div class="mb-3 p-2 bg-light rounded border">
@@ -247,15 +250,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function procesarBusqueda(valor) {
-        if (!valor || isBuscando) return;
-        if (listaBicis.some(b => b.num_chasis.toUpperCase() === valor)) {
-            mostrarInfoModal('Esta bicicleta ya fue agregada al pedido.');
-            numChasisInput.value = '';
-            return;
-        }
+    if (!valor || isBuscando) return;
 
-        await buscarBicicleta(valor);
+    // Verifica si ya existe la bici en la lista (ignorando mayúsculas/minúsculas)
+    if (listaBicis.some(b => b.num_chasis.toUpperCase() === valor.toUpperCase())) {
+        mostrarInfoModal('Esta bicicleta ya fue agregada al pedido.');
+        numChasisInput.value = '';
+        numChasisInput.focus();  // Mantiene el foco para que puedas seguir escaneando
+        return; // No continuar con búsqueda ni submit
     }
+
+    await buscarBicicleta(valor);
+}
+
 
     async function buscarBicicleta(numSerie) {
         isBuscando = true;
@@ -266,10 +273,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             const biciData = data.bici;
 
-            if (!res.ok || !data.success || !biciData || !biciData.num_chasis) {
+           /*  if (!res.ok || !data.success || !biciData || !biciData.num_chasis) {
                 mostrarErrorModal('No se encontró ninguna bicicleta con ese número');
                 return;
-            }
+            } */
 
             if (biciData.pedido_asociado) {
                 mostrarErrorModal('Esta bicicleta ya tiene un pedido registrado.');

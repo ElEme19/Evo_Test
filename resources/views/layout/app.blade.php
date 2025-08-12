@@ -89,7 +89,7 @@
                         </a>
                     </li>
                     
-                    @if (in_array($tipo, ['0', '1', '2', '3', '5']))
+                    @if (in_array($tipo, ['0','2', '3', '5']))
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="bicicletaDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
@@ -105,7 +105,7 @@
                     </li>
                     @endif
 
-                    @if (in_array($tipo, ['0', '2','3', '4']))
+                    @if (in_array($tipo, ['2','3', '4']))
                     <li class="nav-item">
                         <a class="nav-link" href="/pieza">
                             <i class="bi bi-tools me-1"></i>@lang('Refacciones')
@@ -114,7 +114,7 @@
                     @endif
 
 
-                     @if (in_array($tipo, ['0', '1', '2', '3', '5']))
+                     @if (in_array($tipo, ['0', '2', '3', '5']))
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="bicicletaDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
@@ -127,7 +127,7 @@
                     </li>
                     @endif
                     
-                    @if (in_array($tipo, ['0', '2','3', '4']))
+                    @if (in_array($tipo, ['2','3', '4']))
                     <li class="nav-item">
                         <a class="nav-link" href="/Sucursal/vista">
                             <i class="bi bi-shop me-1"></i>@lang('Sucursales')
@@ -135,7 +135,7 @@
                     </li>
                     @endif
 
-                    @if (in_array($tipo, ['0', '2', '3', '4']))
+                    @if (in_array($tipo, ['2', '3', '4']))
                         <li class="nav-item">
                             <a class="nav-link" href="/area/ver">
                                 <i class="bi bi-diagram-3 me-1"></i>@lang('Áreas')
@@ -143,7 +143,7 @@
                         </li>
                     @endif
 
-                    @if (in_array($tipo, ['0', '2']))
+                    @if (in_array($tipo, ['0']))
                     <li class="nav-item">
                         <a class="nav-link" href="/Mexico/import">
                             <i class="bi bi-upload me-1"></i>@lang('Importar')
@@ -152,7 +152,7 @@
                     @endif
                     
                     
-                    @if (in_array($tipo, ['0', '2']))
+                    @if (in_array($tipo, ['2']))
                     <li class="nav-item">
                         <a class="nav-link" href="/Cotizacion/crear">
                             <i class="bi bi-receipt-cutoff me-1"></i>@lang('Cotizacion')
@@ -161,7 +161,7 @@
                     </li>
                     @endif
 
-                     @if (in_array($tipo, ['0','9']))
+                     @if (in_array($tipo, ['9']))
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="bicicletaDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
@@ -175,7 +175,7 @@
                     @endif
 
 
-                    @if ($tipo == '0')
+                    @if ($tipo == '2')
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
