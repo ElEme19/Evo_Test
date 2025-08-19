@@ -71,7 +71,7 @@
 
     <div class="col-md-6">
         <label for="id_modelo" class="form-label">@lang('Seleccione un modelo')</label>
-        <select name="id_modelo" id="id_modelo" class="form-select" required>
+        <select name="id_modelo" id="id_modelo" class="form-select">
             <option value="">@lang('Seleccione un modelo')</option>
             @foreach($modelos as $modelo)
                 <option value="{{ $modelo->id_modelo }}">{{ $modelo->nombre_modelo }}</option>
@@ -108,7 +108,6 @@ $(document).ready(function () {
     $('.prefijo-btn').on('click', function(){
         prefijoElegido = $(this).data('prefijo');
         $('#num_chasis').val(prefijoElegido);
-
         modalPrefijo.hide();
 
         // Colocar cursor justo después del prefijo
@@ -121,9 +120,49 @@ $(document).ready(function () {
 
     // Evitar que el usuario modifique o borre el prefijo
     $('#num_chasis').on('input', function(){
-        let valor = $(this).val();
+        let valor = $(this).val().toUpperCase(); // Forzar mayúsculas
         if (!valor.startsWith(prefijoElegido)) {
             $(this).val(prefijoElegido);
+            return;
+        }
+
+        // Detectar modelo automáticamente
+        if (valor.length >= 13) {
+            let regex = /^(HE0EA2A|HMDNA2A|HMDMA2A)0.{3}(\d{2})\d{4}$/;
+            let matches = valor.match(regex);
+
+            if (matches) {
+                let codigo = matches[2];
+                let mapaModelos = {
+                    '14': 'Zeus',
+                    '05': 'Galaxy',
+                    '03': 'Primavera',
+                    '19': 'Reina',
+                    '09': 'VmpS5',
+                    '06': 'Rayo',
+                    '11': 'Polar',
+                    '24': 'Urbex',
+                    '18': 'Eclipce',
+                    '07': 'Aguila',
+                    '08': 'Sol',
+                    '16': 'Sol Pro',
+                };
+
+                let nombreModelo = mapaModelos[codigo] || '';
+                if (nombreModelo) {
+                    $('#id_modelo option').each(function() {
+                        $(this).prop('selected', $(this).text() === nombreModelo);
+                    });
+                    // Disparar change para cargar colores y voltajes automáticamente
+                    $('#id_modelo').trigger('change');
+                } else {
+                    $('#id_modelo').val('');
+                }
+            } else {
+                $('#id_modelo').val('');
+            }
+        } else {
+            $('#id_modelo').val('');
         }
     });
 
@@ -172,5 +211,6 @@ $(document).ready(function () {
 
 });
 </script>
+
 
 @endsection

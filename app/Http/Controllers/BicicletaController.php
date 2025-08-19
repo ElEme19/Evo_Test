@@ -14,7 +14,9 @@ use App\Models\TipoStock;
 use App\Models\VoltajeModelo;   
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
- 
+use App\Models\Autorizacion;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SolicitudAutorizacion;
 
 
 
@@ -50,15 +52,15 @@ class BicicletaController extends Controller
     }
     /**
      * Guarda la bicicleta y dispara la impresión vía PrintNode.
-     */
+     */  
 public function store(Request $request)
 {
     $validated = $request->validate([
         'num_chasis' => 'required|string|size:17',
-        'id_modelo'  => 'required|string|exists:modelos,id_modelo',
+        'id_modelo'  => 'nullable|string|exists:modelos,id_modelo',
     ]);
     // Forzar mayúsculas
-$validated['num_chasis'] = strtoupper($validated['num_chasis']);
+    $validated['num_chasis'] = strtoupper($validated['num_chasis']);
 
     DB::beginTransaction();
 
@@ -115,7 +117,6 @@ $validated['num_chasis'] = strtoupper($validated['num_chasis']);
     }
 }
 
-
 public function biciensistema(Request $request)
 {
     $validated = $request->validate([
@@ -125,22 +126,22 @@ public function biciensistema(Request $request)
         'id_tipoStock'  => 'required|string|exists:tipo_stock,id_tipoStock',
         'id_voltaje'    => 'nullable|string|max:10',
     ]);
-    // Forzar mayúsculas
-$validated['num_chasis'] = strtoupper($validated['num_chasis']);
+
+    $validated['num_chasis'] = strtoupper($validated['num_chasis']);
+    $user = Auth::guard('usuarios')->user();
 
     DB::beginTransaction();
-
     try {
+        // Actualizar bicicleta
         Bicicleta::where('num_chasis', $validated['num_chasis'])
             ->update([
                 'id_color'      => $validated['id_color'],
                 'id_lote'       => $validated['id_lote'],
                 'id_tipoStock'  => $validated['id_tipoStock'],
-                'codigo_barras' => $validated['num_chasis'],
+                'codigo_barras' => null,
                 'id_voltaje'    => $validated['id_voltaje'] ?? 'VOLT000',
                 'updated_at'    => now(),
             ]);
-
         DB::commit();
     } catch (\Exception $e) {
         DB::rollBack();
@@ -148,42 +149,132 @@ $validated['num_chasis'] = strtoupper($validated['num_chasis']);
             'error' => $e->getMessage(),
             'trace' => $e->getTraceAsString(),
         ]);
-        return back()
-            ->with('error', 'Error al guardar: ' . $e->getMessage())
-            ->withInput();
+        return back()->with('error', 'Error al guardar: ' . $e->getMessage())
+                     ->withInput();
     }
 
+    // Usuario tipo 0: imprime directo
+    if ($user->user_tipo == '0') {
+        try {
+            $bici = Bicicleta::where('num_chasis', $validated['num_chasis'])->first();
+            $apiKey = env('PRINTNODE_API_KEY');
+            $printerId = env('PRINTNODE_PRINTER_ID');
+
+            $this->enviarPrintNode(
+                $bici->num_chasis,
+                $bici->color->nombre_color ?? 'Color desconocido',
+                $apiKey,
+                (int)$printerId
+            );
+
+            return redirect()->route('Bicicleta.guarda')
+                             ->with('success', 'Bicicleta guardada e impresa correctamente.');
+        } catch (\Exception $e) {
+            Log::error('⚠️ Error al imprimir bicicleta tipo 0:', ['error' => $e->getMessage()]);
+            return redirect()->route('Bicicleta.guarda')
+                             ->with('success', 'Bicicleta guardada correctamente.')
+                             ->with('warning', '⚠️ Error al imprimir: ' . $e->getMessage());
+        }
+    }
+
+    // Usuario tipo 1: crea autorización
+    if ($user->user_tipo == '1') {
     try {
-        $colorNombre = ColorModelo::where('id_colorM', $validated['id_color'])->value('nombre_color') ?? 'Error';
+        $token = bin2hex(random_bytes(16));
 
-        $user = Auth::guard('usuarios')->user();
-        $apiKey = match ($user->user_tipo) {
-            '0' => env('PRINTNODE_API_KEY'),
-            '1' => env('PRINTNODE_API_KEY_2'),
-            default => env('PRINTNODE_API_KEY'),
-        };
-        $printerId = match ($user->user_tipo) {
-            '0' => env('PRINTNODE_PRINTER_ID'),
-            '1' => env('PRINTNODE_PRINTER_ID_2'),
-            default => env('PRINTNODE_PRINTER_ID'),
-        };
+        // Crear autorización
+        Autorizacion::create([
+            'num_chasis' => $validated['num_chasis'],
+            'estado'     => 'pendiente',
+            'token'      => $token,
+            'usuario_solicita'=> 1,
+        ]);
 
-        $printResult = $this->enviarPrintNode($validated['num_chasis'], $colorNombre, $apiKey, (int) $printerId);
+        // -------------------------------
+        // DEPURACIÓN DE ENVÍO DE CORREO
+        // -------------------------------
+        try {
+            Mail::to('emi2.0carmona@gmail.com')
+    ->send(new \App\Mail\SolicitudAutorizacion(
+        $validated['num_chasis'],
+        $token,
+        $user->name ?? $user->usuario ?? 'Usuario desconocido'
+    ));
+
+
+            Log::info('✅ Correo enviado correctamente para: ' . $validated['num_chasis']);
+        } catch (\Exception $mailEx) {
+            Log::error('❌ Error enviando correo: ' . $mailEx->getMessage(), [
+                'num_chasis' => $validated['num_chasis'],
+                'token'      => $token,
+            ]);
+            return redirect()->route('Bicicleta.guarda')
+                             ->with('warning', 'No se pudo enviar el correo de autorización. Revisa logs.');
+        }
 
         return redirect()->route('Bicicleta.guarda')
-            ->with('success', 'Bicicleta guardada e impresa correctamente.')
-            ->with('print_response', $printResult);
+                         ->with('success', 'Solicitud de autorización enviada. Esperando aprobación.');
 
     } catch (\Exception $e) {
-        Log::error('⚠️ Bicicleta guardada, pero error al imprimir:', [
+        Log::error('⚠️ Error al crear autorización:', [
             'codigo' => $validated['num_chasis'],
             'error'  => $e->getMessage()
         ]);
 
         return redirect()->route('Bicicleta.guarda')
-            ->with('success', ' Bicicleta guardada correctamente.')
-            ->with('warning', '⚠️ Error al imprimir: ' . $e->getMessage());
+                         ->with('success', 'Bicicleta guardada correctamente.')
+                         ->with('warning', '⚠️ Error al crear autorización: ' . $e->getMessage());
     }
+}}
+
+// Función auxiliar
+private function biciYaImprimida($num_chasis)
+{
+    return Bicicleta::where('num_chasis', $num_chasis)
+                    ->whereNotNull('codigo_barras')
+                    ->exists();
+}
+
+public function procesarAutorizacion(Request $request, $token, $accion)
+{
+    $autorizacion = Autorizacion::where('token', $token)->first();
+
+    if (!$autorizacion) {
+        return response("❌ Token no válido o expirado.");
+    }
+
+    if ($autorizacion->estado !== 'pendiente') {
+        return response("⚠️ Esta solicitud ya fue procesada.");
+    }
+
+    if (!in_array($accion, ['approve', 'reject'])) {
+        return response("Acción no válida.");
+    }
+
+    $autorizacion->estado = $accion === 'approve' ? 'aprobado' : 'rechazado';
+    $autorizacion->save();
+
+    if ($accion === 'approve') {
+        $bici = Bicicleta::where('num_chasis', $autorizacion->num_chasis)->first();
+        if ($bici) {
+            try {
+                $this->enviarPrintNode(
+                    $bici->num_chasis,
+                    $bici->color->nombre_color ?? 'Color desconocido',
+                    env('PRINTNODE_API_KEY'),
+                    (int)env('PRINTNODE_PRINTER_ID')
+                );
+            } catch (\Exception $e) {
+                Log::error('Error al imprimir tras aprobación:', ['error' => $e->getMessage()]);
+            }
+        }
+    }
+
+    return response(
+        $accion === 'approve'
+            ? "✅ Solicitud aprobada y bicicleta impresa."
+            : "❌ Solicitud rechazada. No se imprimirá la bicicleta."
+    );
 }
 
 
@@ -304,7 +395,7 @@ EOT;
 }
 
 
-private function enviarPrintNode(string $code, $color, string $apiKey, int $printerId): array
+public function enviarPrintNode(string $code, $color, string $apiKey, int $printerId): array
 {
     try {
         $zpl = <<<EOT

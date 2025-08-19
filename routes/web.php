@@ -22,7 +22,7 @@ use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\ListaModelosController;
 use App\Http\Controllers\PiezasBController;
 use App\Http\Controllers\PedidosPiezasController;
-
+use App\Http\Controllers\AutorizacionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -217,8 +217,11 @@ Route::get('pieza/imagen/{path}', [PiezasBController::class, 'mostrarImagen'])->
 //Youtube
 Route::get('/imprimir-qr-youtube', [BicicletaController::class, 'vistaImprimirQR'])->name('bicicleta.vistaImprimirQR');
 Route::post('/imprimir-qr-youtube', [BicicletaController::class, 'imprimirQRConPrintNode'])->name('bicicleta.imprimirQR');
-
-
+Route::get('/bicicleta/prueba-modelo', [BicicletaController::class, 'vistaPruebaModelo'])
+    ->name('Bicicleta.pruebaModelo');
+//Nmms JUAN
+Route::get('/autorizacion/responder/{token}/{accion}', [AutorizacionController::class, 'responder'])
+     ->name('autorizacion.responder');
 
 });
 
