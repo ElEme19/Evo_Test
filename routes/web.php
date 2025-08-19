@@ -214,6 +214,9 @@ Route::put('/pieza/{pieza}', [PiezasBController::class, 'update'])->name('pieza.
 Route::get('pieza/imagen/{path}', [PiezasBController::class, 'mostrarImagen'])->where('path', '.*')->name('pieza.imagen');
 
 
+//Youtube
+Route::get('/imprimir-qr-youtube', [BicicletaController::class, 'vistaImprimirQR'])->name('bicicleta.vistaImprimirQR');
+Route::post('/imprimir-qr-youtube', [BicicletaController::class, 'imprimirQRConPrintNode'])->name('bicicleta.imprimirQR');
 
 
 

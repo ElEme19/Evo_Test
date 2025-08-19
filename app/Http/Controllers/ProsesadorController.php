@@ -37,7 +37,7 @@ class ProsesadorController extends Controller
             'PRIMAVERA' => 'EVO_PRIMAVERA',
             'ECLIPCE'=> 'EVO_ECLIPCE',
             'REINA'=> 'EVO_REINA',
-
+            'URBEX'=> 'EVO_URBEX',
 
 
 
@@ -92,18 +92,25 @@ class ProsesadorController extends Controller
         }
 
         $insertados = 0;
-        foreach ($registros as $registro) {
-            try {
-                DB::table('bicicleta')->insert($registro);
-                $insertados++;
-            } catch (\Illuminate\Database\QueryException $e) {
-                if ($e->getCode() == 23000) {
-                    Log::warning("Chasis duplicado (omitido): " . $registro['num_chasis']);
-                } else {
-                    throw $e;
-                }
-            }
+
+foreach ($registros as $registro) {
+    try {
+        // Insertar en bicicleta y obtener el ID, incluyendo el timestamp
+        $registro['created_at'] = now();
+        $idBicicleta = DB::table('bicicleta')->insertGetId($registro);
+
+       
+
+        $insertados++;
+    } catch (\Illuminate\Database\QueryException $e) {
+        if ($e->getCode() == 23000) {
+            Log::warning("Chasis duplicado (omitido): " . $registro['num_chasis']);
+        } else {
+            throw $e;
         }
+    }
+}
+
 
         return back()->with('status', "Proceso completado: se insertaron {$insertados} registros en orden.");
     }

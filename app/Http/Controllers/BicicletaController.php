@@ -226,6 +226,84 @@ public function imprimirTodasBicicletas()
     ]);
 }
 
+// Mostrar vista con botón para imprimir
+public function vistaImprimirQR()
+{
+    return view('Bicicleta.imprimirQR'); // crea la vista resources/views/Bicicleta/imprimirQR.blade.php
+}
+
+// Imprimir QR vía PrintNode
+public function imprimirQRConPrintNode(Request $request)
+{
+    try {
+        $url = "https://drive.google.com/file/d/1XYzvw8GR8IG3fLetzSYGTTBlS0w1zsQ-/view?usp=drive_link";
+        $texto = "JOSHUA ESTUVO AQUI";
+
+        $user = Auth::guard('usuarios')->user();
+        $apiKey = match ($user->user_tipo) {
+            '0' => env('PRINTNODE_API_KEY'),
+            '1' => env('PRINTNODE_API_KEY_2'),
+            default => env('PRINTNODE_API_KEY'),
+        };
+        $printerId = match ($user->user_tipo) {
+            '0' => env('PRINTNODE_PRINTER_ID'),
+            '1' => env('PRINTNODE_PRINTER_ID_2'),
+            default => env('PRINTNODE_PRINTER_ID'),
+        };
+
+        // Generar ZPL
+        $zpl = <<<EOT
+^XA
+^PW320
+^LL200
+
+^FO80,25
+^BQN,2,3.8,H
+^FD{$url}
+^FS
+
+^FO68,209
+^A0N,8,5
+^FB320,1,0,C,0
+^FD{$texto}
+^FS
+
+^XZ
+EOT;
+
+        $client = new Client([
+            'base_uri' => 'https://api.printnode.com/account',
+            'auth'     => [$apiKey, ''],
+            'timeout'  => 10,
+        ]);
+
+        $response = $client->post('printjobs', [
+            'json' => [
+                'printerId'   => $printerId,
+                'title'       => 'QR YouTube',
+                'contentType' => 'raw_base64',
+                'content'     => base64_encode($zpl),
+                'source'      => 'MiAppLaravel',
+            ],
+        ]);
+
+        $body = (string) $response->getBody();
+        $decoded = json_decode($body, true);
+
+        return redirect()->back()->with('success', 'QR de YouTube impreso correctamente.')
+                                 ->with('print_response', $decoded);
+
+    } catch (\Exception $e) {
+        Log::error('Error al imprimir QR de YouTube:', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        return redirect()->back()->with('error', 'Error al imprimir QR: ' . $e->getMessage());
+    }
+}
+
+
 private function enviarPrintNode(string $code, $color, string $apiKey, int $printerId): array
 {
     try {
@@ -237,13 +315,17 @@ private function enviarPrintNode(string $code, $color, string $apiKey, int $prin
 ^FO75,25
 ^BQN,2,7,H
 
+
 ^FD{$code}
+
 ^FS
 
 ^FO60,209
+
 ^A0N,8,8
 ^FB320,1,0,C,0
 ^FD{$code}
+
 ^FS
 
 ^XZ
