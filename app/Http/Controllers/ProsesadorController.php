@@ -38,6 +38,7 @@ class ProsesadorController extends Controller
             'ECLIPCE'=> 'EVO_ECLIPCE',
             'REINA'=> 'EVO_REINA',
             'URBEX'=> 'EVO_URBEX',
+            'AGUILA PRO'=> 'EVO_AGUILA_PRO',
 
 
 

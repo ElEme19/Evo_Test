@@ -156,7 +156,7 @@
                         </li>
                     @endif
 
-                    @if (in_array($tipo, ['1']))
+                    @if (in_array($tipo, ['0']))
                     <li class="nav-item">
                         <a class="nav-link" href="/Mexico/import">
                             <i class="bi bi-upload me-1"></i>@lang('Importar')
