@@ -89,7 +89,7 @@
                         </a>
                     </li>
                     
-                    @if (in_array($tipo, ['0','1', '3', '5']))
+                    @if (in_array($tipo, ['1', '3', '5']))
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="bicicletaDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
@@ -105,6 +105,18 @@
                     </li>
                     @endif
 
+                    @if (in_array($tipo, ['0']))
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="bicicletaDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bicycle me-1"></i>@lang('Imprimir')
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="bicicletaDropdown">
+                            <li><a class="dropdown-item" href="/Bicicleta/vista"><i class="bi bi-plus-circle me-2"></i>@lang('Nuevo')</a></li>
+                           </ul>
+                    </li>
+                    @endif
+
                     @if (in_array($tipo, ['2','3', '4']))
                     <li class="nav-item">
                         <a class="nav-link" href="/pieza">
@@ -114,7 +126,7 @@
                     @endif
 
 
-                     @if (in_array($tipo, ['0', '2', '3', '5']))
+                     @if (in_array($tipo, ['2', '3', '5']))
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="bicicletaDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
@@ -143,7 +155,7 @@
                         </li>
                     @endif
 
-                    @if (in_array($tipo, ['0']))
+                    @if (in_array($tipo, ['1']))
                     <li class="nav-item">
                         <a class="nav-link" href="/Mexico/import">
                             <i class="bi bi-upload me-1"></i>@lang('Importar')
