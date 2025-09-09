@@ -278,25 +278,34 @@ public function procesarAutorizacion(Request $request, $token, $accion)
 }
 
 
-public function imprimirTodasBicicletas()
+
+public function imprimirBicicletasPorFecha(Request $request)
 {
-    set_time_limit(0); // para no cortar la ejecución si tarda mucho
+    set_time_limit(0);
 
     $apiKey = config('printnode.api_key');
     $printerId = config('printnode.printer_id');
 
-    $codigos = Bicicleta::orderBy('orden_excel')->pluck('num_chasis')->toArray();
+    // La fecha que envía el usuario en formato YYYY-MM-DD
+    $fecha = $request->input('fecha');
+
+    // Traer bicicletas de esa fecha junto con el modelo
+    $bicicletas = Bicicleta::with('modelo')
+        ->whereDate('created_at', $fecha)
+        ->orderBy('orden_excel')
+        ->get();
 
     $resultados = [];
 
-    foreach ($codigos as $codigo) {
-        $codigo = trim($codigo);
+    foreach ($bicicletas as $bici) {
+        $codigo = trim($bici->num_chasis);
 
         try {
             $resultado = $this->enviarPrintNode($codigo, null, $apiKey, $printerId);
 
             $resultados[] = [
                 'num_chasis' => $codigo,
+                'modelo'     => $bici->modelo->nombre_modelo ?? 'Sin modelo',
                 'status'     => 'success',
                 'message'    => $resultado['message'],
                 'data'       => $resultado['data'] ?? null,
@@ -304,6 +313,7 @@ public function imprimirTodasBicicletas()
         } catch (\Exception $e) {
             $resultados[] = [
                 'num_chasis' => $codigo,
+                'modelo'     => $bici->modelo->nombre_modelo ?? 'Sin modelo',
                 'status'     => 'error',
                 'message'    => $e->getMessage(),
             ];
@@ -312,10 +322,15 @@ public function imprimirTodasBicicletas()
 
     return response()->json([
         'status'     => 'completed',
+        'fecha'      => $fecha,
+        'total'      => count($resultados),
         'resultados' => $resultados,
         'timestamp'  => now()->toDateTimeString(),
     ]);
 }
+
+
+
 
 // Mostrar vista con botón para imprimir
 public function vistaImprimirQR()
