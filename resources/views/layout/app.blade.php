@@ -113,7 +113,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="bicicletaDropdown">
                             <li><a class="dropdown-item" href="/Bicicleta/vista"><i class="bi bi-plus-circle me-2"></i>@lang('Nuevo')</a></li>
-                            <li><a class="dropdown-item" href="/Bicicleta/vista"><i class="bi bi-printer me-2"></i>@lang('Imprimir todo')</a></li>
+                            <li><a class="dropdown-item" href="/imprimirTodo"><i class="bi bi-printer me-2"></i>@lang('Imprimir todo')</a></li>
                            </ul>
                     </li>
                     @endif

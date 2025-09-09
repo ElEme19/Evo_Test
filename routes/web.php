@@ -94,7 +94,9 @@ Route::get('/colores-por-modelo/{id_modelo}', [BicicletaController::class, 'colo
 Route::get('/voltaje-por-modelo/{id_modelo}', [BicicletaController::class, 'voltajePorModelo'])->name('Bicicleta.voltajeXmodelo');
 Route::get('/Bicicleta/buscar-por-ultimos4', [BicicletaController::class, 'buscarPorUltimosSx'])->name('Bicicleta.buscarUltimos4');
 
-Route::get('/imprimir-bicis', [BicicletaController::class, 'imprimirTodasBicicletas']);
+Route::get('/imprimirTodo', [BicicletaController::class, 'imprimirTodasBicicletas']);
+Route::get('/imprimirTodo', [BicicletaController::class, 'viewImprimirTodo'])->name('Bicicleta.imprimirTodo');
+Route::post('/imprimirTodo', [BicicletaController::class, 'imprimirBicicletasPorFecha'])->name('Bicicleta.imprimirTodo.post');
 
 
 

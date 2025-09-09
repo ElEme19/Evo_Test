@@ -283,17 +283,22 @@ public function imprimirBicicletasPorFecha(Request $request)
 {
     set_time_limit(0);
 
-    $apiKey = config('printnode.api_key');
+    $apiKey    = config('printnode.api_key');
     $printerId = config('printnode.printer_id');
 
-    // La fecha que envía el usuario en formato YYYY-MM-DD
-    $fecha = $request->input('fecha');
+    // Parámetros desde la vista
+    $fecha   = $request->input('fecha');        // YYYY-MM-DD
+    $idModelo = $request->input('id_modelo');   // ID del modelo
 
-    // Traer bicicletas de esa fecha junto con el modelo
-    $bicicletas = Bicicleta::with('modelo')
-        ->whereDate('created_at', $fecha)
-        ->orderBy('orden_excel')
-        ->get();
+    // Query con filtros
+    $query = Bicicleta::with('modelo')
+        ->whereDate('created_at', $fecha);
+
+    if ($idModelo) {
+        $query->where('id_modelo', $idModelo);
+    }
+
+    $bicicletas = $query->orderBy('orden_excel')->get();
 
     $resultados = [];
 
@@ -323,10 +328,18 @@ public function imprimirBicicletasPorFecha(Request $request)
     return response()->json([
         'status'     => 'completed',
         'fecha'      => $fecha,
+        'id_modelo'  => $idModelo,
         'total'      => count($resultados),
         'resultados' => $resultados,
         'timestamp'  => now()->toDateTimeString(),
     ]);
+}
+
+
+public function viewImprimirTodo()
+{
+    $modelos = modelos_bici::orderBy('nombre_modelo')->get();
+    return view('Bicicleta.imprimirTodo', compact('modelos'));
 }
 
 
