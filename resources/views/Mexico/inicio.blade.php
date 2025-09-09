@@ -75,13 +75,13 @@
                                             <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 58%"></div>
                                         </div>
                                     </div>
-                                    <span class="fw-bold text-dark">58% completado</span>
+                                    <span class="fw-bold text-dark">-1% completado</span>
                                 </div>
                             </div>
                             <div class="col-md-4 text-center d-none d-md-block">
                                 <img src="{{ asset('images/cloudL.png') }}" alt="CloudLabs Logo" style="height: 150px;" class="mb-3">
                                 <div class="alert alert-info bg-opacity-10">
-                                    <small><i class="fas fa-info-circle me-1"></i> ¿Tienes sugerencias? <a href="#" class="text-info">Cuéntanos</a></small>
+                                    <small><i class="fas fa-info-circle me-1"></i> ¿Tienes sugerencias? <a href="https://youtube.com/shorts/jdpw0B7UEQE?si=UhWV8jW7jAGJFEDd" class="text-info">Cuéntanos</a></small>
                                 </div>
                             </div>
                         </div>
