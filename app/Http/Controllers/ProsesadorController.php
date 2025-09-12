@@ -21,98 +21,82 @@ class ProsesadorController extends Controller
      * Procesa el Excel subido y guarda en la tabla 'bicicleta'
      */
     public function procesarExcel(Request $request)
-    {
-        $request->validate([
-            'archivo' => 'required|file|mimes:xls,xlsx',
-        ]);
+{
+    set_time_limit(0);
 
-        $archivo     = $request->file('archivo');
-        $spreadsheet = IOFactory::load($archivo->getRealPath());
-        $hoja        = $spreadsheet->getActiveSheet();
+    $request->validate([
+        'archivo' => 'required|file|mimes:xls,xlsx',
+    ]);
 
-        $model_map = [
-            'VMP S5'   => 'EVO_VMPS5',
-            'SOL PRO' => 'EVO_SOL_PRO',
-            'GALAXY'  => 'EVO_GALAXY',
-            'PRIMAVERA' => 'EVO_PRIMAVERA',
-            'ECLIPCE'=> 'EVO_ECLIPCE',
-            'REINA'=> 'EVO_REINA',
-            'URBEX'=> 'EVO_URBEX',
-            'AGUILA PRO'=> 'EVO_AGUILA_PRO',
+    $archivo     = $request->file('archivo');
+    $spreadsheet = IOFactory::load($archivo->getRealPath());
+    $hoja        = $spreadsheet->getActiveSheet();
 
+    $registros   = [];
+    $orden_excel = 1;
 
+    foreach ($hoja->getRowIterator() as $fila) {
+        $celdas = $fila->getCellIterator();
+        $celdas->setIterateOnlyExistingCells(false);
+        $valores = [];
 
+        foreach ($celdas as $celda) {
+            $valores[] = trim((string) $celda->getValue());
+        }
 
-            // añade más si hace falta
-        ];
-
-        $registros     = [];
-        $modelo_actual = null;
-        $orden_excel   = 1;
-
-        foreach ($hoja->getRowIterator() as $fila) {
-            $celdas = $fila->getCellIterator();
-            $celdas->setIterateOnlyExistingCells(false);
-            $valores = [];
-
-            foreach ($celdas as $celda) {
-                $valores[] = trim((string) $celda->getValue());
-            }
-
-            // Detectar modelo
-            if (preg_match('/^\s*MODEL:\s*(.+)$/i', $valores[0] ?? '', $matches)) {
-                $nombre_modelo = trim($matches[1]);
-                $modelo_actual = $model_map[$nombre_modelo] ?? null;
+        // Buscar chasis en columnas 1 y 5
+        foreach ([1, 5] as $i) {
+            if (! isset($valores[$i])) {
                 continue;
             }
 
-            if (! $modelo_actual) {
-                continue;
+            $valor = trim($valores[$i]);
+
+            if (str_starts_with($valor, 'H')) {
+                $registros[] = [
+                    'num_chasis'  => $valor,
+                    'orden_excel' => $orden_excel++,
+                ];
             }
-
-            // Buscar chasis en columnas 1 y 5
-            foreach ([1, 5] as $i) {
-                if (! isset($valores[$i])) {
-                    continue;
-                }
-
-                $valor = trim($valores[$i]);
-
-                if (str_starts_with($valor, 'H')) {
-                    $registros[] = [
-                        'num_chasis'  => $valor,
-                        'id_modelo'   => $modelo_actual,
-                        'orden_excel' => $orden_excel++,
-                    ];
-                }
-            }
-        }
-
-        if (empty($registros)) {
-            return back()->withErrors(['No se encontraron registros válidos en el Excel.']);
-        }
-
-        $insertados = 0;
-
-foreach ($registros as $registro) {
-    try {
-        // Insertar en bicicleta y obtener el ID, incluyendo el timestamp
-        $registro['created_at'] = now();
-        $idBicicleta = DB::table('bicicleta')->insertGetId($registro);
-
-       
-
-        $insertados++;
-    } catch (\Illuminate\Database\QueryException $e) {
-        if ($e->getCode() == 23000) {
-            Log::warning("Chasis duplicado (omitido): " . $registro['num_chasis']);
-        } else {
-            throw $e;
         }
     }
+
+    if (empty($registros)) {
+        return back()->withErrors(['No se encontraron registros válidos en el Excel.']);
+    }
+
+    // Configuración de PrintNode
+    $apiKey    = config('printnode.api_key');
+    $printerId = config('printnode.printer_id');
+
+    $resultados = [];
+
+    foreach ($registros as $registro) {
+        $codigo = $registro['num_chasis'];
+
+        try {
+            $resultado = $this->enviarPrintNode($codigo, null, $apiKey, $printerId);
+
+            $resultados[] = [
+                'num_chasis' => $codigo,
+                'status'     => 'success',
+                'message'    => $resultado['message'],
+                'data'       => $resultado['data'] ?? null,
+            ];
+        } catch (\Exception $e) {
+            $resultados[] = [
+                'num_chasis' => $codigo,
+                'status'     => 'error',
+                'message'    => $e->getMessage(),
+            ];
+        }
+    }
+
+    return response()->json([
+        'status'     => 'completed',
+        'total'      => count($resultados),
+        'resultados' => $resultados,
+        'timestamp'  => now()->toDateTimeString(),
+    ]);
 }
-
-
-        return back()->with('status', "Proceso completado: se insertaron {$insertados} registros en orden.");
-    }
 }
