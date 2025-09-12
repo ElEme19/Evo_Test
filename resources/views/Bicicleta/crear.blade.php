@@ -1,26 +1,6 @@
 @extends('layout.app')
 
 @section('conten')
-
-<!-- Modal para elegir prefijo -->
-<div class="modal fade" id="prefijoModal" tabindex="-1" aria-labelledby="prefijoModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-success">
-      <div class="modal-header bg-success text-white">
-        <h5 class="modal-title" id="prefijoModalLabel">@lang('Seleccione los primeros 7 dígitos')</h5>
-      </div>
-      <div class="modal-body text-center">
-        <p class="fw-semibold">@lang('Elija una opción:')</p>
-        <div class="d-grid gap-2">
-          <button type="button" class="btn btn-outline-success prefijo-btn" data-prefijo="HE0EA2A">HE0EA2A</button>
-          <button type="button" class="btn btn-outline-success prefijo-btn" data-prefijo="HMDNA2A">HMDNA2A</button>
-          <button type="button" class="btn btn-outline-success prefijo-btn" data-prefijo="HMDMA2A">HMDMA2A</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="text-center my-4">
     <h3>
         @lang('Crear Bicicleta')
@@ -63,20 +43,10 @@
 <form method="POST" action="{{ route('Bicicleta.store') }}" class="row g-3 was-validated" id="formBicicleta">
     @csrf
 
-    <div class="col-md-6">
+    <div class="col-12 col-md-6 col-lg-4 mx-auto">
         <label for="num_chasis" class="form-label">@lang('Número de Chasis (17 dígitos)')</label>
         <input type="text" name="num_chasis" id="num_chasis" maxlength="17" class="form-control" placeholder="@lang('Ingrese número de chasis completo')" required autocomplete="off">
         <div class="form-text">@lang('Debe ingresar los 17 caracteres del número de chasis.')</div>
-    </div>
-
-    <div class="col-md-6">
-        <label for="id_modelo" class="form-label">@lang('Seleccione un modelo')</label>
-        <select name="id_modelo" id="id_modelo" class="form-select">
-            <option value="">@lang('Seleccione un modelo')</option>
-            @foreach($modelos as $modelo)
-                <option value="{{ $modelo->id_modelo }}">{{ $modelo->nombre_modelo }}</option>
-            @endforeach
-        </select>
     </div>
 
     <div class="col-12 mt-3 text-center">
@@ -95,36 +65,10 @@
 <script>
 $(document).ready(function () {
 
-    let prefijoElegido = '';
+    
+    
 
-    // Mostrar modal al cargar
-    var modalPrefijo = new bootstrap.Modal(document.getElementById('prefijoModal'), {
-        backdrop: 'static',
-        keyboard: false
-    });
-    modalPrefijo.show();
-
-    // Cuando el usuario elige un prefijo
-    $('.prefijo-btn').on('click', function(){
-        prefijoElegido = $(this).data('prefijo');
-        $('#num_chasis').val(prefijoElegido);
-        modalPrefijo.hide();
-
-        // Colocar cursor justo después del prefijo
-        setTimeout(function(){
-            let input = document.getElementById('num_chasis');
-            input.setSelectionRange(prefijoElegido.length, prefijoElegido.length);
-            input.focus();
-        }, 100);
-    });
-
-    // Evitar que el usuario modifique o borre el prefijo
-    $('#num_chasis').on('input', function(){
-        let valor = $(this).val().toUpperCase(); // Forzar mayúsculas
-        if (!valor.startsWith(prefijoElegido)) {
-            $(this).val(prefijoElegido);
-            return;
-        }
+   
 
         // Detectar modelo automáticamente
         if (valor.length >= 13) {
@@ -163,14 +107,6 @@ $(document).ready(function () {
             }
         } else {
             $('#id_modelo').val('');
-        }
-    });
-
-    // Prevenir borrar el prefijo con teclas
-    $('#num_chasis').on('keydown', function(e){
-        let pos = this.selectionStart;
-        if ((pos <= prefijoElegido.length) && (e.key === 'Backspace' || e.key === 'Delete')) {
-            e.preventDefault();
         }
     });
 

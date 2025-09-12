@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Bicicleta extends Model
 {
-    protected $table = 'bicicleta';
-    protected $primaryKey = 'num_chasis';
-    public $incrementing = false; // Porque la PK no es un número autoincremental
-    protected $keyType = 'string';
+     protected $table = 'bicicleta';
+    protected $primaryKey = 'id_fake'; // ← un campo entero autoincremental
+    public $incrementing = true;
+    protected $keyType = 'int';
      public $timestamps = true;
 
     protected $fillable = [
