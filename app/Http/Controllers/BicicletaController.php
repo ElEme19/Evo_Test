@@ -123,36 +123,31 @@ class BicicletaController extends Controller
     ]);
 }
 
-    public function guarda()
-    {
-        $modelos = modelos_bici::all();
-        $colores = ColorModelo::all();
-        $lotes   = Lote::all();
-        $tipos   = TipoStock::all();
-
-        return view('Bicicleta.guarda', compact('modelos','colores','lotes','tipos'));
-    }
-    /**
-     * Guarda la bicicleta y dispara la impresión vía PrintNode.
-     */  
+   
 public function store(Request $request)
 {
     $validated = $request->validate([
         'num_chasis' => 'required|string|size:17',
-        'id_modelo'  => 'nullable|string|exists:modelos,id_modelo',
+        'id_modelo'  => 'nullable|integer',
     ]);
+
     // Forzar mayúsculas
     $validated['num_chasis'] = strtoupper($validated['num_chasis']);
 
-    DB::beginTransaction();
+    $bicicleta = null;
 
+    DB::beginTransaction();
     try {
-        Bicicleta::create([
-            'num_chasis' => $validated['num_chasis'],
-            'id_modelo'  => $validated['id_modelo'],
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Buscar si ya existe
+        $bicicleta = Bicicleta::where('num_chasis', $validated['num_chasis'])->first();
+
+        if (! $bicicleta) {
+            // No existe, se crea
+            $bicicleta = Bicicleta::create([
+                'num_chasis' => $validated['num_chasis'],
+                'id_modelo'  => $validated['id_modelo'] ?? null,
+            ]);
+        }
 
         DB::commit();
     } catch (\Exception $e) {
@@ -166,8 +161,12 @@ public function store(Request $request)
             ->withInput();
     }
 
+    // =====================
+    // IMPRESIÓN
+    // =====================
     try {
-        $modeloNombre = modelos_bici::where('id_modelo', $validated['id_modelo'])->value('nombre_modelo') ?? 'Modelo desconocido';
+        $modeloNombre = modelos_bici::where('id_modelo', $validated['id_modelo'] ?? $bicicleta->id_modelo ?? null)
+            ->value('nombre_modelo') ?? 'Modelo desconocido';
 
         $user = Auth::guard('usuarios')->user();
         $apiKey = match ($user->user_tipo) {
@@ -181,10 +180,17 @@ public function store(Request $request)
             default => env('PRINTNODE_PRINTER_ID'),
         };
 
-        $printResult = $this->enviarPrintNode($validated['num_chasis'], $modeloNombre, $apiKey, (int) $printerId);
+        $printResult = $this->enviarPrintNode(
+            $validated['num_chasis'],
+            $modeloNombre,
+            $apiKey,
+            (int) $printerId
+        );
 
         return redirect()->route('Bicicleta.crear')
-            ->with('success', 'Bicicleta guardada e impresa correctamente.')
+            ->with('success', $bicicleta->wasRecentlyCreated
+                ? '✅ Bicicleta guardada e impresa correctamente.'
+                : 'ℹ️ Bicicleta ya existía, pero se imprimió de nuevo.')
             ->with('print_response', $printResult);
 
     } catch (\Exception $e) {
@@ -194,7 +200,9 @@ public function store(Request $request)
         ]);
 
         return redirect()->route('Bicicleta.crear')
-            ->with('success', 'Bicicleta guardada correctamente.')
+            ->with('success', $bicicleta->wasRecentlyCreated
+                ? '✅ Bicicleta guardada correctamente.'
+                : 'ℹ️ Bicicleta ya existía.')
             ->with('warning', '⚠️ Error al imprimir: ' . $e->getMessage());
     }
 }
