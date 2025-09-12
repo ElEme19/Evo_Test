@@ -154,7 +154,7 @@ Route::delete('/area/{id}', [AreaController::class, 'eliminar'])->name('area.eli
 
 //Lector Excel para contenedores
 Route::get('/Mexico/import',  [ProsesadorController::class, 'formulario'])->name('procesador.import');
-Route::post('/Mexico/procesar', [ProsesadorController::class, 'procesarExcel'])->name('procesador.procesar');
+Route::post('/Mexico/procesar', [BicicletaController::class, 'procesarExcel'])->name('procesador.procesar');
 
 //Pedidos
 Route::get('/pedido/ver', [PedidosController::class, 'index'])->name('pedido.ver');
