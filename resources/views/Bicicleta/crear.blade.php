@@ -45,9 +45,17 @@
 
     <div class="col-12 col-md-6 col-lg-4 mx-auto">
         <label for="num_chasis" class="form-label">@lang('Número de Chasis (17 dígitos)')</label>
-        <input type="text" name="num_chasis" id="num_chasis" maxlength="17" class="form-control" placeholder="@lang('Ingrese número de chasis completo')" required autocomplete="off">
+        <input type="text" name="num_chasis" id="num_chasis" maxlength="" class="form-control" placeholder="@lang('Ingrese número de chasis completo')" required autocomplete="off">
         <div class="form-text">@lang('Debe ingresar los 17 caracteres del número de chasis.')</div>
     </div>
+
+
+    <div class="col-12 col-md-6 col-lg-4 mx-auto">
+        <label for="num_chasis" class="form-label">@lang('Número de Motor (14 dígitos)')</label>
+        <input type="text" name="num_motor" id="num_motor" maxlength="" class="form-control" placeholder="@lang('Ingrese número de chasis completo')" required autocomplete="off">
+        <div class="form-text">@lang('Debe ingresar los 14 caracteres del número de motor.')</div>
+    </div>
+
 
     <div class="col-12 mt-3 text-center">
         <button type="submit" class="btn btn-outline-success">@lang('Guardar Bicicleta')</button>
