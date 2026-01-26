@@ -18,6 +18,8 @@ use App\Models\Autorizacion;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SolicitudAutorizacion;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Illuminate\Support\Facades\Http;
+
 
 
 
@@ -40,6 +42,39 @@ class BicicletaController extends Controller
 
         return view('Bicicleta.crear', compact('modelos','colores','lotes','tipos'));
     }
+
+
+    public function enviarMiPrintAPI(string $zpl, string $printerKey): array
+{
+    try {
+        $url = config("printing.printers.$printerKey");
+
+        if (!$url) {
+            throw new \Exception("Impresora no configurada: $printerKey");
+        }
+
+        $response = Http::timeout(5)->post($url, [
+            'zpl' => $zpl
+        ]);
+
+        if (!$response->successful()) {
+            throw new \Exception("Error impresora: " . $response->body());
+        }
+
+        return [
+            'status' => 'success',
+            'message' => '🖨️ Impresión enviada correctamente',
+            'timestamp' => now()->toDateTimeString(),
+        ];
+    } catch (\Exception $e) {
+
+        Log::error('Error impresión local:', [
+            'error' => $e->getMessage()
+        ]);
+
+        throw new \Exception('⚠️ Error impresión API propia: ' . $e->getMessage());
+    }
+}
 
 
 
@@ -98,7 +133,7 @@ class BicicletaController extends Controller
         $codigo = $registro['num_chasis'];
 
         try {
-            $resultado = $this->enviarPrintNode($codigo, null, $apiKey, $printerId);
+            $resultado = $this->enviarMiPrintAPI($zpl, 'TALLER_1');
 
             $resultados[] = [
                 'num_chasis' => $codigo,
@@ -168,7 +203,7 @@ public function store(Request $request)
         $modeloNombre = modelos_bici::where('id_modelo', $validated['id_modelo'] ?? $bicicleta->id_modelo ?? null)
             ->value('nombre_modelo') ?? 'Modelo desconocido';
 
-        $user = Auth::guard('usuarios')->user();
+       /*  $user = Auth::guard('usuarios')->user();
         $apiKey = match ($user->user_tipo) {
             '0' => env('PRINTNODE_API_KEY'),
             '1' => env('PRINTNODE_API_KEY_2'),
@@ -178,14 +213,28 @@ public function store(Request $request)
             '0' => env('PRINTNODE_PRINTER_ID'),
             '1' => env('PRINTNODE_PRINTER_ID_2'),
             default => env('PRINTNODE_PRINTER_ID'),
-        };
+        }; */
 
-        $printResult = $this->enviarPrintNode(
-            $validated['num_chasis'],
-            $modeloNombre,
-            $apiKey,
-            (int) $printerId
-        );
+        $zpl = <<<EOT
+        ^XA
+        ^PW320
+        ^LL200
+        ^FO75,25
+        ^BQN,2,7,H
+        ^FD{$validated['num_chasis']}
+        ^FS
+        ^FO60,209
+        ^A0N,8,8
+        ^FB320,1,0,C,0
+        ^FD{$validated['num_chasis']}
+        ^FS
+        ^XZ
+        EOT;
+
+        $printerKey = $user->user_tipo == '1' ? 'TALLER_2' : 'TALLER_1';
+
+        $printResult = $this->enviarMiPrintAPI($zpl, $printerKey);
+
 
         return redirect()->route('Bicicleta.crear')
             ->with('success', $bicicleta->wasRecentlyCreated
