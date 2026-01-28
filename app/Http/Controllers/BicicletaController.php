@@ -158,17 +158,28 @@ class BicicletaController extends Controller
     ]);
 }
 
-private function generarZplEtiquetaChasis(string $codigo): string
+private function generarZplEtiquetaChasis(string $code): string
 {
-    return "^XA
-^CI28
-^FO40,40^A0N,35,35^FDCHASIS:^FS
-^FO40,90^BY2
-^BCN,80,Y,N,N
-^FD{$codigo}^FS
-^FO40,190^A0N,30,30^FD{$codigo}^FS
-^XZ";
+    return <<<EOT
+^XA
+^PW320
+^LL200
+
+^FO75,25
+^BQN,2,7,H
+^FD{$code}
+^FS
+
+^FO60,209
+^A0N,8,8
+^FB320,1,0,C,0
+^FD{$code}
+^FS
+
+^XZ
+EOT;
 }
+
    
    
 public function store(Request $request)
