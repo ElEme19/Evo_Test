@@ -29696,3 +29696,7 @@
 #71 {main}
 "} 
 [2026-01-26 11:07:55] local.ERROR: ⚠️ Bicicleta guardada, pero error al imprimir: {"codigo":"PRUEBADECHICLES21","error":"Undefined variable $user"} 
+[2026-01-28 11:20:35] local.ERROR: Error impresión local: {"error":"cURL error 28: Connection timed out after 5010 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://192.168.100.108:5000/print"} 
+[2026-01-28 11:20:35] local.ERROR: ⚠️ Bicicleta guardada, pero error al imprimir: {"codigo":"1234568YUIGFTDY6R","error":"⚠️ Error impresión API propia: cURL error 28: Connection timed out after 5010 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://192.168.100.108:5000/print"} 
+[2026-01-28 11:21:42] local.ERROR: Error impresión local: {"error":"cURL error 28: Connection timed out after 5001 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://192.168.100.108:5000/print"} 
+[2026-01-28 11:21:42] local.ERROR: ⚠️ Bicicleta guardada, pero error al imprimir: {"codigo":"JKDHBWFJKEBDEJKFF","error":"⚠️ Error impresión API propia: cURL error 28: Connection timed out after 5001 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://192.168.100.108:5000/print"} 
