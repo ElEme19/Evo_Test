@@ -102,11 +102,9 @@ class BicicletaController extends Controller
             $valores[] = trim((string) $celda->getValue());
         }
 
-        // Buscar chasis en columnas 1 y 5
+        // Buscar chasis en columnas 1 y 5 (B y F)
         foreach ([1, 5] as $i) {
-            if (! isset($valores[$i])) {
-                continue;
-            }
+            if (!isset($valores[$i])) continue;
 
             $valor = trim($valores[$i]);
 
@@ -123,25 +121,27 @@ class BicicletaController extends Controller
         return back()->withErrors(['No se encontraron registros válidos en el Excel.']);
     }
 
-    // Configuración de PrintNode
-    $apiKey    = config('printnode.api_key');
-    $printerId = config('printnode.printer_id');
-
     $resultados = [];
 
     foreach ($registros as $registro) {
         $codigo = $registro['num_chasis'];
 
         try {
+
+            // 👉 Generar ZPL por chasis (aquí vive la magia de la etiqueta)
+            $zpl = $this->generarZplEtiquetaChasis($codigo);
+
+            // 👉 Enviar a tu API local
             $resultado = $this->enviarMiPrintAPI($zpl, 'TALLER_1');
 
             $resultados[] = [
                 'num_chasis' => $codigo,
                 'status'     => 'success',
-                'message'    => $resultado['message'],
-                'data'       => $resultado['data'] ?? null,
+                'message'    => $resultado['message'] ?? 'Impresión enviada',
             ];
+
         } catch (\Exception $e) {
+
             $resultados[] = [
                 'num_chasis' => $codigo,
                 'status'     => 'error',
@@ -158,6 +158,17 @@ class BicicletaController extends Controller
     ]);
 }
 
+private function generarZplEtiquetaChasis(string $codigo): string
+{
+    return "^XA
+^CI28
+^FO40,40^A0N,35,35^FDCHASIS:^FS
+^FO40,90^BY2
+^BCN,80,Y,N,N
+^FD{$codigo}^FS
+^FO40,190^A0N,30,30^FD{$codigo}^FS
+^XZ";
+}
    
 public function store(Request $request)
 {
