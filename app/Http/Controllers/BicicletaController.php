@@ -203,7 +203,7 @@ public function store(Request $request)
         $modeloNombre = modelos_bici::where('id_modelo', $validated['id_modelo'] ?? $bicicleta->id_modelo ?? null)
             ->value('nombre_modelo') ?? 'Modelo desconocido';
 
-       /*  $user = Auth::guard('usuarios')->user();
+        $user = Auth::guard('usuarios')->user();
         $apiKey = match ($user->user_tipo) {
             '0' => env('PRINTNODE_API_KEY'),
             '1' => env('PRINTNODE_API_KEY_2'),
@@ -213,7 +213,7 @@ public function store(Request $request)
             '0' => env('PRINTNODE_PRINTER_ID'),
             '1' => env('PRINTNODE_PRINTER_ID_2'),
             default => env('PRINTNODE_PRINTER_ID'),
-        }; */
+        };
 
         $zpl = <<<EOT
         ^XA
@@ -231,7 +231,7 @@ public function store(Request $request)
         ^XZ
         EOT;
 
-        $printerKey = $user->user_tipo == '1' ? 'TALLER_2' : 'TALLER_1';
+        $printerKey = $user->user_tipo == '1' ? 'TALLER_1' : 'TALLER_1';
 
         $printResult = $this->enviarMiPrintAPI($zpl, $printerKey);
 
